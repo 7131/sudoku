@@ -1,0 +1,192 @@
+// Creator prototype update
+if (typeof Creator === "function") {
+
+    Creator.prototype = Object.create(Creator.prototype, {
+
+        // initialize the fields
+        "initialize": { "value": function(grids) {
+            // set the grid list
+            if (Array.isArray(grids)) {
+                this._grids = this._shuffle(grids);
+            } else {
+                this._grids = [];
+            }
+
+            // create a list of clues
+            this._clues = [];
+            for (let i = 0; i < 81; i++) {
+                this._clues.push(false);
+            }
+
+            // create a replacement table
+            let first = this._permutate([ 3, 4, 5 ]);
+            let second = this._permutate([ 6, 7, 8 ]);
+            let normal = [];
+            let reverse = [];
+            for (let i = 0; i < first.length; i++) {
+                for (let j = 0; j < second.length; j++) {
+                    normal.push(first[i].concat(second[j]));
+                    reverse.push(second[i].concat(first[j]));
+                }
+            }
+            this._table = normal.concat(reverse);
+        }},
+
+        // start creating problems
+        "start": { "value": function(logic, levels, needs) {
+            // initialize the fields
+            this._logic = logic;
+            this._levels = levels;
+            if (Array.isArray(needs)) {
+                this._needs = needs;
+            } else {
+                this._needs = [];
+            }
+            this._table = this._shuffle(this._table);
+            this._index = 0;
+            this._row = 0;
+            this._col = 0;
+            this._entity = null;
+            this._accept = true;
+
+            // execute
+            setTimeout(this._execute.bind(this), this._interval);
+        }},
+
+        // permutate the array
+        "_permutate": { "value": function(values) {
+            // check arguments
+            if (values.length <= 1) {
+                return [ values.concat() ];
+            }
+
+            // recursive processing
+            let result = [];
+            for (let i = 0; i < values.length; i++) {
+                let follow = values.concat();
+                let first = follow.splice(i, 1);
+
+                // permutate an array with one less element
+                let parts = this._permutate(follow);
+                for (let j = 0; j < parts.length; j++) {
+                    result.push(first.concat(parts[j]));
+                }
+            }
+            return result;
+        }},
+
+        // execute problem creation
+        "_execute": { "value": function() {
+            // check fields
+            if (this._table.length <= this._col) {
+                this.finishEvent(true);
+                return;
+            }
+
+            // create a problem
+            if (this._entity == null) {
+                this._entity = this._getEntity();
+            }
+            let numbers = this._entity.createNext(this._accept);
+            if (numbers == null) {
+                this._entity = this._getEntity();
+                numbers = this._entity.createNext(this._accept);
+            }
+            this._logic.setSolidList(numbers);
+            this._logic.setNumberList([]);
+            this._logic.setupCandidates();
+
+            // create a solution
+            let result = this._solver.solve(this._logic, this._levels);
+            if (result.solutions.length == 1) {
+                // if there is only one solution
+                let valid = true;
+                let i = 0;
+                while (valid && i < this._needs.length) {
+                    if (this._needs[i] && result.summary[i] === 0) {
+                        valid = false;
+                    }
+                    i++;
+                }
+                if (valid) {
+                    // if all required methods are used
+                    this.progressEvent(this._changeNumbers(numbers), result.summary);
+                    this._entity = null;
+                } else {
+                    // if at least one required method is not used
+                    this.progressEvent(null, []);
+                    this._accept = true;
+                }
+            } else {
+                // if there is no one solution
+                this.progressEvent(null, []);
+                this._accept = false;
+            }
+
+            // check for cancellations
+            if (this.cancelEvent()) {
+                this.finishEvent(false);
+                return;
+            }
+
+            // execute more
+            setTimeout(this._execute.bind(this), this._interval);
+        }},
+
+        // get the next creation entity
+        "_getEntity": { "value": function() {
+            // replace the standard grid
+            let next = this._grids[this._index];
+            next = this._convertRow(next, this._row);
+            next = this._convertCol(next, this._col);
+            let entity = new CreatorEntity(next, this._clues);
+
+            // update index
+            this._index++;
+            if (this._grids.length <= this._index) {
+                this._index = 0;
+                this._row++;
+                if (this._table.length <= this._row) {
+                    this._row = 0;
+                    this._col++;
+                }
+            }
+            return entity;
+        }},
+
+        // convert rows
+        "_convertRow": { "value": function(sample) {
+            let map = this._table[this._row];
+            let numbers = sample.slice(0, 27);
+            for (let i = 0; i < map.length; i++) {
+                let start = map[i] * 9;
+                Array.prototype.push.apply(numbers, sample.slice(start, start + 9));
+            }
+            return numbers;
+        }},
+
+        // convert columns
+        "_convertCol": { "value": function(sample) {
+            let map = this._table[this._col];
+            let numbers = [];
+            for (let i = 0; i < 9; i++) {
+                let start = i * 9;
+                Array.prototype.push.apply(numbers, sample.slice(start, start + 3));
+                for (let j = 0; j < map.length; j++) {
+                    numbers.push(sample[start + map[j]]);
+                }
+            }
+            return numbers;
+        }},
+
+        // change numbers
+        "_changeNumbers": { "value": function(numbers) {
+            let map = [ 0 ].concat(this._shuffle(Numbers.all));
+            const selector = function(elem) { return map[elem]; };
+            return numbers.map(selector);
+        }},
+
+    });
+
+}
+

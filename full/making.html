@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../default.css">
+<script src="../logics.js"></script>
+<script src="../physics.js"></script>
+<script src="./extensions.js"></script>
+<script src="../making.js"></script>
+<title>Siteswap Sudoku Making</title>
+</head>
+
+<body>
+<nav id="top">
+<span><a href="./index.html">Puzzles</a></span>
+<span><a href="./solution.html">Solution</a></span>
+<span><a href="./creation.html">Creation</a></span>
+<span>Making</span>
+</nav>
+
+<article>
+<h1>Siteswap Sudoku Making</h1>
+<div class="table">
+  <div class="row">
+    <div class="cell">
+      <canvas id="board"></canvas>
+    </div>
+    <div class="cell">
+      <div id="number">
+        <input type="radio" id="solid" name="type" checked="checked"><label for="solid">Solid</label>
+        <input type="radio" id="decision" name="type"><label for="decision">Decision</label>
+        <input type="radio" id="candidate" name="type"><label for="candidate">Candidate</label>
+      </div>
+
+      <table id="key">
+        <tr>
+          <td><button id="key1">1</button></td>
+          <td><button id="key2">2</button></td>
+          <td><button id="key3">3</button></td>
+          <td><button id="key4">4</button></td>
+          <td><button id="key5">5</button></td>
+        </tr>
+        <tr>
+          <td><span id="count1">0</span></td>
+          <td><span id="count2">0</span></td>
+          <td><span id="count3">0</span></td>
+          <td><span id="count4">0</span></td>
+          <td><span id="count5">0</span></td>
+        </tr>
+        <tr>
+          <td><button id="key6">6</button></td>
+          <td><button id="key7">7</button></td>
+          <td><button id="key8">8</button></td>
+          <td><button id="key9">9</button></td>
+          <td><button id="erase">X</button></td>
+        </tr>
+        <tr>
+          <td><span id="count6">0</span></td>
+          <td><span id="count7">0</span></td>
+          <td><span id="count8">0</span></td>
+          <td><span id="count9">0</span></td>
+          <td><span id="remain">81</span></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<section>
+<h2>Handling the problem you created</h2>
+<div>
+  <button id="problem">Try to solve it</button>
+</div>
+<div>
+  <button id="solution">Use the automatic solution</button>
+</div>
+<div>
+  <button id="save">Output to text</button>
+</div>
+<div>
+  <textarea id="data"></textarea>
+</div>
+<div>
+  <button id="load">Restore from text</button>
+</div>
+</section>
+
+</article>
+</body>
+
+</html>

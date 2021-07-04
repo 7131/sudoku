@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../default.css">
+<script src="../logics.js"></script>
+<script src="../physics.js"></script>
+<script src="./grids.js"></script>
+<script src="../solver.js"></script>
+<script src="../creator.js"></script>
+<script src="./extensions.js"></script>
+<script src="../creation.js"></script>
+<title>Siteswap Sudoku Creation</title>
+</head>
+
+<body>
+<nav id="top">
+<span><a href="./index.html">Puzzles</a></span>
+<span><a href="./solution.html">Solution</a></span>
+<span>Creation</span>
+<span><a href="./making.html">Making</a></span>
+</nav>
+
+<article>
+<h1>Siteswap Sudoku Creation</h1>
+<div>
+  <button id="create">Create one</button>
+  <span id="message"></span>
+</div>
+<div>
+  <canvas id="board"></canvas>
+</div>
+<div>
+  <button id="problem">Try to solve</button>
+</div>
+
+<section>
+<h2>Settings</h2>
+<div class="table">
+  <div class="row">
+    <div class="cell"><label for="count_clues">Number of clues</label></div>
+    <div class="cell"><input type="number" id="count_clues" value="25"></div>
+    <div class="cell note"><label for="count_clues"><span id="min_clues">2</span> to <span id="max_clues">81</span></label></div>
+  </div>
+  <div class="row">
+    <div class="cell">Solving methods</div>
+    <div class="cell">
+      <table class="border">
+        <tr>
+          <th>unusable</th>
+          <th>available</th>
+          <th>required</th>
+          <th>method</th>
+        </tr>
+        <tr>
+          <td class="symbol"><input type="radio" id="group1_1" name="group1" disabled="disabled"></td>
+          <td class="symbol"><input type="radio" id="group1_2" name="group1" checked="checked"></td>
+          <td class="symbol"><input type="radio" id="group1_3" name="group1"></td>
+          <td>1. Fill the unique candidate</td>
+        </tr>
+        <tr>
+          <td class="symbol"><input type="radio" id="group2_1" name="group2"></td>
+          <td class="symbol"><input type="radio" id="group2_2" name="group2" checked="checked"></td>
+          <td class="symbol"><input type="radio" id="group2_3" name="group2"></td>
+          <td>2. Fill the unique cell</td>
+        </tr>
+        <tr>
+          <td class="symbol"><input type="radio" id="group3_1" name="group3"></td>
+          <td class="symbol"><input type="radio" id="group3_2" name="group3" checked="checked"></td>
+          <td class="symbol"><input type="radio" id="group3_3" name="group3"></td>
+          <td>3. Shared cells</td>
+        </tr>
+        <tr>
+          <td class="symbol"><input type="radio" id="group4_1" name="group4"></td>
+          <td class="symbol"><input type="radio" id="group4_2" name="group4" checked="checked"></td>
+          <td class="symbol"><input type="radio" id="group4_3" name="group4"></td>
+          <td>4. Twin cells</td>
+        </tr>
+        <tr>
+          <td class="symbol"><input type="radio" id="group5_1" name="group5" checked="checked"></td>
+          <td class="symbol"><input type="radio" id="group5_2" name="group5"></td>
+          <td class="symbol"><input type="radio" id="group5_3" name="group5"></td>
+          <td>5. Siteswap twin cells</td>
+        </tr>
+        <tr>
+          <td class="symbol"><input type="radio" id="group6_1" name="group6" checked="checked"></td>
+          <td class="symbol"><input type="radio" id="group6_2" name="group6"></td>
+          <td class="symbol"><input type="radio" id="group6_3" name="group6"></td>
+          <td>6. Triplet cells</td>
+        </tr>
+        <tr>
+          <td class="symbol"><input type="radio" id="group7_1" name="group7" checked="checked"></td>
+          <td class="symbol"><input type="radio" id="group7_2" name="group7"></td>
+          <td class="symbol"><input type="radio" id="group7_3" name="group7"></td>
+          <td>7. Siteswap triplet cells</td>
+        </tr>
+        <tr>
+          <td class="symbol"><input type="radio" id="group8_1" name="group8" checked="checked"></td>
+          <td class="symbol"><input type="radio" id="group8_2" name="group8"></td>
+          <td class="symbol"><input type="radio" id="group8_3" name="group8"></td>
+          <td>8. X-Wing</td>
+        </tr>
+        <tr>
+          <td class="symbol"><input type="radio" id="group9_1" name="group9" checked="checked"></td>
+          <td class="symbol"><input type="radio" id="group9_2" name="group9"></td>
+          <td class="symbol"><input type="radio" id="group9_3" name="group9"></td>
+          <td>9. Ariadne&apos;s thread (single)</td>
+        </tr>
+        <tr>
+          <td class="symbol"><input type="radio" id="group10_1" name="group10" checked="checked"></td>
+          <td class="symbol"><input type="radio" id="group10_2" name="group10"></td>
+          <td class="symbol"><input type="radio" id="group10_3" name="group10"></td>
+          <td>10. Ariadne&apos;s thread (double)</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="cell"><label for="count_output">Number to create</label></div>
+    <div class="cell"><input type="number" id="count_output" min="0" value="5"></div>
+    <div class="cell note"><label for="count_output">Unlimited for 0</label></div>
+  </div>
+</div>
+
+<div>
+  <button id="start">Create multi</button>
+</div>
+<p>Total number searched: <span id="count_try"></span></p>
+<p>Number of creations: <span id="count_create"></span></p>
+<div>
+  <button id="stop">Stop</button>
+</div>
+<div>
+  <textarea id="data_output"></textarea>
+</div>
+</section>
+
+</article>
+</body>
+
+</html>
