@@ -110,6 +110,7 @@ if (typeof Solver === "function") {
 
         // create a solution
         "_createSolutions": { "value": function(logic) {
+            // 1 cell
             let cells = logic.getAllCells();
             for (let i = 0; i < cells.length; i++) {
                 // process all cells in order
@@ -119,23 +120,82 @@ if (typeof Solver === "function") {
                     let max = cell.candidate.getNumber(1);
 
                     // rows and columns
-                    this._reduceOutofTwin(logic.getRowCells(cell.row), cell.col, min, max);
-                    this._reduceOutofTwin(logic.getColCells(cell.col), cell.row, min, max);
+                    this._reduceSingleTwin(logic.getRowCells(cell.row), cell.col, min, max);
+                    this._reduceSingleTwin(logic.getColCells(cell.col), cell.row, min, max);
 
                     // blocks
                     let block = logic.getBlockCells(cell.block);
                     let index = block.indexOf(cell);
-                    this._reduceOutofTwin(block, index, min, max);
+                    this._reduceSingleTwin(block, index, min, max);
                 }
+            }
+
+            // 2 cells
+            for (let i = 0; i < 9; i++) {
+                this._reduceDoubleTwin(logic.getRowCells(i));
+                this._reduceDoubleTwin(logic.getColCells(i));
+                this._reduceDoubleTwin(logic.getBlockCells(i));
             }
             return [];
         }},
 
-        // reduce candidates from other than the twin cells
-        "_reduceOutofTwin": { "value": function(group, index, min, max) {
+        // reduce candidates from the other cells based on the value in the twin cell
+        "_reduceSingleTwin": { "value": function(group, index, min, max) {
             let distance = max - min;
             group[(index + distance) % 9].candidate.remove(min);
             group[(index + 9 - distance) % 9].candidate.remove(max);
+        }},
+
+        // reduce candidates from the other cells based on the values in the two cells
+        "_reduceDoubleTwin": { "value": function(group) {
+            // handle the entire group
+            let cells = [];
+            for (let i = 0; i < group.length; i++) {
+                if (group[i].candidate.length == 2) {
+                    cells.push(group[i]);
+                }
+            }
+
+            // check two cells at a time
+            while (2 <= cells.length) {
+                // 1st cell
+                let cell1 = cells.shift();
+                let min1 = cell1.candidate.getNumber(0);
+                let max1 = cell1.candidate.getNumber(1);
+                let index1 = group.indexOf(cell1);
+                for (let i = 0; i < cells.length; i++) {
+                    // 2nd cell
+                    let cell2 = cells[i];
+                    let min2 = cell2.candidate.getNumber(0);
+                    let max2 = cell2.candidate.getNumber(1);
+                    let index2 = group.indexOf(cell2);
+
+                    // get the distances
+                    let distance = index2 - index1;
+                    let min1min2 = (min1 - min2 + 9) % 9;
+                    let min1max2 = (min1 - max2 + 9) % 9;
+                    let max1min2 = (max1 - min2 + 9) % 9;
+                    let max1max2 = (max1 - max2 + 9) % 9;
+                    if ((min1 == min2 && max1max2 == distance) || (min1 == max2 && max1min2 == distance)) {
+                        this._reduceOutofTwin(group, index1, index2, max1);
+                    } else if ((max1 == min2 && min1max2 == distance) || (max1 == max2 && min1min2 == distance)) {
+                        this._reduceOutofTwin(group, index1, index2, min1);
+                    } else if ((min1min2 == distance && max1max2 == distance) || (min1max2 == distance && max1min2 == distance)) {
+                        this._reduceOutofTwin(group, index1, index2, min1);
+                        this._reduceOutofTwin(group, index1, index2, max1);
+                    }
+                }
+            }
+        }},
+
+        // reduce candidates from cells other than the twin cells
+        "_reduceOutofTwin": { "value": function(group, index1, index2, number1) {
+            for (let i = 0; i < group.length; i++) {
+                if (i != index1 && i != index2) {
+                    let number = (index1 - i + number1 + 8) % 9 + 1;
+                    group[i].candidate.remove(number);
+                }
+            }
         }},
 
     });

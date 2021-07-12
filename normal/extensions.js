@@ -43,6 +43,7 @@ if (typeof Creator === "function") {
                 this._needs = [];
             }
             this._table = this._shuffle(this._table);
+            this._grids = this._shuffle(this._grids);
             this._index = 0;
             this._row = 0;
             this._col = 0;
@@ -155,8 +156,8 @@ if (typeof Creator === "function") {
         }},
 
         // convert rows
-        "_convertRow": { "value": function(sample) {
-            let map = this._table[this._row];
+        "_convertRow": { "value": function(sample, index) {
+            let map = this._table[index];
             let numbers = sample.slice(0, 27);
             for (let i = 0; i < map.length; i++) {
                 let start = map[i] * 9;
@@ -166,8 +167,8 @@ if (typeof Creator === "function") {
         }},
 
         // convert columns
-        "_convertCol": { "value": function(sample) {
-            let map = this._table[this._col];
+        "_convertCol": { "value": function(sample, index) {
+            let map = this._table[index];
             let numbers = [];
             for (let i = 0; i < 9; i++) {
                 let start = i * 9;
