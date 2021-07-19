@@ -36,7 +36,7 @@ Controller.prototype = {
             this._countAreas.push(document.getElementById("count" + i));
         }
         this._settingBoxes = [];
-        let level = 1;
+        let level = 0;
         let box = document.getElementById("level" + level);
         while (box != null) {
             this._settingBoxes.push(box);
@@ -184,11 +184,10 @@ Controller.prototype = {
         // create a list of progress
         let progress = [ { "title": "Initial state, candidates are in [ ].", "table": initial } ];
         for (let i = 0; i < result.progress.length; i++) {
-            progress.push({ "title": "Method " + (result.progress[i].depth + 1), "table": result.progress[i].table });
+            progress.push({ "title": "Method " + result.progress[i].depth, "table": result.progress[i].table });
         }
         if (1 < result.solutions.length) {
             // when there are multiple solutions
-            progress.pop();
             for (let i = 0; i < result.solutions.length; i++) {
                 progress.push({ "title": "Solution " + (i + 1), "table": result.solutions[i] });
             }

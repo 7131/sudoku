@@ -275,7 +275,7 @@ PhysicalBoard.prototype = {
 
         // create a JSON object
         let now = new Date();
-        let description = now.toLocaleString("ja");
+        let description = now.toLocaleString();
         if (title != null) {
             description = title + " (" + description + ")";
         }

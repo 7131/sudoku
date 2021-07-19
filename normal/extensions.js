@@ -51,7 +51,7 @@ if (typeof Creator === "function") {
             this._accept = true;
 
             // execute
-            setTimeout(this._execute.bind(this), this._interval);
+            setTimeout(this._execute.bind(this), 1);
         }},
 
         // permutate the array
@@ -131,7 +131,7 @@ if (typeof Creator === "function") {
             }
 
             // execute more
-            setTimeout(this._execute.bind(this), this._interval);
+            setTimeout(this._execute.bind(this), 1);
         }},
 
         // get the next creation entity

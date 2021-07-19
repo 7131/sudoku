@@ -26,9 +26,9 @@ Controller.prototype = {
         this._countTry = document.getElementById("count_try");
         this._countCreate = document.getElementById("count_create");
         this._outputArea = document.getElementById("data_output");
-        let group = document.getElementsByName("group1");
-        this._dependRadios = document.getElementsByName("group2");
-        let level = 3;
+        let group = document.getElementsByName("group0");
+        this._dependRadios = document.getElementsByName("group1");
+        let level = 2;
         let depend = document.getElementsByName("group" + level);
         while (0 < depend.length) {
             group = this._dependRadios;
@@ -125,8 +125,8 @@ Controller.prototype = {
         if (clues < this._minClues || this._maxClues < clues) {
             return;
         }
-        let levels = this._getRadioGroup(1, false);
-        let needs = this._getRadioGroup(3, true);
+        let levels = this._getRadioGroup(0, false);
+        let needs = this._getRadioGroup(2, true);
 
         // reset the board
         this._board.clear();
@@ -153,7 +153,7 @@ Controller.prototype = {
     "_getRadioGroup": function(col, checked) {
         // process radio buttons in order
         let group = [];
-        let row = 1;
+        let row = 0;
         let radio = document.getElementById("group" + row + "_" + col);
         while (radio != null) {
             // set depending on whether or not there is checked
@@ -172,7 +172,7 @@ Controller.prototype = {
         if (numbers != null) {
             // valid data
             let now = new Date();
-            let message = now.toLocaleString("ja") + " (" + summary.join() + ")";
+            let message = now.toLocaleString() + " (" + summary.join() + ")";
             let data = { "description": message, "pattern": numbers };
             this._problems.push(data);
             this._countCreate.innerText = this._problems.length.toLocaleString();

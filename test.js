@@ -68,7 +68,7 @@ Controller.prototype = {
 
         // execute the first test
         this._index = 1;
-        setTimeout(this._execute.bind(this), 10);
+        setTimeout(this._execute.bind(this), 1);
     },
 
     // execute a test
@@ -95,7 +95,7 @@ Controller.prototype = {
 
         // execute the next test
         this._index++;
-        setTimeout(this._execute.bind(this), 10);
+        setTimeout(this._execute.bind(this), 1);
     },
 
     // get the result message

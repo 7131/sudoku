@@ -78,7 +78,6 @@ const Creator = function() {
     // fields
     this._solver = new Solver();
     this._solver.initialize();
-    this._interval = 1;
 
     // events
     this.progressEvent = function(numbers, summary) { };
@@ -141,7 +140,7 @@ Creator.prototype = {
         this._accept = true;
 
         // execute
-        setTimeout(this._execute.bind(this), this._interval);
+        setTimeout(this._execute.bind(this), 1);
     },
 
     // set clues for 4-fold rotational symmetry
@@ -243,7 +242,7 @@ Creator.prototype = {
         }
 
         // execute more
-        setTimeout(this._execute.bind(this), this._interval);
+        setTimeout(this._execute.bind(this), 1);
     },
 
     // get the next creation entity
