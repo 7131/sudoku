@@ -28,11 +28,13 @@ PhysicalBoard.prototype = {
             canvas.height = canvas.clientHeight;
         }
         canvas.style.position = "absolute";
+        canvas.style.zIndex = 2;
         this._grid = canvas.getContext("2d");
 
         // number area (front)
         let face = document.createElement("canvas");
         face.style.position = "absolute";
+        face.style.zIndex = 3;
         face.style.webkitTapHighlightColor = "#00000000";
         face.style.cursor = "pointer";
         face.width = canvas.width;
@@ -50,6 +52,7 @@ PhysicalBoard.prototype = {
         let rear = document.createElement("canvas");
         rear.width = canvas.width;
         rear.height = canvas.height;
+        rear.style.zIndex = 1;
         rear.style.border = canvas.style.border;
         canvas.parentElement.appendChild(rear);
         this._back = rear.getContext("2d");
