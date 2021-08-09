@@ -177,19 +177,30 @@ if (typeof Solver === "function") {
                     let max1min2 = (max1 - min2 + 9) % 9;
                     let max1max2 = (max1 - max2 + 9) % 9;
                     if ((min1 == min2 && max1max2 == distance) || (min1 == max2 && max1min2 == distance)) {
-                        this._reduceOutofTwin(group, index1, index2, max1);
+                        this._reduceSameNumber(group, index1, index2, min1);
+                        this._reduceDescending(group, index1, index2, max1);
                     } else if ((max1 == min2 && min1max2 == distance) || (max1 == max2 && min1min2 == distance)) {
-                        this._reduceOutofTwin(group, index1, index2, min1);
+                        this._reduceSameNumber(group, index1, index2, max1);
+                        this._reduceDescending(group, index1, index2, min1);
                     } else if ((min1min2 == distance && max1max2 == distance) || (min1max2 == distance && max1min2 == distance)) {
-                        this._reduceOutofTwin(group, index1, index2, min1);
-                        this._reduceOutofTwin(group, index1, index2, max1);
+                        this._reduceDescending(group, index1, index2, min1);
+                        this._reduceDescending(group, index1, index2, max1);
                     }
                 }
             }
         }},
 
-        // reduce candidates from cells other than the twin cells
-        "_reduceOutofTwin": { "value": function(group, index1, index2, number1) {
+        // reduce candidates with the same number
+        "_reduceSameNumber": { "value": function(group, index1, index2, number) {
+            for (let i = 0; i < group.length; i++) {
+                if (i != index1 && i != index2) {
+                    group[i].candidate.remove(number);
+                }
+            }
+        }},
+
+        // reduce candidates while descending numbers
+        "_reduceDescending": { "value": function(group, index1, index2, number1) {
             for (let i = 0; i < group.length; i++) {
                 if (i != index1 && i != index2) {
                     let number = (index1 - i + number1 + 8) % 9 + 1;
