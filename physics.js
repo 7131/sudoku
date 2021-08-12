@@ -15,7 +15,7 @@ PhysicalBoard.prototype = {
             // if no style is specified
             let width = document.documentElement.clientWidth;
             let height = document.documentElement.clientHeight;
-            let size = Math.floor(Math.min(width, height) * 0.9);
+            let size = Math.floor(Math.min(width, height) * 0.8);
             let remain = size % 9;
             if (remain < 2) {
                 size += 2 - remain;

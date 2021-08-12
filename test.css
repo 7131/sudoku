@@ -12,8 +12,8 @@ article {
     margin-bottom: 10ex;
 }
 
-input[type="button"] {
-    width: 90%;
+button {
+    width: 90vw;
     margin-top: 2ex;
 }
 
@@ -46,7 +46,7 @@ div.hidden {
 
 @media (min-width: 768px) {
 
-    input[type="button"] {
+    button {
         width: auto;
     }
 

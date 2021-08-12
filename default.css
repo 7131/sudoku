@@ -1,15 +1,11 @@
 @charset "utf-8";
 
-nav {
-    margin-top: 3ex;
+body {
+    margin: 3ex 0ex 10ex 2ex;
 }
 
 nav span {
     margin-right: 1ex;
-}
-
-article {
-    margin-bottom: 10ex;
 }
 
 section {
@@ -22,22 +18,22 @@ div {
 
 select {
     padding: 0.5ex 1ex;
-    width: 90vw;
+    width: 80vw;
     font-size: large;
 }
 
 button {
-    width: 90vw;
+    width: 80vw;
     font-size: large;
 }
 
 textarea {
-    width: 90vw;
+    width: 80vw;
     height: 20ex;
 }
 
 input {
-    width: 90vw;
+    width: 80vw;
 }
 
 input[type="checkbox"] {
@@ -78,14 +74,13 @@ table.border tr td {
 }
 
 #key td {
-    width: 18vw;
+    width: 15vw;
     text-align: center;
 }
 
 #key button {
     width: 100%;
-    height: 3ex;
-    font-size: x-large;
+    font-size: large;
 }
 
 #key span {
@@ -155,6 +150,11 @@ table.border tr td {
 
     #key td {
         width: 50px;
+    }
+
+    #key button {
+        height: 3ex;
+        font-size: x-large;
     }
 
     .table {
