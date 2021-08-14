@@ -1,6 +1,6 @@
 # Sudoku
 
-There are two types of sudoku puzzles: siteswap sudoku and normal sudoku.
+There are three types of sudoku puzzles: (full) siteswap sudoku, partial siteswap sudoku, and normal sudoku.
 There are four applications for each type: to play puzzles, to use the automatic solution, to use the automatic creation, and to make new puzzles by yourself.
 You can execute your favorite applications.
 
@@ -63,6 +63,22 @@ You can execute your favorite applications.
     <dd>This is the page to make new normal sudoku puzzles.</dd>
   <dt>normal / test.html</dt>
     <dd>This is a page for testing the normal sudoku.</dd>
+  <dt>partial / index.html</dt>
+    <dd>This is the page to play partial siteswap sudoku puzzles.</dd>
+  <dt>partial / problems.js</dt>
+    <dd>A collection of partial siteswap sudoku puzzles.</dd>
+  <dt>partial / extensions.js</dt>
+    <dd>Extend the default program by overwriting it for partial siteswap sudoku.</dd>
+  <dt>partial / solution.html</dt>
+    <dd>This is the page to use the partial siteswap sudoku automatic solution.</dd>
+  <dt>partial / creation.html</dt>
+    <dd>This is the page to use the partial siteswap sudoku automatic creation.</dd>
+  <dt>partial / grids.js</dt>
+    <dd>All grids of partial siteswap sudoku except rotation match.</dd>
+  <dt>partial / making.html</dt>
+    <dd>This is the page to make new partial siteswap sudoku puzzles.</dd>
+  <dt>partial / test.html</dt>
+    <dd>This is a page for testing the partial siteswap sudoku.</dd>
   <dt>image / *.gif</dt>
     <dd>These are images explaining the rules of sudoku.</dd>
 </dl>
