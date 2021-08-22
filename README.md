@@ -11,7 +11,7 @@ You can execute your favorite applications.
     <dd>This is the entrance page. Usually redirect to the page to play siteswap sudoku puzzles.</dd>
   <dt>default.css</dt>
     <dd>The style sheet for many pages.</dd>
-  <dt>index.js</dt>
+  <dt>puzzle.js</dt>
     <dd>This is a controller that receives input from the puzzles page and outputs the results.</dd>
   <dt>logics.js</dt>
     <dd>Classes for valid numbers, candidate array, and sudoku logical board.</dd>
@@ -32,6 +32,8 @@ You can execute your favorite applications.
   <dt>test.js</dt>
     <dd>This is a controller that receives input from the test page and outputs the results to the table.</dd>
   <dt>full / index.html</dt>
+    <dd>This is the entrance page of siteswap sudoku applications. Usually redirect to the page to play siteswap sudoku puzzles.</dd>
+  <dt>full / puzzle.html</dt>
     <dd>This is the page to play siteswap sudoku puzzles.</dd>
   <dt>full / problems.js</dt>
     <dd>A collection of siteswap sudoku puzzles.</dd>
@@ -48,6 +50,8 @@ You can execute your favorite applications.
   <dt>full / test.html</dt>
     <dd>This is a page for testing the siteswap sudoku.</dd>
   <dt>normal / index.html</dt>
+    <dd>This is the entrance page of normal sudoku applications. Usually redirect to the page to play normal sudoku puzzles.</dd>
+  <dt>normal / puzzle.html</dt>
     <dd>This is the page to play normal sudoku puzzles.</dd>
   <dt>normal / problems.js</dt>
     <dd>A collection of normal sudoku puzzles.</dd>
@@ -64,6 +68,8 @@ You can execute your favorite applications.
   <dt>normal / test.html</dt>
     <dd>This is a page for testing the normal sudoku.</dd>
   <dt>partial / index.html</dt>
+    <dd>This is the entrance page of partial siteswap sudoku applications. Usually redirect to the page to play partial siteswap sudoku puzzles.</dd>
+  <dt>partial / puzzle.html</dt>
     <dd>This is the page to play partial siteswap sudoku puzzles.</dd>
   <dt>partial / problems.js</dt>
     <dd>A collection of partial siteswap sudoku puzzles.</dd>

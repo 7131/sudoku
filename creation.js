@@ -87,7 +87,7 @@ Controller.prototype = {
 
         // get the data
         let data = JSON.stringify(problems);
-        window.open("./index.html?data=" + data, "problem");
+        window.open("./puzzle.html?data=" + data, "problem");
     },
 
     // create multiple problems

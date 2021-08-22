@@ -7,30 +7,42 @@
 <link rel="stylesheet" type="text/css" href="../default.css">
 <script src="../logics.js"></script>
 <script src="../physics.js"></script>
-<script src="../solver.js"></script>
+<script src="./problems.js"></script>
 <script src="./extensions.js"></script>
-<script src="../solution.js"></script>
-<title>Sudoku Solution</title>
+<script src="../puzzle.js"></script>
+<title>Sudoku Puzzles</title>
 </head>
 
 <body>
 <nav id="top">
-<span><a href="./puzzle.html">Puzzles</a></span>
-<span>Solution</span>
+<span>Puzzles</span>
+<span><a href="./solution.html">Solution</a></span>
 <span><a href="./creation.html">Creation</a></span>
 <span><a href="./making.html">Making</a></span>
 </nav>
 
 <article>
-<h1>Sudoku Solution</h1>
-<p>Set the problem</p>
+<h1>Sudoku Puzzles</h1>
+<div>
+  <select id="problem" name="problem"></select>
+</div>
+<p>Description: <span id="description"></span></p>
+<div>
+  <button id="display">Display</button>
+</div>
+
 <div class="table">
   <div class="row">
     <div class="cell">
       <canvas id="board"></canvas>
     </div>
     <div class="cell">
-      <table id="key" class="solid">
+      <div id="number">
+        <input type="radio" id="decision" name="type" checked="checked"><label for="decision">Decision</label>
+        <input type="radio" id="candidate" name="type"><label for="candidate">Candidate</label>
+      </div>
+
+      <table id="key" class="decision">
         <tr>
           <td><button id="key1">1</button></td>
           <td><button id="key2">2</button></td>
@@ -60,36 +72,40 @@
           <td><span id="remain">81</span></td>
         </tr>
       </table>
-
-      <div>
-        <textarea id="data"></textarea>
-      </div>
-      <div>
-        <button id="load">Set from text</button>
-      </div>
     </div>
   </div>
 </div>
 
 <div>
-  <button id="solve">Solve</button>
+  <button id="judge">Judge</button>
 </div>
-<div id="result">
-  <p id="message">&nbsp;</p>
-</div>
+<p id="result">&nbsp;</p>
 
 <section>
-<h2>Settings</h2>
-<div id="setting">
-  <div><input type="checkbox" id="level0" name="level0" checked="checked" disabled="disabled"><label for="level0">0. Fill the unique candidate</label></div>
-  <div><input type="checkbox" id="level1" name="level1" checked="checked"><label for="level1">1. Fill the unique cell</label></div>
-  <div><input type="checkbox" id="level2" name="level2" checked="checked"><label for="level2">2. Shared cells</label></div>
-  <div><input type="checkbox" id="level3" name="level3" checked="checked"><label for="level3">3. Twin cells</label></div>
-  <div><input type="checkbox" id="level4" name="level4" checked="checked"><label for="level4">4. Triplet cells</label></div>
-  <div><input type="checkbox" id="level5" name="level5" checked="checked"><label for="level5">5. X-Wing</label></div>
-  <div><input type="checkbox" id="level6" name="level6" checked="checked"><label for="level6">6. Ariadne&apos;s thread (single)</label></div>
-  <div><input type="checkbox" id="level7" name="level7" checked="checked"><label for="level7">7. Ariadne&apos;s thread (double)</label></div>
+<h2>Save grid data</h2>
+<div>
+  <button id="save">Output to text</button>
 </div>
+<div>
+  <textarea id="data"></textarea>
+</div>
+<div>
+  <button id="load">Restore from text</button>
+</div>
+</section>
+
+<section>
+<h2>How to play</h2>
+<ol>
+  <li>Put any number from 1 to 9 in the empty space.</li>
+  <li>Put a number from 1 to 9 in each of the rows, columns, and blocks surrounded by a thick frame.
+    <div>
+      <img src="../image/normal_row.gif" alt="row" width="100" height="100">
+      <img src="../image/normal_col.gif" alt="column" width="100" height="100">
+      <img src="../image/normal_block.gif" alt="block" width="100" height="100">
+    </div>
+  </li>
+</ol>
 </section>
 
 </article>

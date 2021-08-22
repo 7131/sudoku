@@ -141,7 +141,7 @@ Controller.prototype = {
     // show the problem on another page
     "_showProblem": function(e) {
         let data = this._board.getData();
-        window.open("./index.html?data=" + data, "problem");
+        window.open("./puzzle.html?data=" + data, "problem");
     },
 
     // show the solution page

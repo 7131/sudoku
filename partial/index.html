@@ -3,124 +3,19 @@
 
 <head>
 <meta charset="utf-8">
+<meta http-equiv="refresh" content="0; URL=./puzzle.html">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="stylesheet" type="text/css" href="../default.css">
-<script src="../logics.js"></script>
-<script src="../physics.js"></script>
-<script src="./problems.js"></script>
-<script src="./extensions.js"></script>
-<script src="../index.js"></script>
-<title>Partial Siteswap Sudoku Puzzles</title>
+<title>Partial Siteswap Sudoku</title>
 </head>
 
 <body>
-<nav id="top">
-<span>Puzzles</span>
-<span><a href="./solution.html">Solution</a></span>
-<span><a href="./creation.html">Creation</a></span>
-<span><a href="./making.html">Making</a></span>
-</nav>
-
-<article>
-<h1>Partial Siteswap Sudoku Puzzles</h1>
-<div>
-  <select id="problem" name="problem"></select>
-</div>
-<p>Description: <span id="description"></span></p>
-<div>
-  <button id="display">Display</button>
-</div>
-
-<div class="table">
-  <div class="row">
-    <div class="cell">
-      <canvas id="board"></canvas>
-    </div>
-    <div class="cell">
-      <div id="number">
-        <input type="radio" id="decision" name="type" checked="checked"><label for="decision">Decision</label>
-        <input type="radio" id="candidate" name="type"><label for="candidate">Candidate</label>
-      </div>
-
-      <table id="key" class="decision">
-        <tr>
-          <td><button id="key1">1</button></td>
-          <td><button id="key2">2</button></td>
-          <td><button id="key3">3</button></td>
-          <td><button id="key4">4</button></td>
-          <td><button id="key5">5</button></td>
-        </tr>
-        <tr>
-          <td><span id="count1">0</span></td>
-          <td><span id="count2">0</span></td>
-          <td><span id="count3">0</span></td>
-          <td><span id="count4">0</span></td>
-          <td><span id="count5">0</span></td>
-        </tr>
-        <tr>
-          <td><button id="key6">6</button></td>
-          <td><button id="key7">7</button></td>
-          <td><button id="key8">8</button></td>
-          <td><button id="key9">9</button></td>
-          <td><button id="erase">&nbsp;</button></td>
-        </tr>
-        <tr>
-          <td><span id="count6">0</span></td>
-          <td><span id="count7">0</span></td>
-          <td><span id="count8">0</span></td>
-          <td><span id="count9">0</span></td>
-          <td><span id="remain">81</span></td>
-        </tr>
-      </table>
-    </div>
-  </div>
-</div>
-
-<div>
-  <button id="judge">Judge</button>
-</div>
-<p id="result">&nbsp;</p>
-
-<section>
-<h2>Save grid data</h2>
-<div>
-  <button id="save">Output to text</button>
-</div>
-<div>
-  <textarea id="data"></textarea>
-</div>
-<div>
-  <button id="load">Restore from text</button>
-</div>
-</section>
-
-<section>
-<h2>How to play</h2>
+<h1>Partial Siteswap Sudoku</h1>
 <ol>
-  <li>Put any number from 1 to 9 in the empty space.</li>
-  <li>Put a number from 1 to 9 in each of the rows, columns, and blocks surrounded by a thick frame.
-    <div>
-      <img src="../image/normal_row.gif" alt="normal row" width="100" height="100">
-      <img src="../image/normal_col.gif" alt="normal column" width="100" height="100">
-      <img src="../image/normal_block.gif" alt="normal block" width="100" height="100">
-    </div>
-  </li>
-  <li>Make sure all rows and columns are valid siteswaps in the direction of the arrow. You don&apos;t have to think about blocks.
-    <div>
-      <img src="../image/siteswap_row.gif" alt="siteswap row" width="100" height="100">
-      <img src="../image/siteswap_col.gif" alt="siteswap column" width="100" height="100">
-    </div>
-  </li>
+  <li><a href="./puzzle.html">Puzzles</a></li>
+  <li><a href="./solution.html">Solution</a></li>
+  <li><a href="./creation.html">Creation</a></li>
+  <li><a href="./making.html">Making</a></li>
 </ol>
-
-<p>See also:</p>
-<ul>
-  <li><a href="../full/">(Full) Siteswap Sudoku</a></li>
-  <li><a href="../normal/">Normal Sudoku</a></li>
-</ul>
-</section>
-
-</article>
 </body>
 
 </html>
