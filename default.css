@@ -16,6 +16,10 @@ div {
     margin: 1ex 0ex;
 }
 
+div.space {
+    margin-top: 3ex;
+}
+
 select {
     padding: 0.5ex 1ex;
     width: 80vw;
