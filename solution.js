@@ -3,7 +3,7 @@ const Controller = function() {
     // get the query string
     this._json = "";
     if (window.location.search != "") {
-        let results = window.location.search.match(/[?&]data=([^&#]*)/);
+        const results = window.location.search.match(/[?&]data=([^&#]*)/);
         if (2 <= results.length) {
             this._json = decodeURIComponent(results[1].replace(/\+/g, " "));
         }
@@ -24,7 +24,7 @@ Controller.prototype = {
     // initialize the private fields and the page
     "_initialize": function(e) {
         // get the elements
-        let canvas = document.getElementById("board");
+        const canvas = document.getElementById("board");
         this._board.setCanvas(canvas, this._selectCell.bind(this));
         this._solveButton = document.getElementById("solve");
         this._resultArea = document.getElementById("result");
@@ -48,7 +48,7 @@ Controller.prototype = {
         // button events
         this._solveButton.addEventListener("click", this._solve.bind(this), false);
         for (let i = 1; i <= 9; i++) {
-            let key = document.getElementById("key" + i);
+            const key = document.getElementById("key" + i);
             key.addEventListener("click", this._pressNumber.bind(this), false);
         }
         document.getElementById("erase").addEventListener("click", this._eraseNumber.bind(this), false);
@@ -70,9 +70,9 @@ Controller.prototype = {
         this._board.drawBack(false);
 
         // get the cell position
-        let rect = e.currentTarget.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        let y = e.clientY - rect.top;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
         this._board.selectCell(x, y);
 
         // draw background
@@ -82,7 +82,7 @@ Controller.prototype = {
     // press the number button
     "_pressNumber": function(e) {
         // get the input value
-        let value = parseInt(e.currentTarget.innerText, 10);
+        const value = parseInt(e.currentTarget.innerText, 10);
         this._board.setSolidCell(value);
 
         // update results
@@ -103,25 +103,25 @@ Controller.prototype = {
         this._clearResult();
 
         // reset the board
-        let solids = this._board.logic.getSolidList();
+        const solids = this._board.logic.getSolidList();
         this._board.clear();
         this._board.setPattern(solids);
         this._board.logic.setupCandidates();
 
         // set the selected method
         const selector = function(elem) { return elem.checked; };
-        let levels = this._settingBoxes.map(selector);
+        const levels = this._settingBoxes.map(selector);
 
         // execute
-        let initial = this._board.logic.getCurrentStatus();
-        let result = this._solver.solve(this._board.logic, levels);
+        const initial = this._board.logic.getCurrentStatus();
+        const result = this._solver.solve(this._board.logic, levels);
         this._setResult(initial, result);
         this._solveButton.disabled = false;
     },
 
     // restore from text
     "_load": function(e) {
-        let data = this._board.setData(this._dataArea.value);
+        const data = this._board.setData(this._dataArea.value);
         if (data == null) {
             alert("The text format is incorrect.");
             return;
@@ -138,7 +138,7 @@ Controller.prototype = {
 
     // display the counter list
     "_showCounters": function() {
-        let counters = this._board.getCounters(true);
+        const counters = this._board.getCounters(true);
         for (let i = 0; i < counters.length; i++) {
             this._countAreas[i].innerHTML = counters[i];
         }
@@ -182,7 +182,7 @@ Controller.prototype = {
         this._messageArea.innerHTML = message + " (" + result.summary.join() + ")";
 
         // create a list of progress
-        let progress = [ { "title": "Initial state, candidates are in [ ].", "table": initial } ];
+        const progress = [ { "title": "Initial state, candidates are in [ ].", "table": initial } ];
         for (let i = 0; i < result.progress.length; i++) {
             progress.push({ "title": "Method " + result.progress[i].depth, "table": result.progress[i].table });
         }
@@ -195,10 +195,10 @@ Controller.prototype = {
 
         // display progress
         for (let i = 0; i < progress.length; i++) {
-            let text = document.createElement("p");
+            const text = document.createElement("p");
             text.innerHTML = progress[i].title;
             this._resultArea.appendChild(text);
-            let table = this._convertTable(progress[i].table);
+            const table = this._convertTable(progress[i].table);
             table.className = "border";
             this._resultArea.appendChild(table);
         }
@@ -207,18 +207,18 @@ Controller.prototype = {
     // convert to a table
     "_convertTable": function(rows) {
         // set the stylesheet class name
-        let horizontal = [ "top", "middle", "bottom" ];
-        let vertical = [ "left", "center", "right" ];
+        const horizontal = [ "top", "middle", "bottom" ];
+        const vertical = [ "left", "center", "right" ];
 
         // create a table element
-        let table = document.createElement("table");
+        const table = document.createElement("table");
         for (let i = 0; i < rows.length; i++) {
-            let row = rows[i];
-            let hidx = i % 3;
-            let tr = document.createElement("tr");
+            const row = rows[i];
+            const hidx = i % 3;
+            const tr = document.createElement("tr");
             for (let j = 0; j < row.length; j++) {
-                let vidx = j % 3;
-                let td = document.createElement("td");
+                const vidx = j % 3;
+                const td = document.createElement("td");
                 td.classList.add(horizontal[hidx]);
                 td.classList.add(vertical[vidx]);
                 if (Array.isArray(row[j])) {

@@ -19,10 +19,10 @@ if (typeof Creator === "function") {
             }
 
             // create a replacement table
-            let first = this._permutate([ 3, 4, 5 ]);
-            let second = this._permutate([ 6, 7, 8 ]);
-            let normal = [];
-            let reverse = [];
+            const first = this._permutate([ 3, 4, 5 ]);
+            const second = this._permutate([ 6, 7, 8 ]);
+            const normal = [];
+            const reverse = [];
             for (let i = 0; i < first.length; i++) {
                 for (let j = 0; j < second.length; j++) {
                     normal.push(first[i].concat(second[j]));
@@ -62,13 +62,13 @@ if (typeof Creator === "function") {
             }
 
             // recursive processing
-            let result = [];
+            const result = [];
             for (let i = 0; i < values.length; i++) {
-                let follow = values.concat();
-                let first = follow.splice(i, 1);
+                const follow = values.concat();
+                const first = follow.splice(i, 1);
 
                 // permutate an array with one less element
-                let parts = this._permutate(follow);
+                const parts = this._permutate(follow);
                 for (let j = 0; j < parts.length; j++) {
                     result.push(first.concat(parts[j]));
                 }
@@ -98,7 +98,7 @@ if (typeof Creator === "function") {
             this._logic.setupCandidates();
 
             // create a solution
-            let result = this._solver.solve(this._logic, this._levels);
+            const result = this._solver.solve(this._logic, this._levels);
             if (result.solutions.length == 1) {
                 // if there is only one solution
                 let valid = true;
@@ -140,7 +140,7 @@ if (typeof Creator === "function") {
             let next = this._grids[this._index];
             next = this._convertRow(next, this._row);
             next = this._convertCol(next, this._col);
-            let entity = new CreatorEntity(next, this._clues);
+            const entity = new CreatorEntity(next, this._clues);
 
             // update index
             this._index++;
@@ -157,10 +157,10 @@ if (typeof Creator === "function") {
 
         // convert rows
         "_convertRow": { "value": function(sample, index) {
-            let map = this._table[index];
-            let numbers = sample.slice(0, 27);
+            const map = this._table[index];
+            const numbers = sample.slice(0, 27);
             for (let i = 0; i < map.length; i++) {
-                let start = map[i] * 9;
+                const start = map[i] * 9;
                 Array.prototype.push.apply(numbers, sample.slice(start, start + 9));
             }
             return numbers;
@@ -168,10 +168,10 @@ if (typeof Creator === "function") {
 
         // convert columns
         "_convertCol": { "value": function(sample, index) {
-            let map = this._table[index];
-            let numbers = [];
+            const map = this._table[index];
+            const numbers = [];
             for (let i = 0; i < 9; i++) {
-                let start = i * 9;
+                const start = i * 9;
                 Array.prototype.push.apply(numbers, sample.slice(start, start + 3));
                 for (let j = 0; j < map.length; j++) {
                     numbers.push(sample[start + map[j]]);
@@ -182,7 +182,7 @@ if (typeof Creator === "function") {
 
         // change numbers
         "_changeNumbers": { "value": function(numbers) {
-            let map = [ 0 ].concat(this._shuffle(Numbers.all));
+            const map = [ 0 ].concat(this._shuffle(Numbers.all));
             const selector = function(elem) { return map[elem]; };
             return numbers.map(selector);
         }},

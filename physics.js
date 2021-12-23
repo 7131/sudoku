@@ -13,10 +13,10 @@ PhysicalBoard.prototype = {
         // set the board size
         if (canvas.clientWidth == canvas.width && canvas.clientHeight == canvas.height) {
             // if no style is specified
-            let width = document.documentElement.clientWidth;
-            let height = document.documentElement.clientHeight;
+            const width = document.documentElement.clientWidth;
+            const height = document.documentElement.clientHeight;
             let size = Math.floor(Math.min(width, height) * 0.8);
-            let remain = size % 9;
+            const remain = size % 9;
             if (remain < 2) {
                 size += 2 - remain;
             }
@@ -32,7 +32,7 @@ PhysicalBoard.prototype = {
         this._grid = canvas.getContext("2d");
 
         // number area (front)
-        let face = document.createElement("canvas");
+        const face = document.createElement("canvas");
         face.style.position = "absolute";
         face.style.zIndex = 3;
         face.style.webkitTapHighlightColor = "#00000000";
@@ -49,7 +49,7 @@ PhysicalBoard.prototype = {
         this._fore.lineWidth = 2;
 
         // background area (backmost)
-        let rear = document.createElement("canvas");
+        const rear = document.createElement("canvas");
         rear.width = canvas.width;
         rear.height = canvas.height;
         rear.style.zIndex = 1;
@@ -59,12 +59,12 @@ PhysicalBoard.prototype = {
         this._back.fillStyle = "gold";
 
         // drawing sizes
-        let nw = canvas.width / 9;
-        let nh = canvas.height / 9;
-        let ncw = nw / 2 + 2;
-        let nch = nh / 2 + 2;
-        let cw = nw / 3;
-        let ch = nh / 3;
+        const nw = canvas.width / 9;
+        const nh = canvas.height / 9;
+        const ncw = nw / 2 + 2;
+        const nch = nh / 2 + 2;
+        const cw = nw / 3;
+        const ch = nh / 3;
 
         // coordinates
         this._ax = [ 1 ];
@@ -211,7 +211,7 @@ PhysicalBoard.prototype = {
         // switch the value in the selected cell
         this.logic.setSolid(this._index, 0);
         this.logic.setNumber(this._index, 0);
-        let candidate = this.logic.getCandidate(this._index);
+        const candidate = this.logic.getCandidate(this._index);
         candidate.toggle(value);
         this._drawCandidate(candidate.getArray());
     },
@@ -219,17 +219,17 @@ PhysicalBoard.prototype = {
     // get a list of counters
     "getCounters": function(initial) {
         // initialize the counters
-        let counters = [ 0 ];
+        const counters = [ 0 ];
         for (let i = 0; i < Numbers.all.length; i++) {
             counters.push(0);
         }
 
         // count each number
-        let solids = this.logic.getSolidList();
-        let numbers = this.logic.getNumberList();
+        const solids = this.logic.getSolidList();
+        const numbers = this.logic.getNumberList();
         for (let i = 0; i < numbers.length; i++) {
-            let solid = solids[i];
-            let number = numbers[i];
+            const solid = solids[i];
+            const number = numbers[i];
             if (Numbers.isValid(solid)) {
                 counters[solid]++;
             } else if (!initial && Numbers.isValid(number)) {
@@ -259,7 +259,7 @@ PhysicalBoard.prototype = {
     // get the current data
     "getData": function(title, all, stay) {
         // current state
-        let solids = this.logic.getSolidList();
+        const solids = this.logic.getSolidList();
         let numbers = null;
         let candidates = null;
         if (all) {
@@ -277,12 +277,12 @@ PhysicalBoard.prototype = {
         }
 
         // create a JSON object
-        let now = new Date();
+        const now = new Date();
         let description = now.toLocaleString();
         if (title != null) {
             description = title + " (" + description + ")";
         }
-        let data = { "description": description, "pattern": solids };
+        const data = { "description": description, "pattern": solids };
         if (numbers != null) {
             data.numbers = numbers;
         }
@@ -350,11 +350,11 @@ PhysicalBoard.prototype = {
         }
 
         // coordinate calculation
-        let pos = this._getPosition(this._index);
-        let x = this._ax[pos.col];
-        let y = this._ay[pos.row];
-        let w = this._ax[pos.col + 1] - x;
-        let h = this._ay[pos.row + 1] - y;
+        const pos = this._getPosition(this._index);
+        const x = this._ax[pos.col];
+        const y = this._ay[pos.row];
+        const w = this._ax[pos.col + 1] - x;
+        const h = this._ay[pos.row + 1] - y;
 
         // fill the background
         if (fill) {
@@ -367,11 +367,11 @@ PhysicalBoard.prototype = {
     // draw an x mark
     "drawCross": function(index) {
         // get coordinates
-        let pos = this._getPosition(index);
-        let left = this._ax[pos.col] + 3;
-        let top = this._ay[pos.row] + 3;
-        let right = this._ax[pos.col + 1] - 3;
-        let bottom = this._ay[pos.row + 1] - 3;
+        const pos = this._getPosition(index);
+        const left = this._ax[pos.col] + 3;
+        const top = this._ay[pos.row] + 3;
+        const right = this._ax[pos.col + 1] - 3;
+        const bottom = this._ay[pos.row + 1] - 3;
 
         // draw
         this._fore.beginPath();
@@ -417,16 +417,16 @@ PhysicalBoard.prototype = {
 
         // clear
         this._drawNumber(0);
-        let pos = this._getPosition(this._index);
+        const pos = this._getPosition(this._index);
 
         // draw
         this._fore.font = this._small;
         this._fore.fillStyle = this._candidate;
         for (let i = 0; i < values.length; i++) {
-            let index = Numbers.all.indexOf(values[i]);
+            const index = Numbers.all.indexOf(values[i]);
             if (0 <= index) {
-                let x = this._nx[pos.col] + this._cx[index];
-                let y = this._ny[pos.row] + this._cy[index];
+                const x = this._nx[pos.col] + this._cx[index];
+                const y = this._ny[pos.row] + this._cy[index];
                 this._fore.fillText(values[i], x, y);
             }
         }
@@ -440,11 +440,11 @@ PhysicalBoard.prototype = {
         }
 
         // coordinate calculation
-        let pos = this._getPosition(this._index);
-        let x = this._ax[pos.col];
-        let y = this._ay[pos.row];
-        let w = this._ax[pos.col + 1] - x;
-        let h = this._ay[pos.row + 1] - y;
+        const pos = this._getPosition(this._index);
+        const x = this._ax[pos.col];
+        const y = this._ay[pos.row];
+        const w = this._ax[pos.col + 1] - x;
+        const h = this._ay[pos.row + 1] - y;
 
         // clear
         this._fore.clearRect(x, y, w, h);
@@ -457,7 +457,7 @@ PhysicalBoard.prototype = {
 
     // draw a list of solid values
     "_drawSolidList": function() {
-        let solids = this.logic.getSolidList();
+        const solids = this.logic.getSolidList();
 
         // specify the font
         this._fore.font = this._large;
@@ -474,7 +474,7 @@ PhysicalBoard.prototype = {
                 }
             }
             if (value !== "") {
-                let pos = this._getPosition(i);
+                const pos = this._getPosition(i);
                 this._fore.fillText(value, this._nx[pos.col], this._ny[pos.row]);
             }
         }
@@ -482,7 +482,7 @@ PhysicalBoard.prototype = {
 
     // draw a list of number values
     "_drawNumberList": function() {
-        let numbers = this.logic.getNumberList();
+        const numbers = this.logic.getNumberList();
 
         // specify the font
         this._fore.font = this._large;
@@ -491,7 +491,7 @@ PhysicalBoard.prototype = {
         // draw
         for (let i = 0; i < numbers.length; i++) {
             if (Numbers.isValid(numbers[i]) && !this.logic.isSolid(i)) {
-                let pos = this._getPosition(i);
+                const pos = this._getPosition(i);
                 this._fore.fillText(numbers[i], this._nx[pos.col], this._ny[pos.row]);
             }
         }
@@ -499,7 +499,7 @@ PhysicalBoard.prototype = {
 
     // draw a list of candidate values
     "_drawCandidateList": function() {
-        let candidates = this.logic.getCandidateList();
+        const candidates = this.logic.getCandidateList();
 
         // specify the font
         this._fore.font = this._small;
@@ -507,13 +507,13 @@ PhysicalBoard.prototype = {
 
         // draw
         for (let i = 0; i < candidates.length; i++) {
-            let values = candidates[i].getArray();
+            const values = candidates[i].getArray();
             if (0 < values.length && !this.logic.isSolid(i)) {
-                let pos = this._getPosition(i);
+                const pos = this._getPosition(i);
                 for (let j = 0; j < values.length; j++) {
-                    let index = Numbers.all.indexOf(values[j]);
-                    let x = this._nx[pos.col] + this._cx[index];
-                    let y = this._ny[pos.row] + this._cy[index];
+                    const index = Numbers.all.indexOf(values[j]);
+                    const x = this._nx[pos.col] + this._cx[index];
+                    const y = this._ny[pos.row] + this._cy[index];
                     this._fore.fillText(values[j], x, y);
                 }
             }
@@ -522,8 +522,8 @@ PhysicalBoard.prototype = {
 
     // get position
     "_getPosition": function(index) {
-        let row = Math.floor(index / 9);
-        let col = index % 9;
+        const row = Math.floor(index / 9);
+        const col = index % 9;
         return { "row": row, "col": col };
     },
 

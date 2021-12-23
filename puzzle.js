@@ -3,10 +3,10 @@ const Controller = function() {
     // get the query string
     let data = null;
     if (window.location.search != "") {
-        let results = window.location.search.match(/[?&]data=([^&#]*)/);
+        const results = window.location.search.match(/[?&]data=([^&#]*)/);
         if (2 <= results.length) {
             // get a JSON string
-            let json = decodeURIComponent(results[1].replace(/\+/g, " "));
+            const json = decodeURIComponent(results[1].replace(/\+/g, " "));
             try {
                 data = JSON.parse(json);
                 if (!Array.isArray(data)) {
@@ -35,7 +35,7 @@ Controller.prototype = {
     // initialize the private fields and the page
     "_initialize": function(e) {
         // get the elements
-        let canvas = document.getElementById("board");
+        const canvas = document.getElementById("board");
         this._board.setCanvas(canvas, this._selectCell.bind(this));
         this._problemSelector = document.getElementById("problem");
         this._descriptionArea = document.getElementById("description");
@@ -51,14 +51,14 @@ Controller.prototype = {
         }
 
         // set up a problem list
-        let title = document.createElement("option");
+        const title = document.createElement("option");
         title.value = 0;
         title.selected = true;
         title.innerHTML = "Select...";
         this._problemSelector.innerHTML = "";
         this._problemSelector.appendChild(title);
         for (let i = 1; i <= this._problems.length; i++) {
-            let option = document.createElement("option");
+            const option = document.createElement("option");
             option.value = i;
             option.innerHTML = i;
             this._problemSelector.appendChild(option);
@@ -68,15 +68,15 @@ Controller.prototype = {
         document.getElementById("display").addEventListener("click", this._display.bind(this), false);
         document.getElementById("save").addEventListener("click", this._save.bind(this), false);
         document.getElementById("load").addEventListener("click", this._load.bind(this), false);
-        let types = [ "decision", "candidate" ];
+        const types = [ "decision", "candidate" ];
         for (let i = 0; i < types.length; i++) {
-            let radio = document.getElementById(types[i]);
+            const radio = document.getElementById(types[i]);
             radio.addEventListener("change", this._changeRadio.bind(this), false);
         }
         this._type = types[0];
         this._keyTable.className = this._type;
         for (let i = 1; i <= 9; i++) {
-            let key = document.getElementById("key" + i);
+            const key = document.getElementById("key" + i);
             key.addEventListener("click", this._pressNumber.bind(this), false);
         }
         this._eraseButton.addEventListener("click", this._eraseNumber.bind(this), false);
@@ -123,9 +123,9 @@ Controller.prototype = {
         this._board.drawBack(false);
 
         // get the cell position
-        let rect = e.currentTarget.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        let y = e.clientY - rect.top;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
         this._board.selectCell(x, y, true);
         if (this._board.isSolidCell()) {
             return;
@@ -157,7 +157,7 @@ Controller.prototype = {
     // press the number button
     "_pressNumber": function(e) {
         // get the input value
-        let value = parseInt(e.currentTarget.innerText, 10);
+        const value = parseInt(e.currentTarget.innerText, 10);
         if (this._type == "candidate") {
             // candidate
             this._board.toggleCandidate(value);
@@ -190,7 +190,7 @@ Controller.prototype = {
     // judge the result
     "_judge": function(e) {
         // get incorrect cells
-        let indexes = this._board.logic.getIncorrectIndexes();
+        const indexes = this._board.logic.getIncorrectIndexes();
         let reason = "";
         if (0 < indexes.length) {
             reason = "There are mistakes in the numbers.";
@@ -224,7 +224,7 @@ Controller.prototype = {
     // restore from text
     "_load": function(e) {
         // grid data
-        let data = this._board.setData(this._dataArea.value, true);
+        const data = this._board.setData(this._dataArea.value, true);
         if (data == null) {
             alert("The text format is incorrect.");
             return;
@@ -242,7 +242,7 @@ Controller.prototype = {
 
     // display the counter list
     "_showCounters": function() {
-        let counters = this._board.getCounters();
+        const counters = this._board.getCounters();
         for (let i = 0; i < counters.length; i++) {
             this._countAreas[i].innerHTML = counters[i];
         }

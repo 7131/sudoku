@@ -11,7 +11,7 @@ if (typeof LogicalBoard === "function") {
             }
 
             // decide the number in the specified cell
-            let cell = this._cells[index];
+            const cell = this._cells[index];
             cell.value = value;
             cell.candidate.clear();
 
@@ -22,8 +22,8 @@ if (typeof LogicalBoard === "function") {
             this.getBlockCells(cell.block).forEach(action);
 
             // remove collisions from the same group
-            let row = this.getRowCells(cell.row);
-            let col = this.getColCells(cell.col);
+            const row = this.getRowCells(cell.row);
+            const col = this.getColCells(cell.col);
             for (let i = 0; i < 9; i++) {
                 row[i].candidate.remove((value + cell.col + 8 - i) % 9 + 1);
                 col[i].candidate.remove((value + cell.row + 8 - i) % 9 + 1);
@@ -33,7 +33,7 @@ if (typeof LogicalBoard === "function") {
         // get a list of incorrect indexes
         "getIncorrectIndexes": { "value": function() {
             // check for duplicate numbers
-            let indexes = [];
+            const indexes = [];
             for (let i = 0; i < 9; i++) {
                 Array.prototype.push.apply(indexes, this._getDuplicates(this._rows[i]));
                 Array.prototype.push.apply(indexes, this._getDuplicates(this._cols[i]));
@@ -54,9 +54,9 @@ if (typeof LogicalBoard === "function") {
         // get a list of collision indexes
         "_getCollisions": { "value": function(group) {
             // get a list of drop points for each number
-            let numbers = [];
+            const numbers = [];
             for (let i = 0; i < group.length; i++) {
-                let index = group[i];
+                const index = group[i];
 
                 // solid value or numerical value
                 let value = this._cells[index].solid;
@@ -64,7 +64,7 @@ if (typeof LogicalBoard === "function") {
                     value = this._cells[index].value;
                 }
                 if (Numbers.isValid(value)) {
-                    let drop = (value + i) % 9;
+                    const drop = (value + i) % 9;
                     if (!Array.isArray(numbers[drop])) {
                         numbers[drop] = [];
                     }
@@ -73,13 +73,13 @@ if (typeof LogicalBoard === "function") {
             }
 
             // check if there was a collision
-            let collisions = [];
+            const collisions = [];
             for (let i = 0; i < 9; i++) {
-                let indexes = numbers[i];
+                const indexes = numbers[i];
                 if (Array.isArray(indexes) && 1 < indexes.length) {
                     for (let j = 0; j < indexes.length; j++) {
                         // exclude solid values
-                        let index = indexes[j];
+                        const index = indexes[j];
                         if (!this.isSolid(index)) {
                             collisions.push(index);
                         }
@@ -107,13 +107,13 @@ if (typeof Solver === "function") {
         // create a solution
         "_createSolutions": { "value": function(logic) {
             // 1 cell
-            let cells = logic.getAllCells();
+            const cells = logic.getAllCells();
             for (let i = 0; i < cells.length; i++) {
                 // process all cells in order
-                let cell = cells[i];
+                const cell = cells[i];
                 if (cell.candidate.length == 2) {
-                    let min = cell.candidate.getNumber(0);
-                    let max = cell.candidate.getNumber(1);
+                    const min = cell.candidate.getNumber(0);
+                    const max = cell.candidate.getNumber(1);
 
                     // rows and columns
                     this._reduceSingleTwin(logic.getRowCells(cell.row), cell.col, min, max);
@@ -131,7 +131,7 @@ if (typeof Solver === "function") {
 
         // reduce candidates from the other cells based on the value in the twin cell
         "_reduceSingleTwin": { "value": function(group, index, min, max) {
-            let distance = max - min;
+            const distance = max - min;
             group[(index + distance) % 9].candidate.remove(min);
             group[(index + 9 - distance) % 9].candidate.remove(max);
         }},
@@ -139,7 +139,7 @@ if (typeof Solver === "function") {
         // reduce candidates from the other cells based on the values in the two cells
         "_reduceDoubleTwin": { "value": function(group) {
             // handle the entire group
-            let cells = [];
+            const cells = [];
             for (let i = 0; i < group.length; i++) {
                 if (group[i].candidate.length == 2) {
                     cells.push(group[i]);
@@ -149,23 +149,23 @@ if (typeof Solver === "function") {
             // check two cells at a time
             while (2 <= cells.length) {
                 // 1st cell
-                let cell1 = cells.shift();
-                let min1 = cell1.candidate.getNumber(0);
-                let max1 = cell1.candidate.getNumber(1);
-                let index1 = group.indexOf(cell1);
+                const cell1 = cells.shift();
+                const min1 = cell1.candidate.getNumber(0);
+                const max1 = cell1.candidate.getNumber(1);
+                const index1 = group.indexOf(cell1);
                 for (let i = 0; i < cells.length; i++) {
                     // 2nd cell
-                    let cell2 = cells[i];
-                    let min2 = cell2.candidate.getNumber(0);
-                    let max2 = cell2.candidate.getNumber(1);
-                    let index2 = group.indexOf(cell2);
+                    const cell2 = cells[i];
+                    const min2 = cell2.candidate.getNumber(0);
+                    const max2 = cell2.candidate.getNumber(1);
+                    const index2 = group.indexOf(cell2);
 
                     // get the distances
-                    let distance = index2 - index1;
-                    let min1min2 = (min1 - min2 + 9) % 9;
-                    let min1max2 = (min1 - max2 + 9) % 9;
-                    let max1min2 = (max1 - min2 + 9) % 9;
-                    let max1max2 = (max1 - max2 + 9) % 9;
+                    const distance = index2 - index1;
+                    const min1min2 = (min1 - min2 + 9) % 9;
+                    const min1max2 = (min1 - max2 + 9) % 9;
+                    const max1min2 = (max1 - min2 + 9) % 9;
+                    const max1max2 = (max1 - max2 + 9) % 9;
                     if ((min1 == min2 && max1max2 == distance) || (min1 == max2 && max1min2 == distance)) {
                         this._reduceSameNumber(group, index1, index2, min1);
                         this._reduceDescending(group, index1, index2, max1);
@@ -193,7 +193,7 @@ if (typeof Solver === "function") {
         "_reduceDescending": { "value": function(group, index1, index2, number1) {
             for (let i = 0; i < group.length; i++) {
                 if (i != index1 && i != index2) {
-                    let number = (index1 - i + number1 + 8) % 9 + 1;
+                    const number = (index1 - i + number1 + 8) % 9 + 1;
                     group[i].candidate.remove(number);
                 }
             }
@@ -296,7 +296,7 @@ if (typeof Creator === "function") {
             this._logic.setupCandidates();
 
             // create a solution
-            let result = this._solver.solve(this._logic, this._levels);
+            const result = this._solver.solve(this._logic, this._levels);
             if (result.solutions.length == 1) {
                 // if there is only one solution
                 let valid = true;
@@ -338,7 +338,7 @@ if (typeof Creator === "function") {
             let next = this._grids[this._index];
             next = this._convertRow(next, this._row);
             next = this._convertCol(next, this._col);
-            let entity = new CreatorEntity(next, this._clues);
+            const entity = new CreatorEntity(next, this._clues);
 
             // update index
             this._index++;
@@ -355,10 +355,10 @@ if (typeof Creator === "function") {
 
         // convert rows
         "_convertRow": { "value": function(sample, index) {
-            let map = this._table[index];
-            let numbers = [];
+            const map = this._table[index];
+            const numbers = [];
             for (let i = 0; i < map.length; i++) {
-                let start = map[i] * 9;
+                const start = map[i] * 9;
                 Array.prototype.push.apply(numbers, sample.slice(start, start + 27));
             }
             return numbers;
@@ -366,11 +366,11 @@ if (typeof Creator === "function") {
 
         // convert columns
         "_convertCol": { "value": function(sample, index) {
-            let map = this._table[index];
-            let numbers = [];
+            const map = this._table[index];
+            const numbers = [];
             for (let i = 0; i < 81; i += 9) {
                 for (let j = 0; j < map.length; j++) {
-                    let start = i + map[j];
+                    const start = i + map[j];
                     Array.prototype.push.apply(numbers, sample.slice(start, start + 3));
                 }
             }

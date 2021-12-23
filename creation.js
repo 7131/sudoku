@@ -15,7 +15,7 @@ Controller.prototype = {
     // initialize the private fields and the page
     "_initialize": function(e) {
         // get the elements
-        let canvas = document.getElementById("board");
+        const canvas = document.getElementById("board");
         this._board.setCanvas(canvas);
         this._createButton = document.getElementById("create");
         this._messageArea = document.getElementById("message");
@@ -79,14 +79,14 @@ Controller.prototype = {
         }
 
         // if there are too many problems, reduce to 8 or less
-        let count = Math.min(this._problems.length, 8);
-        let problems = [];
+        const count = Math.min(this._problems.length, 8);
+        const problems = [];
         for (let i = 0; i < count; i++) {
             problems.push(this._problems[i]);
         }
 
         // get the data
-        let data = JSON.stringify(problems);
+        const data = JSON.stringify(problems);
         window.open("./puzzle.html?data=" + data, "problem");
     },
 
@@ -103,7 +103,7 @@ Controller.prototype = {
 
     // input the number of clues
     "_inputClues": function(e) {
-        let clues = this._getInt(this._countClues.value);
+        const clues = this._getInt(this._countClues.value);
         if (clues < this._minClues || this._maxClues < clues) {
             // invalid
             this._countClues.className = "error";
@@ -121,12 +121,12 @@ Controller.prototype = {
     // execute creation
     "_execute": function() {
         // get the input values
-        let clues = this._getInt(this._countClues.value);
+        const clues = this._getInt(this._countClues.value);
         if (clues < this._minClues || this._maxClues < clues) {
             return;
         }
-        let levels = this._getRadioGroup(0, false);
-        let needs = this._getRadioGroup(2, true);
+        const levels = this._getRadioGroup(0, false);
+        const needs = this._getRadioGroup(2, true);
 
         // reset the board
         this._board.clear();
@@ -152,7 +152,7 @@ Controller.prototype = {
     // get a list of radio button settings
     "_getRadioGroup": function(col, checked) {
         // process radio buttons in order
-        let group = [];
+        const group = [];
         let row = 0;
         let radio = document.getElementById("group" + row + "_" + col);
         while (radio != null) {
@@ -171,9 +171,9 @@ Controller.prototype = {
         this._countTry.innerText = this._trial.toLocaleString();
         if (numbers != null) {
             // valid data
-            let now = new Date();
-            let message = now.toLocaleString() + " (" + summary.join() + ")";
-            let data = { "description": message, "pattern": numbers };
+            const now = new Date();
+            const message = now.toLocaleString() + " (" + summary.join() + ")";
+            const data = { "description": message, "pattern": numbers };
             this._problems.push(data);
             this._countCreate.innerText = this._problems.length.toLocaleString();
         }
@@ -220,7 +220,7 @@ Controller.prototype = {
 
     // get an integer value
     "_getInt": function(text) {
-        let after = text.replace(/,/g, "");
+        const after = text.replace(/,/g, "");
         let number = parseInt(after, 10);
         if (isNaN(number)) {
             number = 0;

@@ -5,12 +5,12 @@ const CreatorEntity = function(sample, clues) {
     this._clues = clues;
 
     // create reduction clues
-    let count = Math.floor(this._clues.length / 2);
+    const count = Math.floor(this._clues.length / 2);
     this._shrink = [];
     for (let i = 0; i < count; i++) {
         if (this._clues[i]) {
             // when a clue is set in the cell
-            let copy = this._clues.concat();
+            const copy = this._clues.concat();
             copy[i] = false;
             copy[copy.length - 1 - i] = false;
             this._shrink.push(copy);
@@ -18,7 +18,7 @@ const CreatorEntity = function(sample, clues) {
     }
     if (this._clues.length % 2 == 1 && this._clues[count]) {
         // when a clue is set in the center cell
-        let copy = this._clues.concat();
+        const copy = this._clues.concat();
         copy[count] = false;
         this._shrink.push(copy);
     }
@@ -59,7 +59,7 @@ CreatorEntity.prototype = {
 
     // create a problem
     "_createProblem": function() {
-        let numbers = [];
+        const numbers = [];
         for (let i = 0; i < this._sample.length; i++) {
             // get clues
             if (this._clues[i]) {
@@ -119,7 +119,7 @@ Creator.prototype = {
         count /= 2;
 
         // set clues in rotationally symmetric cells
-        let quad = this._getRandom(count / 2);
+        const quad = this._getRandom(count / 2);
         this._setQuadClues(quad);
         this._setTwinClues(count - quad * 2);
     },
@@ -146,7 +146,7 @@ Creator.prototype = {
     // set clues for 4-fold rotational symmetry
     "_setQuadClues": function(count) {
         // get the operation target positions
-        let target = [];
+        const target = [];
         for (let i = 0; i < 4; i++) {
             for (let j = i; j < 8 - i; j++) {
                 target.push({ "row": i, "col": j });
@@ -154,10 +154,10 @@ Creator.prototype = {
         }
 
         // set random positions as clues
-        let positions = this._shuffle(target);
+        const positions = this._shuffle(target);
         count = Math.min(count, positions.length);
         for (let i = 0; i < count; i++) {
-            let pos = positions[i];
+            const pos = positions[i];
             this._clues[pos.row * 9 + pos.col] = true;
             this._clues[(8 - pos.row) + pos.col * 9] = true;
             this._clues[pos.row + (8 - pos.col) * 9] = true;
@@ -168,8 +168,8 @@ Creator.prototype = {
     // set clues for 2-fold rotational symmetry
     "_setTwinClues": function(count) {
         // get indexes of cells for which no clues have been obtained yet
-        let target = [];
-        let half = Math.floor(this._clues.length / 2);
+        const target = [];
+        const half = Math.floor(this._clues.length / 2);
         for (let i = 0; i < half; i++) {
             if (!this._clues[i]) {
                 target.push(i);
@@ -177,11 +177,11 @@ Creator.prototype = {
         }
 
         // set random positions as clues
-        let indexes = this._shuffle(target);
-        let max = this._clues.length - 1;
+        const indexes = this._shuffle(target);
+        const max = this._clues.length - 1;
         count = Math.min(count, indexes.length);
         for (let i = 0; i < count; i++) {
-            let index = indexes[i];
+            const index = indexes[i];
             this._clues[index] = true;
             this._clues[max - index] = true;
         }
@@ -209,7 +209,7 @@ Creator.prototype = {
         this._logic.setupCandidates();
 
         // create a solution
-        let result = this._solver.solve(this._logic, this._levels);
+        const result = this._solver.solve(this._logic, this._levels);
         if (result.solutions.length == 1) {
             // if there is only one solution
             let valid = true;
@@ -248,8 +248,8 @@ Creator.prototype = {
     // get the next creation entity
     "_getEntity": function() {
         // get the next grid
-        let next = this._grids[this._index];
-        let entity = new CreatorEntity(next, this._clues);
+        const next = this._grids[this._index];
+        const entity = new CreatorEntity(next, this._clues);
 
         // update index
         this._index++;
@@ -263,11 +263,11 @@ Creator.prototype = {
 
     // shuffle the array
     "_shuffle": function(target) {
-        let before = target.concat();
-        let after = [];
+        const before = target.concat();
+        const after = [];
         while (0 < before.length) {
             // get elements randomly
-            let index = this._getRandom(before.length);
+            const index = this._getRandom(before.length);
             after.push(before[index]);
             before.splice(index, 1);
         }

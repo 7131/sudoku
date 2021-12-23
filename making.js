@@ -13,7 +13,7 @@ Controller.prototype = {
     // initialize the private fields and the page
     "_initialize": function(e) {
         // get the elements
-        let canvas = document.getElementById("board");
+        const canvas = document.getElementById("board");
         this._board.setCanvas(canvas, this._selectCell.bind(this));
         this._keyTable = document.getElementById("key");
         this._eraseButton = document.getElementById("erase");
@@ -29,15 +29,15 @@ Controller.prototype = {
         document.getElementById("solution").addEventListener("click", this._showSolver.bind(this), false);
         document.getElementById("save").addEventListener("click", this._save.bind(this), false);
         document.getElementById("load").addEventListener("click", this._load.bind(this), false);
-        let types = [ "solid", "decision", "candidate" ];
+        const types = [ "solid", "decision", "candidate" ];
         for (let i = 0; i < types.length; i++) {
-            let radio = document.getElementById(types[i]);
+            const radio = document.getElementById(types[i]);
             radio.addEventListener("change", this._changeRadio.bind(this), false);
         }
         this._type = types[0];
         this._keyTable.className = this._type;
         for (let i = 1; i <= 9; i++) {
-            let key = document.getElementById("key" + i);
+            const key = document.getElementById("key" + i);
             key.addEventListener("click", this._pressNumber.bind(this), false);
         }
         this._eraseButton.addEventListener("click", this._eraseNumber.bind(this), false);
@@ -53,9 +53,9 @@ Controller.prototype = {
         this._board.drawBack(false);
 
         // get the cell position
-        let rect = e.currentTarget.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        let y = e.clientY - rect.top;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
         this._board.selectCell(x, y);
 
         // draw background
@@ -93,7 +93,7 @@ Controller.prototype = {
     // press the number button
     "_pressNumber": function(e) {
         // get the input value
-        let value = parseInt(e.currentTarget.innerText, 10);
+        const value = parseInt(e.currentTarget.innerText, 10);
         switch (this._type) {
             case "decision":
                 // decision
@@ -140,13 +140,13 @@ Controller.prototype = {
 
     // show the problem on another page
     "_showProblem": function(e) {
-        let data = this._board.getData();
+        const data = this._board.getData();
         window.open("./puzzle.html?data=" + data, "problem");
     },
 
     // show the solution page
     "_showSolver": function(e) {
-        let data = this._board.getData();
+        const data = this._board.getData();
         window.open("./solution.html?data=" + data, "solution");
     },
 
@@ -158,7 +158,7 @@ Controller.prototype = {
     // restore from text
     "_load": function(e) {
         // grid data
-        let data = this._board.setData(this._dataArea.value, true, true);
+        const data = this._board.setData(this._dataArea.value, true, true);
         if (data == null) {
             alert("The text format is incorrect.");
             return;
@@ -170,7 +170,7 @@ Controller.prototype = {
 
     // display the counter list
     "_showCounters": function() {
-        let counters = this._board.getCounters();
+        const counters = this._board.getCounters();
         for (let i = 0; i < counters.length; i++) {
             this._countAreas[i].innerHTML = counters[i];
         }

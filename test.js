@@ -26,12 +26,12 @@ Controller.prototype = {
         this._rows = document.getElementById("table").rows;
         for (let i = 1; i < this._rows.length; i++) {
             // No.
-            let number = this._rows[i].cells[ColNum.NUMBER];
+            const number = this._rows[i].cells[ColNum.NUMBER];
             number.innerText = i;
             number.className = "symbol";
 
             // expected values
-            var expects = this._rows[i].cells[ColNum.EXPECT].childNodes;
+            const expects = this._rows[i].cells[ColNum.EXPECT].childNodes;
             expects[0].id = "view-" + i;
             expects[0].addEventListener("click", this._show.bind(this), false);
             expects[1].htmlFor = expects[0].id;
@@ -46,8 +46,8 @@ Controller.prototype = {
     // show or hide the result
     "_show": function(e) {
         // get the display area
-        var check = e.currentTarget;
-        var area = check.nextSibling.nextSibling;
+        const check = e.currentTarget;
+        const area = check.nextSibling.nextSibling;
         if (check.checked) {
             // show
             area.className = "";
@@ -80,11 +80,11 @@ Controller.prototype = {
         }
 
         // execute
-        let row = this._rows[this._index];
-        let problem = row.cells[ColNum.PROBLEM].innerText;
-        let element = document.getElementById("data-" + this._index);
-        let expect = element.innerText;
-        let message = this._getResult(problem, expect);
+        const row = this._rows[this._index];
+        const problem = row.cells[ColNum.PROBLEM].innerText;
+        const element = document.getElementById("data-" + this._index);
+        const expect = element.innerText;
+        const message = this._getResult(problem, expect);
         if (message == "") {
             row.cells[ColNum.RESULT].innerText = "OK";
             row.cells[ColNum.RESULT].className = "";
@@ -121,7 +121,7 @@ Controller.prototype = {
         this._logic.setupCandidates();
 
         // run the solver
-        let actual = this._solver.solve(this._logic);
+        const actual = this._solver.solve(this._logic);
         if (actual == null) {
             return "Could not be resolved.";
         }
@@ -148,7 +148,7 @@ Controller.prototype = {
         }
 
         // compare the number of elements in arrays
-        let count = Math.min(expect.length, actual.length);
+        const count = Math.min(expect.length, actual.length);
         if (count != Math.max(expect.length, actual.length)) {
             return "There is a difference in the number of " + title + ".";
         }
@@ -179,7 +179,7 @@ Controller.prototype = {
 
         // if both are objects
         if (typeof expect == "object" && typeof actual == "object") {
-            let keys = Object.keys(expect).sort();
+            const keys = Object.keys(expect).sort();
             if (!this._areSameValues(keys, Object.keys(actual).sort())) {
                 return false;
             }

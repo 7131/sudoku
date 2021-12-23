@@ -34,9 +34,9 @@ CandidateArray.prototype = {
 
     // add candidates
     "add": function(other) {
-        let others = this._convertToArray(other);
+        const others = this._convertToArray(other);
         for (let i = 0; i < others.length; i++) {
-            let value = others[i];
+            const value = others[i];
             if (Numbers.isValid(value) && this._values.indexOf(value) < 0) {
                 this._values.push(value);
             }
@@ -47,9 +47,9 @@ CandidateArray.prototype = {
 
     // remove candidates
     "remove": function(other) {
-        let others = this._convertToArray(other);
+        const others = this._convertToArray(other);
         for (let i = 0; i < others.length; i++) {
-            let index = this._values.indexOf(others[i]);
+            const index = this._values.indexOf(others[i]);
             if (0 <= index) {
                 this._values.splice(index, 1);
             }
@@ -59,10 +59,10 @@ CandidateArray.prototype = {
 
     // narrow down candidates
     "refine": function(other) {
-        let others = this._convertToArray(other);
-        let intersect = [];
+        const others = this._convertToArray(other);
+        const intersect = [];
         for (let i = 0; i < this._values.length; i++) {
-            let value = this._values[i];
+            const value = this._values[i];
             if (0 <= others.indexOf(value)) {
                 intersect.push(value);
             }
@@ -79,7 +79,7 @@ CandidateArray.prototype = {
         }
 
         // toggle the candidate
-        let index = this._values.indexOf(value);
+        const index = this._values.indexOf(value);
         if (index < 0) {
             this._values.push(value);
             this._values.sort(this._compareNumbers);
@@ -101,7 +101,7 @@ CandidateArray.prototype = {
 
     // whether the specified number is included
     "has": function(other) {
-        let others = this._convertToArray(other);
+        const others = this._convertToArray(other);
         for (let i = 0; i < others.length; i++) {
             if (this._values.indexOf(others[i]) < 0) {
                 return false;
@@ -112,13 +112,13 @@ CandidateArray.prototype = {
 
     // whether the candidates are the same
     "areSame": function(other) {
-        let others = this._convertToArray(other);
+        const others = this._convertToArray(other);
         if (others.length != this.length) {
             return false;
         }
-        let remain = others.concat();
+        const remain = others.concat();
         for (let i = 0; i < this._values.length; i++) {
-            let index = remain.indexOf(this._values[i]);
+            const index = remain.indexOf(this._values[i]);
             if (index < 0) {
                 return false;
             }
@@ -162,7 +162,7 @@ const LogicalBoard = function() {
     this._rows = [];
     let index = 0;
     for (let i = 0; i < 9; i++) {
-        let part = [];
+        const part = [];
         for (let j = 0; j < 9; j++) {
             part.push(index);
             index++;
@@ -173,7 +173,7 @@ const LogicalBoard = function() {
     // list of indexes by column
     this._cols = [];
     for (let i = 0; i < 9; i++) {
-        let part = [];
+        const part = [];
         for (let j = 0; j < 81; j += 9) {
             part.push(i + j);
         }
@@ -183,8 +183,8 @@ const LogicalBoard = function() {
     // list of indexes by block
     this._blocks = [];
     for (let i = 0; i < 9; i++) {
-        let part = [];
-        let start = (Math.floor(i / 3) * 9 + (i % 3)) * 3;
+        const part = [];
+        const start = (Math.floor(i / 3) * 9 + (i % 3)) * 3;
         for (let j = 0; j < 3; j++) {
             index = start + j * 9;
             for (let k = 0; k < 3; k++) {
@@ -198,8 +198,8 @@ const LogicalBoard = function() {
     this._cells = [];
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
-            let block = Math.floor(i / 3) * 3 + Math.floor(j / 3);
-            let cell = { "solid": 0, "value": 0, "candidate": new CandidateArray(), "row": i, "col": j, "block": block, };
+            const block = Math.floor(i / 3) * 3 + Math.floor(j / 3);
+            const cell = { "solid": 0, "value": 0, "candidate": new CandidateArray(), "row": i, "col": j, "block": block, };
             this._cells.push(cell);
         }
     }
@@ -240,9 +240,9 @@ LogicalBoard.prototype = {
         }
 
         // set values
-        let count = Math.min(values.length, this._cells.length);
+        const count = Math.min(values.length, this._cells.length);
         for (let i = 0; i < count; i++) {
-            let value = values[i];
+            const value = values[i];
             if (Numbers.isValid(value)) {
                 // valid number
                 this._cells[i].solid = value;
@@ -283,9 +283,9 @@ LogicalBoard.prototype = {
         }
 
         // set values
-        let count = Math.min(values.length, this._cells.length);
+        const count = Math.min(values.length, this._cells.length);
         for (let i = 0; i < count; i++) {
-            let value = values[i];
+            const value = values[i];
             if (Numbers.isValid(value)) {
                 // valid number
                 this._cells[i].value = value;
@@ -322,7 +322,7 @@ LogicalBoard.prototype = {
         }
 
         // set values
-        let count = Math.min(list.length, this._cells.length);
+        const count = Math.min(list.length, this._cells.length);
         for (let i = 0; i < count; i++) {
             this._cells[i].candidate.setArray(list[i]);
         }
@@ -459,7 +459,7 @@ LogicalBoard.prototype = {
         }
 
         // decide the number in the specified cell
-        let cell = this._cells[index];
+        const cell = this._cells[index];
         cell.value = value;
         cell.candidate.clear();
 
@@ -531,12 +531,12 @@ LogicalBoard.prototype = {
 
     // get the current status
     "getCurrentStatus": function() {
-        let table = [];
+        const table = [];
         for (let i = 0; i < this._rows.length; i++) {
-            let cells = this.getRowCells(i);
-            let row = [];
+            const cells = this.getRowCells(i);
+            const row = [];
             for (let j = 0; j < cells.length; j++) {
-                let cell = cells[j];
+                const cell = cells[j];
                 if (Numbers.isValid(cell.value)) {
                     row.push(cell.value);
                 } else {
@@ -550,7 +550,7 @@ LogicalBoard.prototype = {
 
     // copy the logical board
     "copy": function() {
-        let logic = new LogicalBoard();
+        const logic = new LogicalBoard();
         logic.setSolidList(this.getSolidList());
         logic.setNumberList(this.getNumberList());
         logic.setCandidateList(this.getCandidateList());
@@ -560,7 +560,7 @@ LogicalBoard.prototype = {
     // get a list of incorrect indexes
     "getIncorrectIndexes": function() {
         // check for duplicate numbers
-        let indexes = [];
+        const indexes = [];
         for (let i = 0; i < 9; i++) {
             Array.prototype.push.apply(indexes, this._getDuplicates(this._rows[i]));
             Array.prototype.push.apply(indexes, this._getDuplicates(this._cols[i]));
@@ -575,7 +575,7 @@ LogicalBoard.prototype = {
     // whether the boards are the same
     "areSame": function(other) {
         // size
-        let numbers = other.getNumberList();
+        const numbers = other.getNumberList();
         if (numbers.length != this._cells.length) {
             return false;
         }
@@ -597,9 +597,9 @@ LogicalBoard.prototype = {
     // get a list of indexes with duplicate numbers
     "_getDuplicates": function(group) {
         // get a list of indexes for each number
-        let numbers = [];
+        const numbers = [];
         for (let i = 0; i < group.length; i++) {
-            let index = group[i];
+            const index = group[i];
 
             // gets the solid value or number that corresponds to the index
             let value = this._cells[index].solid;
@@ -615,13 +615,13 @@ LogicalBoard.prototype = {
         }
 
         // get a list of indexes
-        let duplicates = [];
+        const duplicates = [];
         for (let i = 0; i < Numbers.all.length; i++) {
-            let indexes = numbers[Numbers.all[i]];
+            const indexes = numbers[Numbers.all[i]];
             if (Array.isArray(indexes) && 1 < indexes.length) {
                 for (let j = 0; j < indexes.length; j++) {
                     // exclude solid values
-                    let index = indexes[j];
+                    const index = indexes[j];
                     if (!this.isSolid(index)) {
                         duplicates.push(index);
                     }
