@@ -4,6 +4,10 @@ body {
     margin: 3ex 0ex 10ex 2ex;
 }
 
+article {
+    line-height: 1.8;
+}
+
 nav span {
     margin-right: 1ex;
 }
@@ -125,6 +129,10 @@ table.border tr td {
 }
 
 @media (min-width: 768px) {
+
+    article {
+        line-height: 1.5;
+    }
 
     select {
         width: auto;
