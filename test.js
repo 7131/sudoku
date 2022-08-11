@@ -1,7 +1,7 @@
 // Column number constants
 const ColNum = {
     "NUMBER": 0,
-    "PROBLEM": 1,
+    "TARGET": 1,
     "EXPECT": 2,
     "RESULT": 3,
 }
@@ -37,9 +37,19 @@ Controller.prototype = {
             expects[1].htmlFor = expects[0].id;
             expects[2].id = "data-" + i;
         }
-        this._button = document.getElementById("execute");
+
+        // get the last row
+        let last = this._rows[this._rows.length - 1];
+        if (last.cells[ColNum.TARGET].innerText != "") {
+            last = last.parentNode.appendChild(last.cloneNode(true));
+        }
+        last.cells[ColNum.NUMBER].innerText = "total";
+        last.cells[ColNum.TARGET].innerText = "";
+        last.cells[ColNum.EXPECT].innerText = "";
+        last.cells[ColNum.RESULT].innerText = "";
 
         // button events
+        this._button = document.getElementById("execute");
         this._button.addEventListener("click", this._start.bind(this), false);
     },
 
@@ -65,23 +75,18 @@ Controller.prototype = {
         for (let i = 1; i < this._rows.length; i++) {
             this._rows[i].cells[ColNum.RESULT].innerText = "";
         }
+        this._errors = [];
 
         // execute the first test
         this._index = 1;
-        setTimeout(this._execute.bind(this), 1);
+        setTimeout(this._execute.bind(this), 10);
     },
 
     // execute a test
     "_execute": function() {
-        // check if finished
-        if (this._rows.length <= this._index) {
-            this._button.disabled = false;
-            return;
-        }
-
         // execute
         const row = this._rows[this._index];
-        const problem = row.cells[ColNum.PROBLEM].innerText;
+        const problem = row.cells[ColNum.TARGET].innerText;
         const element = document.getElementById("data-" + this._index);
         const expect = element.innerText;
         const message = this._getResult(problem, expect);
@@ -91,11 +96,25 @@ Controller.prototype = {
         } else {
             row.cells[ColNum.RESULT].innerText = message;
             row.cells[ColNum.RESULT].className = "error";
+            this._errors.push(this._index);
         }
 
         // execute the next test
         this._index++;
-        setTimeout(this._execute.bind(this), 1);
+        if (this._index < this._rows.length && this._rows[this._index].cells[ColNum.TARGET].innerText != "") {
+            setTimeout(this._execute.bind(this), 10);
+            return;
+        }
+
+        // finished
+        let last = this._rows[this._rows.length - 1];
+        if (this._errors.length == 0) {
+            last.cells[ColNum.RESULT].innerText = "All OK";
+        } else {
+            last.cells[ColNum.RESULT].innerText = "NG : " + this._errors.join();
+            last.cells[ColNum.RESULT].className = "error";
+        }
+        this._button.disabled = false;
     },
 
     // get the result message
