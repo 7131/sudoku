@@ -109,8 +109,7 @@ Controller.prototype = {
         this._board.logic.setupCandidates();
 
         // set the selected method
-        const selector = function(elem) { return elem.checked; };
-        const levels = this._settingBoxes.map(selector);
+        const levels = this._settingBoxes.map(elem => elem.checked);
 
         // execute
         const initial = this._board.logic.getCurrentStatus();

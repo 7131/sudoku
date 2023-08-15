@@ -183,8 +183,7 @@ if (typeof Creator === "function") {
         // change numbers
         "_changeNumbers": { "value": function(numbers) {
             const map = [ 0 ].concat(this._shuffle(Numbers.all));
-            const selector = function(elem) { return map[elem]; };
-            return numbers.map(selector);
+            return numbers.map(elem => map[elem]);
         }},
 
     });

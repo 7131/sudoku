@@ -16,10 +16,10 @@ if (typeof LogicalBoard === "function") {
             cell.candidate.clear();
 
             // remove candidates from the same group
-            const action = function(elem) { return elem.candidate.remove(value); };
-            this.getRowCells(cell.row).forEach(action);
-            this.getColCells(cell.col).forEach(action);
-            this.getBlockCells(cell.block).forEach(action);
+            const act = elem => elem.candidate.remove(value);
+            this.getRowCells(cell.row).forEach(act);
+            this.getColCells(cell.col).forEach(act);
+            this.getBlockCells(cell.block).forEach(act);
 
             // remove collisions from the same group
             const row = this.getRowCells(cell.row);
@@ -47,8 +47,7 @@ if (typeof LogicalBoard === "function") {
             }
 
             // remove duplicate indexes
-            const finder = function(elem, idx, self) { return self.indexOf(elem) == idx; };
-            return indexes.filter(finder);
+            return indexes.filter((elem, idx, self) => self.indexOf(elem) == idx);
         }},
 
         // get a list of collision indexes

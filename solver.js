@@ -41,8 +41,7 @@ SolverMethod.prototype = {
             for (let i = 1; i < solutions.length; i++) {
                 // combine the same solutions into one
                 const solution = solutions[i];
-                const finder = function(elem) { return elem.areSame(solution); };
-                if (!represent.some(finder)) {
+                if (!represent.some(elem => elem.areSame(solution))) {
                     represent.push(solution);
                 }
             }
@@ -183,19 +182,19 @@ SharedCellMethod.prototype = Object.create(SolverMethod.prototype, {
         // process for each candidate value
         for (let i = 0; i < candidate.length; i++) {
             const value = candidate.getNumber(i);
-            const finder = function(elem) { return share.indexOf(elem) < 0 && elem.candidate.has(value); };
+            const find = elem => share.indexOf(elem) < 0 && elem.candidate.has(value);
 
             // block side
-            if (!block.some(finder)) {
-                const remain = group.filter(finder);
+            if (!block.some(find)) {
+                const remain = group.filter(find);
                 for (let j = 0; j < remain.length; j++) {
                     remain[j].candidate.remove(value);
                 }
             }
 
             // other group side
-            if (!group.some(finder)) {
-                const remain = block.filter(finder);
+            if (!group.some(find)) {
+                const remain = block.filter(find);
                 for (let j = 0; j < remain.length; j++) {
                     remain[j].candidate.remove(value);
                 }
@@ -240,8 +239,7 @@ TwinMethod.prototype = Object.create(SolverMethod.prototype, {
         const numbers = [];
         for (let i = 0; i < Numbers.all.length; i++) {
             const number = Numbers.all[i];
-            const finder = function(elem) { return elem.candidate.has(number); };
-            const cells = group.filter(finder);
+            const cells = group.filter(elem => elem.candidate.has(number));
             if (cells.length == 2) {
                 numbers.push({ "value": number, "cells": cells });
             }
@@ -250,8 +248,7 @@ TwinMethod.prototype = Object.create(SolverMethod.prototype, {
         // check two cells at a time
         while (2 <= numbers.length) {
             const first = numbers.shift();
-            const finder = function(elem) { return elem.cells[0] == first.cells[0] && elem.cells[1] == first.cells[1]; };
-            const match = numbers.filter(finder);
+            const match = numbers.filter(elem => elem.cells[0] == first.cells[0] && elem.cells[1] == first.cells[1]);
             if (0 < match.length) {
                 const second = match[0];
                 numbers.splice(numbers.indexOf(second), 1);
@@ -278,8 +275,7 @@ TwinMethod.prototype = Object.create(SolverMethod.prototype, {
         // check two cells at a time
         while (2 <= cells.length) {
             const first = cells.shift();
-            const finder = function(elem) { return elem.candidate.areSame(first.candidate); };
-            const match = cells.filter(finder);
+            const match = cells.filter(elem => elem.candidate.areSame(first.candidate));
             if (0 < match.length) {
                 const second = match[0];
                 cells.splice(cells.indexOf(second), 1);
@@ -332,8 +328,7 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
         const numbers = [];
         for (let i = 0; i < Numbers.all.length; i++) {
             const number = Numbers.all[i];
-            const finder = function(elem) { return elem.candidate.has(number); };
-            const cells = group.filter(finder);
+            const cells = group.filter(elem => elem.candidate.has(number));
             if (2 <= cells.length && cells.length <= 3) {
                 numbers.push({ "value": number, "cells": cells });
             }
@@ -427,9 +422,7 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
 
     // get the union of arrays
     "_unionArray": { "value": function(first, second) {
-        const all = first.concat(second);
-        const finder = function(elem, idx, self) { return self.indexOf(elem) == idx; };
-        return all.filter(finder);
+        return first.concat(second).filter((elem, idx, self) => self.indexOf(elem) == idx);
     }},
 
 });
@@ -484,8 +477,8 @@ XWingMethod.prototype = Object.create(SolverMethod.prototype, {
         for (let i = 0; i < all.length; i++) {
             // reduce by row
             const value = all.getNumber(i);
-            const rfinder = function(elem) { return elem.col == left || elem.col == right || !elem.candidate.has(value); };
-            if (trow.every(rfinder) && brow.every(rfinder)) {
+            const rfind = elem => elem.col == left || elem.col == right || !elem.candidate.has(value);
+            if (trow.every(rfind) && brow.every(rfind)) {
                 for (let j = 0; j < 9; j++) {
                     if (j != top && j != bottom) {
                         lcol[j].candidate.remove(value);
@@ -495,8 +488,8 @@ XWingMethod.prototype = Object.create(SolverMethod.prototype, {
             }
 
             // reduce by column
-            const cfinder = function(elem) { return elem.row == top || elem.row == bottom || !elem.candidate.has(value); };
-            if (lcol.every(cfinder) && rcol.every(cfinder)) {
+            const cfind = elem => elem.row == top || elem.row == bottom || !elem.candidate.has(value);
+            if (lcol.every(cfind) && rcol.every(cfind)) {
                 for (let j = 0; j < 9; j++) {
                     if (j != left && j != right) {
                         trow[j].candidate.remove(value);
@@ -668,8 +661,7 @@ Solver.prototype = {
             // if the Ariadne's thread happens to find only one solution
             result.solutions = [];
         }
-        const selector = function(elem) { return elem.getCurrentStatus(); };
-        result.solutions = result.solutions.map(selector);
+        result.solutions = result.solutions.map(elem => elem.getCurrentStatus());
 
         // get the number of times used for each method
         const counts = [];

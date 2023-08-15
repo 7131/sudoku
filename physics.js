@@ -287,8 +287,7 @@ PhysicalBoard.prototype = {
             data.numbers = numbers;
         }
         if (candidates != null) {
-            const selector = function(elem) { return elem.getArray(); };
-            data.candidates = candidates.map(selector);
+            data.candidates = candidates.map(elem => elem.getArray());
         }
         return JSON.stringify(data);
     },

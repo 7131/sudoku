@@ -221,15 +221,13 @@ LogicalBoard.prototype = {
     "getSolidList": function(limit) {
         // check arguments
         if (limit) {
-            const finder = function(elem) { return Numbers.isValid(elem.solid); };
-            if (!this._cells.some(finder)) {
+            if (!this._cells.some(elem => Numbers.isValid(elem.solid))) {
                 return null;
             }
         }
 
         // get values
-        const selector = function(elem) { return elem.solid; };
-        return this._cells.map(selector);
+        return this._cells.map(elem => elem.solid);
     },
 
     // set a list of solid values
@@ -264,15 +262,13 @@ LogicalBoard.prototype = {
     "getNumberList": function(limit) {
         // check arguments
         if (limit) {
-            const finder = function(elem) { return Numbers.isValid(elem.value); };
-            if (!this._cells.some(finder)) {
+            if (!this._cells.some(elem => Numbers.isValid(elem.value))) {
                 return null;
             }
         }
 
         // get values
-        const selector = function(elem) { return elem.value; };
-        return this._cells.map(selector);
+        return this._cells.map(elem => elem.value);
     },
 
     // set a list of number values
@@ -303,15 +299,13 @@ LogicalBoard.prototype = {
     "getCandidateList": function(limit) {
         // check arguments
         if (limit) {
-            const finder = function(elem) { return 0 < elem.candidate.length; };
-            if (!this._cells.some(finder)) {
+            if (!this._cells.some(elem => 0 < elem.candidate.length)) {
                 return null;
             }
         }
 
         // get values
-        const selector = function(elem) { return elem.candidate; };
-        return this._cells.map(selector);
+        return this._cells.map(elem => elem.candidate);
     },
 
     // set a list of candidate values
@@ -447,8 +441,7 @@ LogicalBoard.prototype = {
 
     // whether all cells are filled
     "isFixed": function() {
-        const finder = function(elem) { return Numbers.isValid(elem.solid) || Numbers.isValid(elem.value); };
-        return this._cells.every(finder);
+        return this._cells.every(elem => Numbers.isValid(elem.solid) || Numbers.isValid(elem.value));
     },
 
     // decide the number
@@ -464,10 +457,10 @@ LogicalBoard.prototype = {
         cell.candidate.clear();
 
         // remove candidates from the same group
-        const action = function(elem) { return elem.candidate.remove(value); };
-        this.getRowCells(cell.row).forEach(action);
-        this.getColCells(cell.col).forEach(action);
-        this.getBlockCells(cell.block).forEach(action);
+        const act = elem => elem.candidate.remove(value);
+        this.getRowCells(cell.row).forEach(act);
+        this.getColCells(cell.col).forEach(act);
+        this.getBlockCells(cell.block).forEach(act);
     },
 
     // setup candidates
@@ -498,7 +491,7 @@ LogicalBoard.prototype = {
         }
 
         // select cells
-        return this._rows[row].map(this._selectCell.bind(this));
+        return this._rows[row].map(this._selectCell, this);
     },
 
     // get a list of cells in the same column
@@ -509,7 +502,7 @@ LogicalBoard.prototype = {
         }
 
         // select cells
-        return this._cols[col].map(this._selectCell.bind(this));
+        return this._cols[col].map(this._selectCell, this);
     },
 
     // get a list of cells in the same block
@@ -520,13 +513,12 @@ LogicalBoard.prototype = {
         }
 
         // select cells
-        return this._blocks[block].map(this._selectCell.bind(this));
+        return this._blocks[block].map(this._selectCell, this);
     },
 
     // get the number of all remaining candidates
     "getCandidateCount": function() {
-        const sum = function(acc, cur) { return acc + cur.candidate.length; };
-        return this._cells.reduce(sum, 0);
+        return this._cells.reduce((acc, cur) => acc + cur.candidate.length, 0);
     },
 
     // get the current status
@@ -568,8 +560,7 @@ LogicalBoard.prototype = {
         }
 
         // remove duplicate indexes
-        const finder = function(elem, idx, self) { return self.indexOf(elem) == idx; };
-        return indexes.filter(finder);
+        return indexes.filter((elem, idx, self) => self.indexOf(elem) == idx);
     },
 
     // whether the boards are the same
