@@ -182,8 +182,8 @@ Controller.prototype = {
 
         // create a list of progress
         const progress = [ { "title": "Initial state, candidates are in [ ].", "table": initial } ];
-        for (let i = 0; i < result.progress.length; i++) {
-            progress.push({ "title": "Method " + result.progress[i].depth, "table": result.progress[i].table });
+        for (const value of result.progress) {
+            progress.push({ "title": "Method " + value.depth, "table": value.table });
         }
         if (1 < result.solutions.length) {
             // when there are multiple solutions
@@ -193,11 +193,11 @@ Controller.prototype = {
         }
 
         // display progress
-        for (let i = 0; i < progress.length; i++) {
+        for (const value of progress) {
             const text = document.createElement("p");
-            text.innerHTML = progress[i].title;
+            text.innerHTML = value.title;
             this._resultArea.appendChild(text);
-            const table = this._convertTable(progress[i].table);
+            const table = this._convertTable(value.table);
             table.className = "border";
             this._resultArea.appendChild(table);
         }

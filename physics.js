@@ -219,10 +219,7 @@ PhysicalBoard.prototype = {
     // get a list of counters
     "getCounters": function(initial) {
         // initialize the counters
-        const counters = [ 0 ];
-        for (let i = 0; i < Numbers.all.length; i++) {
-            counters.push(0);
-        }
+        const counters = new Array(Numbers.all.length + 1).fill(0);
 
         // count each number
         const solids = this.logic.getSolidList();
@@ -421,12 +418,12 @@ PhysicalBoard.prototype = {
         // draw
         this._fore.font = this._small;
         this._fore.fillStyle = this._candidate;
-        for (let i = 0; i < values.length; i++) {
-            const index = Numbers.all.indexOf(values[i]);
+        for (const value of values) {
+            const index = Numbers.all.indexOf(value);
             if (0 <= index) {
                 const x = this._nx[pos.col] + this._cx[index];
                 const y = this._ny[pos.row] + this._cy[index];
-                this._fore.fillText(values[i], x, y);
+                this._fore.fillText(value, x, y);
             }
         }
     },
@@ -509,11 +506,11 @@ PhysicalBoard.prototype = {
             const values = candidates[i].getArray();
             if (0 < values.length && !this.logic.isSolid(i)) {
                 const pos = this._getPosition(i);
-                for (let j = 0; j < values.length; j++) {
-                    const index = Numbers.all.indexOf(values[j]);
+                for (const value of values) {
+                    const index = Numbers.all.indexOf(value);
                     const x = this._nx[pos.col] + this._cx[index];
                     const y = this._ny[pos.row] + this._cy[index];
-                    this._fore.fillText(values[j], x, y);
+                    this._fore.fillText(value, x, y);
                 }
             }
         }

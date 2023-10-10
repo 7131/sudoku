@@ -13,10 +13,7 @@ if (typeof Creator === "function") {
             }
 
             // create a list of clues
-            this._clues = [];
-            for (let i = 0; i < 81; i++) {
-                this._clues.push(false);
-            }
+            this._clues = new Array(81).fill(false);
 
             // create a replacement table
             const first = this._permutate([ 3, 4, 5 ]);
@@ -69,8 +66,8 @@ if (typeof Creator === "function") {
 
                 // permutate an array with one less element
                 const parts = this._permutate(follow);
-                for (let j = 0; j < parts.length; j++) {
-                    result.push(first.concat(parts[j]));
+                for (const part of parts) {
+                    result.push(first.concat(part));
                 }
             }
             return result;
@@ -157,10 +154,9 @@ if (typeof Creator === "function") {
 
         // convert rows
         "_convertRow": { "value": function(sample, index) {
-            const map = this._table[index];
             const numbers = sample.slice(0, 27);
-            for (let i = 0; i < map.length; i++) {
-                const start = map[i] * 9;
+            for (const row of this._table[index]) {
+                const start = row * 9;
                 Array.prototype.push.apply(numbers, sample.slice(start, start + 9));
             }
             return numbers;
@@ -168,13 +164,12 @@ if (typeof Creator === "function") {
 
         // convert columns
         "_convertCol": { "value": function(sample, index) {
-            const map = this._table[index];
             const numbers = [];
             for (let i = 0; i < 9; i++) {
                 const start = i * 9;
                 Array.prototype.push.apply(numbers, sample.slice(start, start + 3));
-                for (let j = 0; j < map.length; j++) {
-                    numbers.push(sample[start + map[j]]);
+                for (const col of this._table[index]) {
+                    numbers.push(sample[start + col]);
                 }
             }
             return numbers;

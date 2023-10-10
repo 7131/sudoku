@@ -107,9 +107,7 @@ Creator.prototype = {
     // set clues
     "setClues": function(count) {
         // initialize clues
-        for (let i = 0; i < this._clues.length; i++) {
-            this._clues[i] = false;
-        }
+        this._clues.fill(false);
 
         // set the center cell if the number of clues is odd
         if ((count % 2) == 1) {

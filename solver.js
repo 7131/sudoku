@@ -114,26 +114,26 @@ OneCellMethod.prototype = Object.create(SolverMethod.prototype, {
     "_reduceInGroup": { "value": function(logic, group) {
         // handle the entire group
         const numbers = [];
-        for (let i = 0; i < group.length; i++) {
-            const candidate = group[i].candidate;
-            for (let j = 0; j < candidate.length; j++) {
-                const number = candidate.getNumber(j);
+        for (const cell of group) {
+            const candidate = cell.candidate;
+            for (let i = 0; i < candidate.length; i++) {
+                const number = candidate.getNumber(i);
                 if (number in numbers) {
                     // if it already exists
                     numbers[number] = null;
                 } else {
                     // if it doesn't exist yet
-                    numbers[number] = group[i];
+                    numbers[number] = cell;
                 }
             }
         }
 
         // candidates with only one cell that can enter are decided by that cell
-        for (let i = 0; i < Numbers.all.length; i++) {
-            const cell = numbers[Numbers.all[i]];
+        for (const number of Numbers.all) {
+            const cell = numbers[number];
             if (cell != null) {
                 const index = logic.getIndex(cell.row, cell.col);
-                logic.decideNumber(index, Numbers.all[i]);
+                logic.decideNumber(index, number);
             }
         }
     }},
@@ -171,8 +171,7 @@ SharedCellMethod.prototype = Object.create(SolverMethod.prototype, {
         // get the intersection
         const share = [];
         const candidate = new CandidateArray();
-        for (let i = 0; i < group.length; i++) {
-            const cell = group[i];
+        for (const cell of group) {
             if (cell.block == block[0].block) {
                 share.push(cell);
                 candidate.add(cell.candidate);
@@ -186,17 +185,15 @@ SharedCellMethod.prototype = Object.create(SolverMethod.prototype, {
 
             // block side
             if (!block.some(find)) {
-                const remain = group.filter(find);
-                for (let j = 0; j < remain.length; j++) {
-                    remain[j].candidate.remove(value);
+                for (const cell of group.filter(find)) {
+                    cell.candidate.remove(value);
                 }
             }
 
             // other group side
             if (!group.some(find)) {
-                const remain = block.filter(find);
-                for (let j = 0; j < remain.length; j++) {
-                    remain[j].candidate.remove(value);
+                for (const cell of block.filter(find)) {
+                    cell.candidate.remove(value);
                 }
             }
         }
@@ -237,8 +234,7 @@ TwinMethod.prototype = Object.create(SolverMethod.prototype, {
     "_reduceInTwin": { "value": function(group) {
         // handle the entire group
         const numbers = [];
-        for (let i = 0; i < Numbers.all.length; i++) {
-            const number = Numbers.all[i];
+        for (const number of Numbers.all) {
             const cells = group.filter(elem => elem.candidate.has(number));
             if (cells.length == 2) {
                 numbers.push({ "value": number, "cells": cells });
@@ -255,8 +251,8 @@ TwinMethod.prototype = Object.create(SolverMethod.prototype, {
 
                 // reduce candidates
                 const values = [ first.value, second.value ];
-                for (let i = 0; i < first.cells.length; i++) {
-                    first.cells[i].candidate.refine(values);
+                for (const cell of first.cells) {
+                    cell.candidate.refine(values);
                 }
             }
         }
@@ -265,12 +261,7 @@ TwinMethod.prototype = Object.create(SolverMethod.prototype, {
     // reduce candidates from other than the twin cells
     "_reduceOutofTwin": { "value": function(group) {
         // handle the entire group
-        const cells = [];
-        for (let i = 0; i < group.length; i++) {
-            if (group[i].candidate.length == 2) {
-                cells.push(group[i]);
-            }
-        }
+        const cells = group.filter(elem => elem.candidate.length == 2);
 
         // check two cells at a time
         while (2 <= cells.length) {
@@ -281,8 +272,7 @@ TwinMethod.prototype = Object.create(SolverMethod.prototype, {
                 cells.splice(cells.indexOf(second), 1);
 
                 // reduce candidates
-                for (let i = 0; i < group.length; i++) {
-                    const cell = group[i];
+                for (const cell of group) {
                     if (cell != first && cell != second) {
                         cell.candidate.remove(first.candidate);
                     }
@@ -326,8 +316,7 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
     "_reduceInTriplet": { "value": function(group) {
         // handle the entire group
         const numbers = [];
-        for (let i = 0; i < Numbers.all.length; i++) {
-            const number = Numbers.all[i];
+        for (const number of Numbers.all) {
             const cells = group.filter(elem => elem.candidate.has(number));
             if (2 <= cells.length && cells.length <= 3) {
                 numbers.push({ "value": number, "cells": cells });
@@ -362,8 +351,8 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
             // reduce candidates
             if (third != null) {
                 const values = [ first.value, second.value, third.value ];
-                for (let i = 0; i < all.length; i++) {
-                    all[i].candidate.refine(values);
+                for (const cell of all) {
+                    cell.candidate.refine(values);
                 }
             }
         }
@@ -372,13 +361,7 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
     // reduce candidates from other than the triplet cells
     "_reduceOutofTriplet": { "value": function(group) {
         // handle the entire group
-        const cells = [];
-        for (let i = 0; i < group.length; i++) {
-            const length = group[i].candidate.length;
-            if (2 <= length && length <= 3) {
-                cells.push(group[i]);
-            }
-        }
+        const cells = group.filter(elem => 2 <= elem.candidate.length && elem.candidate.length <= 3);
 
         // check tree cells at a time
         while (3 <= cells.length) {
@@ -410,8 +393,7 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
 
             // reduce candidates
             if (third != null) {
-                for (let i = 0; i < group.length; i++) {
-                    const cell = group[i];
+                for (const cell of group) {
                     if (cell != first && cell != second && cell != third) {
                         cell.candidate.remove(all);
                     }
@@ -560,8 +542,7 @@ AriadneMethod.prototype = Object.create(SolverMethod.prototype, {
         for (let i = 0; i < numbers.length; i++) {
             if (i != index && !Numbers.isValid(numbers[i])) {
                 all.clear();
-                for (let j = 0; j < copies.length; j++) {
-                    const copy = copies[j];
+                for (const copy of copies) {
                     const value = copy.getNumber(i);
                     if (Numbers.isValid(value)) {
                         all.add(value);
@@ -627,10 +608,7 @@ Solver.prototype = {
             return null;
         }
         if (!Array.isArray(levels)) {
-            levels = [];
-            for (let i = 0; i < this._methods.length; i++) {
-                levels.push(true);
-            }
+            levels = new Array(this._methods.length).fill(true);
         }
 
         // set the method to use
@@ -665,16 +643,14 @@ Solver.prototype = {
 
         // get the number of times used for each method
         const counts = [];
-        for (let i = 0; i < levels.length; i++) {
-            if (levels[i]) {
+        for (const level of levels) {
+            if (level) {
                 counts.push(0);
             } else {
                 counts.push("-");
             }
         }
-        for (let i = 0; i < result.progress.length; i++) {
-            counts[result.progress[i].depth]++;
-        }
+        result.progress.forEach(elem => counts[elem.depth]++);
         result.summary = counts;
         return result;
     },

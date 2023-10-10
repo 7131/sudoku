@@ -76,9 +76,8 @@ if (typeof LogicalBoard === "function") {
             for (let i = 0; i < 9; i++) {
                 const indexes = numbers[i];
                 if (Array.isArray(indexes) && 1 < indexes.length) {
-                    for (let j = 0; j < indexes.length; j++) {
+                    for (const index of indexes) {
                         // exclude solid values
-                        const index = indexes[j];
                         if (!this.isSolid(index)) {
                             collisions.push(index);
                         }
@@ -107,9 +106,8 @@ if (typeof Solver === "function") {
         "_createSolutions": { "value": function(logic) {
             // 1 cell
             const cells = logic.getAllCells();
-            for (let i = 0; i < cells.length; i++) {
+            for (const cell of cells) {
                 // process all cells in order
-                const cell = cells[i];
                 if (cell.candidate.length == 2) {
                     const min = cell.candidate.getNumber(0);
                     const max = cell.candidate.getNumber(1);
@@ -138,12 +136,7 @@ if (typeof Solver === "function") {
         // reduce candidates from the other cells based on the values in the two cells
         "_reduceDoubleTwin": { "value": function(group) {
             // handle the entire group
-            const cells = [];
-            for (let i = 0; i < group.length; i++) {
-                if (group[i].candidate.length == 2) {
-                    cells.push(group[i]);
-                }
-            }
+            const cells = group.filter(elem => elem.candidate.length == 2);
 
             // check two cells at a time
             while (2 <= cells.length) {
@@ -152,9 +145,8 @@ if (typeof Solver === "function") {
                 const min1 = cell1.candidate.getNumber(0);
                 const max1 = cell1.candidate.getNumber(1);
                 const index1 = group.indexOf(cell1);
-                for (let i = 0; i < cells.length; i++) {
+                for (const cell2 of cells) {
                     // 2nd cell
-                    const cell2 = cells[i];
                     const min2 = cell2.candidate.getNumber(0);
                     const max2 = cell2.candidate.getNumber(1);
                     const index2 = group.indexOf(cell2);
@@ -238,10 +230,7 @@ if (typeof Creator === "function") {
             }
 
             // create a list of clues
-            this._clues = [];
-            for (let i = 0; i < 81; i++) {
-                this._clues.push(false);
-            }
+            this._clues = new Array(81).fill(false);
 
             // create a replacement table
             this._table = [
@@ -354,10 +343,9 @@ if (typeof Creator === "function") {
 
         // convert rows
         "_convertRow": { "value": function(sample, index) {
-            const map = this._table[index];
             const numbers = [];
-            for (let i = 0; i < map.length; i++) {
-                const start = map[i] * 9;
+            for (const row of this._table[index]) {
+                const start = row * 9;
                 Array.prototype.push.apply(numbers, sample.slice(start, start + 27));
             }
             return numbers;
@@ -365,11 +353,10 @@ if (typeof Creator === "function") {
 
         // convert columns
         "_convertCol": { "value": function(sample, index) {
-            const map = this._table[index];
             const numbers = [];
             for (let i = 0; i < 81; i += 9) {
-                for (let j = 0; j < map.length; j++) {
-                    const start = i + map[j];
+                for (const col of this._table[index]) {
+                    const start = i + col;
                     Array.prototype.push.apply(numbers, sample.slice(start, start + 3));
                 }
             }

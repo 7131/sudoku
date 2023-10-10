@@ -35,8 +35,7 @@ CandidateArray.prototype = {
     // add candidates
     "add": function(other) {
         const others = this._convertToArray(other);
-        for (let i = 0; i < others.length; i++) {
-            const value = others[i];
+        for (const value of others) {
             if (Numbers.isValid(value) && this._values.indexOf(value) < 0) {
                 this._values.push(value);
             }
@@ -48,8 +47,8 @@ CandidateArray.prototype = {
     // remove candidates
     "remove": function(other) {
         const others = this._convertToArray(other);
-        for (let i = 0; i < others.length; i++) {
-            const index = this._values.indexOf(others[i]);
+        for (const value of others) {
+            const index = this._values.indexOf(value);
             if (0 <= index) {
                 this._values.splice(index, 1);
             }
@@ -61,8 +60,7 @@ CandidateArray.prototype = {
     "refine": function(other) {
         const others = this._convertToArray(other);
         const intersect = [];
-        for (let i = 0; i < this._values.length; i++) {
-            const value = this._values[i];
+        for (const value of this._values) {
             if (0 <= others.indexOf(value)) {
                 intersect.push(value);
             }
@@ -102,8 +100,8 @@ CandidateArray.prototype = {
     // whether the specified number is included
     "has": function(other) {
         const others = this._convertToArray(other);
-        for (let i = 0; i < others.length; i++) {
-            if (this._values.indexOf(others[i]) < 0) {
+        for (const value of others) {
+            if (this._values.indexOf(value) < 0) {
                 return false;
             }
         }
@@ -117,8 +115,8 @@ CandidateArray.prototype = {
             return false;
         }
         const remain = others.concat();
-        for (let i = 0; i < this._values.length; i++) {
-            const index = remain.indexOf(this._values[i]);
+        for (const value of this._values) {
+            const index = remain.indexOf(value);
             if (index < 0) {
                 return false;
             }
@@ -211,9 +209,9 @@ LogicalBoard.prototype = {
 
     // initialize the board
     "initialize": function() {
-        for (let i = 0; i < this.length; i++) {
-            this._cells[i].value = 0;
-            this._cells[i].candidate.clear();
+        for (const cell of this._cells) {
+            cell.value = 0;
+            cell.candidate.clear();
         }
     },
 
@@ -466,8 +464,8 @@ LogicalBoard.prototype = {
     // setup candidates
     "setupCandidates": function() {
         // initialize all candidates
-        for (let i = 0; i < this._cells.length; i++) {
-            this._cells[i].candidate.fill();
+        for (const cell of this._cells) {
+            cell.candidate.fill();
         }
 
         // decide with all solid values
@@ -527,8 +525,7 @@ LogicalBoard.prototype = {
         for (let i = 0; i < this._rows.length; i++) {
             const cells = this.getRowCells(i);
             const row = [];
-            for (let j = 0; j < cells.length; j++) {
-                const cell = cells[j];
+            for (const cell of cells) {
                 if (Numbers.isValid(cell.value)) {
                     row.push(cell.value);
                 } else {
@@ -589,9 +586,7 @@ LogicalBoard.prototype = {
     "_getDuplicates": function(group) {
         // get a list of indexes for each number
         const numbers = [];
-        for (let i = 0; i < group.length; i++) {
-            const index = group[i];
-
+        for (const index of group) {
             // gets the solid value or number that corresponds to the index
             let value = this._cells[index].solid;
             if (!Numbers.isValid(value)) {
@@ -607,12 +602,11 @@ LogicalBoard.prototype = {
 
         // get a list of indexes
         const duplicates = [];
-        for (let i = 0; i < Numbers.all.length; i++) {
-            const indexes = numbers[Numbers.all[i]];
+        for (const value of Numbers.all) {
+            const indexes = numbers[value];
             if (Array.isArray(indexes) && 1 < indexes.length) {
-                for (let j = 0; j < indexes.length; j++) {
+                for (const index of indexes) {
                     // exclude solid values
-                    const index = indexes[j];
                     if (!this.isSolid(index)) {
                         duplicates.push(index);
                     }

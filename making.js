@@ -30,8 +30,8 @@ Controller.prototype = {
         document.getElementById("save").addEventListener("click", this._save.bind(this), false);
         document.getElementById("load").addEventListener("click", this._load.bind(this), false);
         const types = [ "solid", "decision", "candidate" ];
-        for (let i = 0; i < types.length; i++) {
-            const radio = document.getElementById(types[i]);
+        for (const type of types) {
+            const radio = document.getElementById(type);
             radio.addEventListener("change", this._changeRadio.bind(this), false);
         }
         this._type = types[0];
