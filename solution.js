@@ -156,9 +156,13 @@ Controller.prototype = {
     // show the result
     "_setResult": function(initial, result) {
         this._board.redraw();
+        this._messageArea.className = "invalid";
+        if (result == null) {
+            this._messageArea.innerHTML = "There is an error in the settings.";
+            return;
+        }
 
         // show the message
-        let name = "invalid";
         let message = "There ";
         switch (result.solutions.length) {
             case 0:
@@ -168,8 +172,8 @@ Controller.prototype = {
 
             case 1:
                 // one solution
-                name = "valid";
                 message += "is only one solution.";
+                this._messageArea.className = "valid";
                 break;
 
             default:
@@ -177,7 +181,6 @@ Controller.prototype = {
                 message += "are " + result.solutions.length + " solutions.";
                 break;
         }
-        this._messageArea.className = name;
         this._messageArea.innerHTML = message + " (" + result.summary.join() + ")";
 
         // create a list of progress

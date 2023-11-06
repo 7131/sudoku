@@ -91,9 +91,9 @@ PhysicalBoard.prototype = {
         // fonts
         this._large = "bold " + Math.floor(Math.min(nw, nh) * 0.8) + "px sans-serif";
         this._small = "bold " + Math.floor(Math.min(cw, ch)) + "px sans-serif";
-        this._solid = "darkblue";
+        this._solid = "blue";
         this._number = "black";
-        this._candidate = "darkgreen";
+        this._candidate = "green";
     },
 
     // initialize the board

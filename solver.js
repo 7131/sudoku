@@ -604,7 +604,7 @@ Solver.prototype = {
     // solve the problem using the specified level of method
     "solve": function(logic, levels) {
         // check arguments
-        if (logic == null) {
+        if (logic == null || logic.getSolidList(true) == null) {
             return null;
         }
         if (!Array.isArray(levels)) {

@@ -95,7 +95,7 @@ table.border tr td {
 }
 
 #key.solid button {
-    color: darkblue;
+    color: blue;
 }
 
 #key.decision button {
@@ -103,7 +103,7 @@ table.border tr td {
 }
 
 #key.candidate button {
-    color: darkgreen;
+    color: green;
 }
 
 .note {
