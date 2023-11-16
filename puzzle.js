@@ -1,19 +1,15 @@
 // Controller class
 const Controller = function() {
     // get the query string
-    let data = null;
-    if (window.location.search != "") {
-        const results = window.location.search.match(/[?&]data=([^&#]*)/);
-        if (2 <= results.length) {
-            // get a JSON string
-            const json = decodeURIComponent(results[1].replace(/\+/g, " "));
-            try {
-                data = JSON.parse(json);
-                if (!Array.isArray(data)) {
-                    data = [ data ];
-                }
-            } catch (ex) {
+    let data;
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("data")) {
+        try {
+            data = JSON.parse(params.get("data"));
+            if (!Array.isArray(data)) {
+                data = [ data ];
             }
+        } catch (ex) {
         }
     }
     if (Array.isArray(data)) {

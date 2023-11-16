@@ -1,14 +1,5 @@
 // Controller class
 const Controller = function() {
-    // get the query string
-    this._json = "";
-    if (window.location.search != "") {
-        const results = window.location.search.match(/[?&]data=([^&#]*)/);
-        if (2 <= results.length) {
-            this._json = decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
-    }
-
     // fields
     this._board = new PhysicalBoard(new LogicalBoard());
     this._solver = new Solver();
@@ -57,8 +48,12 @@ Controller.prototype = {
 
         // initial display
         this._board.clear();
-        if (this._json != "") {
-            this._board.setData(this._json);
+        const params = new URLSearchParams(window.location.search);
+        if (params.has("data")) {
+            const json = params.get("data");
+            if (json != "") {
+                this._board.setData(json);
+            }
         }
         this._showCounters();
         this._clearResult();
