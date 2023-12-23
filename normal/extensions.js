@@ -182,6 +182,7 @@ if (typeof Creator === "function") {
         }},
 
     });
+    Creator.prototype.constructor = Creator;
 
 }
 

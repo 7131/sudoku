@@ -88,6 +88,7 @@ if (typeof LogicalBoard === "function") {
         }},
 
     });
+    LogicalBoard.prototype.constructor = LogicalBoard;
 
 }
 
@@ -191,6 +192,7 @@ if (typeof Solver === "function") {
         }},
 
     });
+    SiteswapTwinMethod.prototype.constructor = SiteswapTwinMethod;
 
     Solver.prototype = Object.create(Solver.prototype, {
 
@@ -212,6 +214,7 @@ if (typeof Solver === "function") {
         }},
 
     });
+    Solver.prototype.constructor = Solver;
 
 }
 
@@ -364,6 +367,7 @@ if (typeof Creator === "function") {
         }},
 
     });
+    Creator.prototype.constructor = Creator;
 
 }
 

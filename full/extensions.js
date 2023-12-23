@@ -92,6 +92,7 @@ if (typeof LogicalBoard === "function") {
         }},
 
     });
+    LogicalBoard.prototype.constructor = LogicalBoard;
 
 }
 
@@ -201,6 +202,7 @@ if (typeof Solver === "function") {
         }},
 
     });
+    SiteswapTwinMethod.prototype.constructor = SiteswapTwinMethod;
 
     // Siteswap triplet method class
     const SiteswapTripletMethod = function() {
@@ -261,6 +263,7 @@ if (typeof Solver === "function") {
         }},
 
     });
+    SiteswapTripletMethod.prototype.constructor = SiteswapTripletMethod;
 
     Solver.prototype = Object.create(Solver.prototype, {
 
@@ -283,6 +286,7 @@ if (typeof Solver === "function") {
         }},
 
     });
+    Solver.prototype.constructor = Solver;
 
 }
 
