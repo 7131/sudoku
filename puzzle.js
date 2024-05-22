@@ -22,7 +22,7 @@ const Controller = function() {
     this._board = new PhysicalBoard(new LogicalBoard());
 
     // events
-    window.addEventListener("load", this._initialize.bind(this), false);
+    window.addEventListener("load", this._initialize.bind(this));
 }
 
 // Controller prototype
@@ -61,23 +61,23 @@ Controller.prototype = {
         }
 
         // button events
-        document.getElementById("display").addEventListener("click", this._display.bind(this), false);
-        document.getElementById("save").addEventListener("click", this._save.bind(this), false);
-        document.getElementById("load").addEventListener("click", this._load.bind(this), false);
+        document.getElementById("display").addEventListener("click", this._display.bind(this));
+        document.getElementById("save").addEventListener("click", this._save.bind(this));
+        document.getElementById("load").addEventListener("click", this._load.bind(this));
         const types = [ "decision", "candidate" ];
         for (const type of types) {
             const radio = document.getElementById(type);
-            radio.addEventListener("change", this._changeRadio.bind(this), false);
+            radio.addEventListener("change", this._changeRadio.bind(this));
         }
         this._type = types[0];
         this._keyTable.className = this._type;
         for (let i = 1; i <= 9; i++) {
             const key = document.getElementById("key" + i);
-            key.addEventListener("click", this._pressNumber.bind(this), false);
+            key.addEventListener("click", this._pressNumber.bind(this));
         }
-        this._eraseButton.addEventListener("click", this._eraseNumber.bind(this), false);
-        this._judgeButton.addEventListener("click", this._judge.bind(this), false);
-        this._problemSelector.addEventListener("change", this._selectProblem.bind(this), false);
+        this._eraseButton.addEventListener("click", this._eraseNumber.bind(this));
+        this._judgeButton.addEventListener("click", this._judge.bind(this));
+        this._problemSelector.addEventListener("change", this._selectProblem.bind(this));
 
         // initial display
         this._board.clear();

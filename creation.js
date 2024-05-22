@@ -6,7 +6,7 @@ const Controller = function() {
     this._creator.initialize(Grids);
 
     // events
-    window.addEventListener("load", this._initialize.bind(this), false);
+    window.addEventListener("load", this._initialize.bind(this));
 }
 
 // Controller prototype
@@ -39,13 +39,13 @@ Controller.prototype = {
         this._invalidRadio = group[0];
 
         // button events
-        this._createButton.addEventListener("click", this._create.bind(this), false);
-        this._problemButton.addEventListener("click", this._showProblem.bind(this), false);
-        this._startButton.addEventListener("click", this._start.bind(this), false);
-        this._stopButton.addEventListener("click", this._stop.bind(this), false);
-        this._countClues.addEventListener("input", this._inputClues.bind(this), false);
+        this._createButton.addEventListener("click", this._create.bind(this));
+        this._problemButton.addEventListener("click", this._showProblem.bind(this));
+        this._startButton.addEventListener("click", this._start.bind(this));
+        this._stopButton.addEventListener("click", this._stop.bind(this));
+        this._countClues.addEventListener("input", this._inputClues.bind(this));
         for (const radio of group) {
-            radio.addEventListener("change", this._changeRadio.bind(this), false);
+            radio.addEventListener("change", this._changeRadio.bind(this));
         }
         this._creator.progressEvent = this._showProgress.bind(this);
         this._creator.finishEvent = this._showResult.bind(this);

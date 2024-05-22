@@ -6,7 +6,7 @@ const Controller = function() {
     this._solver.initialize();
 
     // events
-    window.addEventListener("load", this._initialize.bind(this), false);
+    window.addEventListener("load", this._initialize.bind(this));
 }
 
 // Controller prototype
@@ -37,14 +37,14 @@ Controller.prototype = {
         this._dependCheck = document.getElementById("level" + (level - 1));
 
         // button events
-        this._solveButton.addEventListener("click", this._solve.bind(this), false);
+        this._solveButton.addEventListener("click", this._solve.bind(this));
         for (let i = 1; i <= 9; i++) {
             const key = document.getElementById("key" + i);
-            key.addEventListener("click", this._pressNumber.bind(this), false);
+            key.addEventListener("click", this._pressNumber.bind(this));
         }
-        document.getElementById("erase").addEventListener("click", this._eraseNumber.bind(this), false);
-        document.getElementById("load").addEventListener("click", this._load.bind(this), false);
-        document.getElementById("level" + (level - 2)).addEventListener("change", this._changeCheck.bind(this), false);
+        document.getElementById("erase").addEventListener("click", this._eraseNumber.bind(this));
+        document.getElementById("load").addEventListener("click", this._load.bind(this));
+        document.getElementById("level" + (level - 2)).addEventListener("change", this._changeCheck.bind(this));
 
         // initial display
         this._board.clear();

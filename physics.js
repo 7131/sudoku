@@ -40,7 +40,7 @@ PhysicalBoard.prototype = {
         face.width = canvas.width;
         face.height = canvas.height;
         face.style.border = canvas.style.border;
-        face.addEventListener("click", event, false);
+        face.addEventListener("click", event);
         canvas.parentElement.appendChild(face);
         this._fore = face.getContext("2d");
         this._fore.textBaseline = "middle";
