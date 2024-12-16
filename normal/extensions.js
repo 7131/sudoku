@@ -134,9 +134,9 @@ if (typeof Creator === "function") {
         // get the next creation entity
         "_getEntity": { "value": function() {
             // replace the standard grid
-            let next = this._grids[this._index];
-            next = this._convertRow(next, this._row);
-            next = this._convertCol(next, this._col);
+            const grid = this._grids[this._index];
+            const conv = this._convertRow(grid, this._row);
+            const next = this._convertCol(conv, this._col);
             const entity = new CreatorEntity(next, this._clues);
 
             // update index

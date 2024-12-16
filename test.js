@@ -107,7 +107,7 @@ Controller.prototype = {
         }
 
         // finished
-        let last = this._rows[this._rows.length - 1];
+        const last = this._rows[this._rows.length - 1];
         if (this._errors.length == 0) {
             last.cells[ColNum.RESULT].innerText = "All OK";
         } else {
