@@ -143,7 +143,6 @@ Controller.prototype = {
         this._resultArea.innerHTML = "";
 
         // set the message area
-        this._messageArea.className = "";
         this._messageArea.innerHTML = "&nbsp;";
         this._resultArea.appendChild(this._messageArea);
     },
@@ -151,7 +150,8 @@ Controller.prototype = {
     // show the result
     "_setResult": function(initial, result) {
         this._board.redraw();
-        this._messageArea.className = "invalid";
+        this._messageArea.classList.remove("valid");
+        this._messageArea.classList.add("invalid");
         if (result == null) {
             this._messageArea.innerHTML = "There is an error in the settings.";
             return;
@@ -168,7 +168,8 @@ Controller.prototype = {
             case 1:
                 // one solution
                 message += "is only one solution.";
-                this._messageArea.className = "valid";
+                this._messageArea.classList.remove("invalid");
+                this._messageArea.classList.add("valid");
                 break;
 
             default:
@@ -196,7 +197,6 @@ Controller.prototype = {
             text.innerHTML = value.title;
             this._resultArea.appendChild(text);
             const table = this._convertTable(value.table);
-            table.className = "border";
             this._resultArea.appendChild(table);
         }
     },
@@ -227,6 +227,7 @@ Controller.prototype = {
             }
             table.appendChild(tr);
         }
+        table.classList.add("border");
         return table;
     },
 

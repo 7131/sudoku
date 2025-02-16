@@ -70,7 +70,6 @@ Controller.prototype = {
             radio.addEventListener("change", this._changeRadio.bind(this));
         }
         this._type = types[0];
-        this._keyTable.className = this._type;
         for (let i = 1; i <= 9; i++) {
             const key = document.getElementById("key" + i);
             key.addEventListener("click", this._pressNumber.bind(this));
@@ -139,8 +138,9 @@ Controller.prototype = {
         }
 
         // set the status
+        this._keyTable.classList.remove(this._type);
         this._type = e.currentTarget.id;
-        this._keyTable.className = this._type;
+        this._keyTable.classList.add(this._type);
         if (this._type == "candidate") {
             // candidate
             this._eraseButton.innerHTML = "#";
@@ -199,10 +199,12 @@ Controller.prototype = {
 
         // show the result
         if (reason == "") {
-            this._resultArea.className = "valid";
+            this._resultArea.classList.remove("invalid");
+            this._resultArea.classList.add("valid");
             this._resultArea.innerHTML = "Correct";
         } else {
-            this._resultArea.className = "invalid";
+            this._resultArea.classList.remove("valid");
+            this._resultArea.classList.add("invalid");
             this._resultArea.innerHTML = "Incorrect (" + reason + ")";
         }
         this._judgeButton.disabled = true;

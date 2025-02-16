@@ -106,10 +106,10 @@ Controller.prototype = {
         const clues = this._getInt(this._countClues.value);
         if (clues < this._minClues || this._maxClues < clues) {
             // invalid
-            this._countClues.className = "error";
+            this._countClues.classList.add("error");
         } else {
             // valid
-            this._countClues.className = "";
+            this._countClues.classList.remove("error");
         }
     },
 

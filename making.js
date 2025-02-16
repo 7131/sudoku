@@ -35,7 +35,6 @@ Controller.prototype = {
             radio.addEventListener("change", this._changeRadio.bind(this));
         }
         this._type = types[0];
-        this._keyTable.className = this._type;
         for (let i = 1; i <= 9; i++) {
             const key = document.getElementById("key" + i);
             key.addEventListener("click", this._pressNumber.bind(this));
@@ -70,8 +69,9 @@ Controller.prototype = {
         }
 
         // set the status
+        this._keyTable.classList.remove(this._type);
         this._type = e.currentTarget.id;
-        this._keyTable.className = this._type;
+        this._keyTable.classList.add(this._type);
         switch (this._type) {
             case "decision":
                 // decision

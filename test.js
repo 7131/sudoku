@@ -28,7 +28,7 @@ Controller.prototype = {
             // No.
             const number = this._rows[i].cells[ColNum.NUMBER];
             number.innerText = i;
-            number.className = "symbol";
+            number.classList.add("symbol");
 
             // expected values
             const expects = this._rows[i].cells[ColNum.EXPECT].childNodes;
@@ -60,10 +60,10 @@ Controller.prototype = {
         const area = check.nextSibling.nextSibling;
         if (check.checked) {
             // show
-            area.className = "";
+            area.classList.remove("hidden");
         } else {
             // hide
-            area.className = "hidden";
+            area.classList.add("hidden");
         }
     },
 
@@ -92,10 +92,10 @@ Controller.prototype = {
         const message = this._getResult(problem, expect);
         if (message == "") {
             row.cells[ColNum.RESULT].innerText = "OK";
-            row.cells[ColNum.RESULT].className = "";
+            row.cells[ColNum.RESULT].classList.remove("error");
         } else {
             row.cells[ColNum.RESULT].innerText = message;
-            row.cells[ColNum.RESULT].className = "error";
+            row.cells[ColNum.RESULT].classList.add("error");
             this._errors.push(this._index);
         }
 
@@ -110,9 +110,10 @@ Controller.prototype = {
         const last = this._rows[this._rows.length - 1];
         if (this._errors.length == 0) {
             last.cells[ColNum.RESULT].innerText = "All OK";
+            last.cells[ColNum.RESULT].classList.remove("error");
         } else {
             last.cells[ColNum.RESULT].innerText = "NG : " + this._errors.join();
-            last.cells[ColNum.RESULT].className = "error";
+            last.cells[ColNum.RESULT].classList.add("error");
         }
         this._button.disabled = false;
     },
