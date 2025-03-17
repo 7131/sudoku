@@ -3,6 +3,9 @@ if (typeof Creator === "function") {
 
     Creator.prototype = Object.create(Creator.prototype, {
 
+        // constructor
+        "constructor": { "value": Creator },
+
         // initialize the fields
         "initialize": { "value": function(grids) {
             // set the grid list
@@ -182,7 +185,6 @@ if (typeof Creator === "function") {
         }},
 
     });
-    Creator.prototype.constructor = Creator;
 
 }
 

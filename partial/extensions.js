@@ -3,6 +3,9 @@ if (typeof LogicalBoard === "function") {
 
     LogicalBoard.prototype = Object.create(LogicalBoard.prototype, {
 
+        // constructor
+        "constructor": { "value": LogicalBoard },
+
         // decide the number
         "decideNumber": { "value": function(index, value) {
             // check arguments
@@ -88,7 +91,6 @@ if (typeof LogicalBoard === "function") {
         }},
 
     });
-    LogicalBoard.prototype.constructor = LogicalBoard;
 
 }
 
@@ -102,6 +104,9 @@ if (typeof Solver === "function") {
 
     // Siteswap twin method prototype
     SiteswapTwinMethod.prototype = Object.create(SolverMethod.prototype, {
+
+        // constructor
+        "constructor": { "value": SiteswapTwinMethod },
 
         // create a solution
         "_createSolutions": { "value": function(logic) {
@@ -192,9 +197,11 @@ if (typeof Solver === "function") {
         }},
 
     });
-    SiteswapTwinMethod.prototype.constructor = SiteswapTwinMethod;
 
     Solver.prototype = Object.create(Solver.prototype, {
+
+        // constructor
+        "constructor": { "value": Solver },
 
         // initialize the fields
         "initialize": { "value": function() {
@@ -214,7 +221,6 @@ if (typeof Solver === "function") {
         }},
 
     });
-    Solver.prototype.constructor = Solver;
 
 }
 
@@ -222,6 +228,9 @@ if (typeof Solver === "function") {
 if (typeof Creator === "function") {
 
     Creator.prototype = Object.create(Creator.prototype, {
+
+        // constructor
+        "constructor": { "value": Creator },
 
         // initialize the fields
         "initialize": { "value": function(grids) {
@@ -367,7 +376,6 @@ if (typeof Creator === "function") {
         }},
 
     });
-    Creator.prototype.constructor = Creator;
 
 }
 

@@ -64,6 +64,9 @@ const OneCandidateMethod = function() {
 // Unique candidate method prototype
 OneCandidateMethod.prototype = Object.create(SolverMethod.prototype, {
 
+    // constructor
+    "constructor": { "value": OneCandidateMethod },
+
     // create a solution
     "_createSolutions": { "value": function(logic) {
         const candidates = logic.getCandidateList();
@@ -84,7 +87,6 @@ OneCandidateMethod.prototype = Object.create(SolverMethod.prototype, {
     }},
 
 });
-OneCandidateMethod.prototype.constructor = OneCandidateMethod;
 
 // Unique cell method class
 const OneCellMethod = function() {
@@ -93,6 +95,9 @@ const OneCellMethod = function() {
 
 // Unique cell method prototype
 OneCellMethod.prototype = Object.create(SolverMethod.prototype, {
+
+    // constructor
+    "constructor": { "value": OneCellMethod },
 
     // create a solution
     "_createSolutions": { "value": function(logic) {
@@ -140,7 +145,6 @@ OneCellMethod.prototype = Object.create(SolverMethod.prototype, {
     }},
 
 });
-OneCellMethod.prototype.constructor = OneCellMethod;
 
 // Shared cells method class
 const SharedCellMethod = function() {
@@ -149,6 +153,9 @@ const SharedCellMethod = function() {
 
 // Shared cells method prototype
 SharedCellMethod.prototype = Object.create(SolverMethod.prototype, {
+
+    // constructor
+    "constructor": { "value": SharedCellMethod },
 
     // create a solution
     "_createSolutions": { "value": function(logic) {
@@ -202,7 +209,6 @@ SharedCellMethod.prototype = Object.create(SolverMethod.prototype, {
     }},
 
 });
-SharedCellMethod.prototype.constructor = SharedCellMethod;
 
 // Twin method class
 const TwinMethod = function() {
@@ -211,6 +217,9 @@ const TwinMethod = function() {
 
 // Twin method prototype
 TwinMethod.prototype = Object.create(SolverMethod.prototype, {
+
+    // constructor
+    "constructor": { "value": TwinMethod },
 
     // create a solution
     "_createSolutions": { "value": function(logic) {
@@ -285,7 +294,6 @@ TwinMethod.prototype = Object.create(SolverMethod.prototype, {
     }},
 
 });
-TwinMethod.prototype.constructor = TwinMethod;
 
 // Triplet method class
 const TripletMethod = function() {
@@ -294,6 +302,9 @@ const TripletMethod = function() {
 
 // Triplet method prototype
 TripletMethod.prototype = Object.create(SolverMethod.prototype, {
+
+    // constructor
+    "constructor": { "value": TripletMethod },
 
     // create a solution
     "_createSolutions": { "value": function(logic) {
@@ -412,7 +423,6 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
     }},
 
 });
-TripletMethod.prototype.constructor = TripletMethod;
 
 // X-Wing method class
 const XWingMethod = function() {
@@ -421,6 +431,9 @@ const XWingMethod = function() {
 
 // X-Wing method prototype
 XWingMethod.prototype = Object.create(SolverMethod.prototype, {
+
+    // constructor
+    "constructor": { "value": XWingMethod },
 
     // create a solution
     "_createSolutions": { "value": function(logic) {
@@ -488,7 +501,6 @@ XWingMethod.prototype = Object.create(SolverMethod.prototype, {
     }},
 
 });
-XWingMethod.prototype.constructor = XWingMethod;
 
 // Ariadne method class
 const AriadneMethod = function() {
@@ -497,6 +509,9 @@ const AriadneMethod = function() {
 
 // Ariadne method prototype
 AriadneMethod.prototype = Object.create(SolverMethod.prototype, {
+
+    // constructor
+    "constructor": { "value": AriadneMethod },
 
     // create a solution
     "_createSolutions": { "value": function(logic) {
@@ -582,7 +597,6 @@ AriadneMethod.prototype = Object.create(SolverMethod.prototype, {
     }},
 
 });
-AriadneMethod.prototype.constructor = AriadneMethod;
 
 // Solver class
 const Solver = function() {

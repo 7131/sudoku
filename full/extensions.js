@@ -3,6 +3,9 @@ if (typeof LogicalBoard === "function") {
 
     LogicalBoard.prototype = Object.create(LogicalBoard.prototype, {
 
+        // constructor
+        "constructor": { "value": LogicalBoard },
+
         // decide the number
         "decideNumber": { "value": function(index, value) {
             // check arguments
@@ -92,7 +95,6 @@ if (typeof LogicalBoard === "function") {
         }},
 
     });
-    LogicalBoard.prototype.constructor = LogicalBoard;
 
 }
 
@@ -106,6 +108,9 @@ if (typeof Solver === "function") {
 
     // Siteswap twin method prototype
     SiteswapTwinMethod.prototype = Object.create(SolverMethod.prototype, {
+
+        // constructor
+        "constructor": { "value": SiteswapTwinMethod },
 
         // create a solution
         "_createSolutions": { "value": function(logic) {
@@ -202,7 +207,6 @@ if (typeof Solver === "function") {
         }},
 
     });
-    SiteswapTwinMethod.prototype.constructor = SiteswapTwinMethod;
 
     // Siteswap triplet method class
     const SiteswapTripletMethod = function() {
@@ -211,6 +215,9 @@ if (typeof Solver === "function") {
 
     // Siteswap triplet method prototype
     SiteswapTripletMethod.prototype = Object.create(SolverMethod.prototype, {
+
+        // constructor
+        "constructor": { "value": SiteswapTripletMethod },
 
         // create a solution
         "_createSolutions": { "value": function(logic) {
@@ -263,9 +270,11 @@ if (typeof Solver === "function") {
         }},
 
     });
-    SiteswapTripletMethod.prototype.constructor = SiteswapTripletMethod;
 
     Solver.prototype = Object.create(Solver.prototype, {
+
+        // constructor
+        "constructor": { "value": Solver },
 
         // initialize the fields
         "initialize": { "value": function() {
@@ -286,7 +295,6 @@ if (typeof Solver === "function") {
         }},
 
     });
-    Solver.prototype.constructor = Solver;
 
 }
 
