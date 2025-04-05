@@ -72,6 +72,16 @@ table.border tr td {
     margin-bottom: 3ex;
 }
 
+#board {
+    position: absolute;
+}
+
+#face {
+    position: absolute;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
 #number label {
     font-size: large;
 }

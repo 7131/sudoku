@@ -27,19 +27,13 @@ PhysicalBoard.prototype = {
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
         }
-        canvas.style.position = "absolute";
-        canvas.style.zIndex = 2;
         this._grid = canvas.getContext("2d");
 
         // number area (front)
         const face = document.createElement("canvas");
-        face.style.position = "absolute";
-        face.style.zIndex = 3;
-        face.style.webkitTapHighlightColor = "#00000000";
-        face.style.cursor = "pointer";
+        face.id = "face";
         face.width = canvas.width;
         face.height = canvas.height;
-        face.style.border = canvas.style.border;
         face.addEventListener("click", event);
         canvas.parentElement.appendChild(face);
         this._fore = face.getContext("2d");
@@ -50,10 +44,9 @@ PhysicalBoard.prototype = {
 
         // background area (backmost)
         const rear = document.createElement("canvas");
+        rear.id = "rear";
         rear.width = canvas.width;
         rear.height = canvas.height;
-        rear.style.zIndex = 1;
-        rear.style.border = canvas.style.border;
         canvas.parentElement.appendChild(rear);
         this._back = rear.getContext("2d");
         this._back.fillStyle = "gold";
