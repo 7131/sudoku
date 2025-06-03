@@ -83,12 +83,7 @@ if (typeof LogicalBoard === "function") {
             for (let i = 0; i < 9; i++) {
                 const indexes = numbers[i];
                 if (Array.isArray(indexes) && 1 < indexes.length) {
-                    for (const index of indexes) {
-                        // exclude solid values
-                        if (!this.isSolid(index)) {
-                            collisions.push(index);
-                        }
-                    }
+                    indexes.filter(elem => !this.isSolid(elem)).forEach(elem => collisions.push(elem));
                 }
             }
             return collisions;

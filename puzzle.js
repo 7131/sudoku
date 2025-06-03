@@ -65,10 +65,7 @@ Controller.prototype = {
         document.getElementById("save").addEventListener("click", this._save.bind(this));
         document.getElementById("load").addEventListener("click", this._load.bind(this));
         const types = [ "decision", "candidate" ];
-        for (const type of types) {
-            const radio = document.getElementById(type);
-            radio.addEventListener("change", this._changeRadio.bind(this));
-        }
+        types.forEach(elem => document.getElementById(elem).addEventListener("change", this._changeRadio.bind(this)));
         this._type = types[0];
         for (let i = 1; i <= 9; i++) {
             const key = document.getElementById("key" + i);
@@ -190,9 +187,7 @@ Controller.prototype = {
         let reason = "";
         if (0 < indexes.length) {
             reason = "There are mistakes in the numbers.";
-            for (const index of indexes) {
-                this._board.drawCross(index);
-            }
+            indexes.forEach(elem => this._board.drawCross(elem));
         } else if (!this._board.logic.isFixed()) {
             reason = "There are unfilled cells.";
         }

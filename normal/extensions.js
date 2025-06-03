@@ -69,9 +69,7 @@ if (typeof Creator === "function") {
 
                 // permutate an array with one less element
                 const parts = this._permutate(follow);
-                for (const part of parts) {
-                    result.push(first.concat(part));
-                }
+                parts.forEach(elem => result.push(first.concat(elem)));
             }
             return result;
         }},
@@ -171,9 +169,7 @@ if (typeof Creator === "function") {
             for (let i = 0; i < 9; i++) {
                 const start = i * 9;
                 Array.prototype.push.apply(numbers, sample.slice(start, start + 3));
-                for (const col of this._table[index]) {
-                    numbers.push(sample[start + col]);
-                }
+                this._table[index].forEach(elem => numbers.push(sample[start + elem]));
             }
             return numbers;
         }},

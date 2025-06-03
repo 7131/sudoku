@@ -181,9 +181,7 @@ Controller.prototype = {
 
         // create a list of progress
         const progress = [ { "title": "Initial state, candidates are in [ ].", "table": initial } ];
-        for (const value of result.progress) {
-            progress.push({ "title": "Method " + value.depth, "table": value.table });
-        }
+        result.progress.forEach(elem => progress.push({ "title": "Method " + elem.depth, "table": elem.table }));
         if (1 < result.solutions.length) {
             // when there are multiple solutions
             for (let i = 0; i < result.solutions.length; i++) {

@@ -44,9 +44,7 @@ Controller.prototype = {
         this._startButton.addEventListener("click", this._start.bind(this));
         this._stopButton.addEventListener("click", this._stop.bind(this));
         this._countClues.addEventListener("input", this._inputClues.bind(this));
-        for (const radio of group) {
-            radio.addEventListener("change", this._changeRadio.bind(this));
-        }
+        group.forEach(elem => elem.addEventListener("change", this._changeRadio.bind(this)));
         this._creator.progressEvent = this._showProgress.bind(this);
         this._creator.finishEvent = this._showResult.bind(this);
         this._creator.cancelEvent = this._canceled.bind(this);
@@ -213,9 +211,7 @@ Controller.prototype = {
         }
 
         // set whether input is possible
-        for (const radio of this._dependRadios) {
-            radio.disabled = invalid;
-        }
+        this._dependRadios.forEach(elem => elem.disabled = invalid);
     },
 
     // get an integer value

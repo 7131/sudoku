@@ -34,12 +34,8 @@ CandidateArray.prototype = {
 
     // add candidates
     "add": function(other) {
-        const others = this._convertToArray(other);
-        for (const value of others) {
-            if (Numbers.isValid(value) && this._values.indexOf(value) < 0) {
-                this._values.push(value);
-            }
-        }
+        const others = this._convertToArray(other).filter(elem => Numbers.isValid(elem) && this._values.indexOf(elem) < 0);
+        this._values = this._values.concat(others);
         this._values.sort(this._compareNumbers);
         this.length = this._values.length;
     },
@@ -47,25 +43,14 @@ CandidateArray.prototype = {
     // remove candidates
     "remove": function(other) {
         const others = this._convertToArray(other);
-        for (const value of others) {
-            const index = this._values.indexOf(value);
-            if (0 <= index) {
-                this._values.splice(index, 1);
-            }
-        }
+        this._values = this._values.filter(elem => others.indexOf(elem) < 0);
         this.length = this._values.length;
     },
 
     // narrow down candidates
     "refine": function(other) {
         const others = this._convertToArray(other);
-        const intersect = [];
-        for (const value of this._values) {
-            if (0 <= others.indexOf(value)) {
-                intersect.push(value);
-            }
-        }
-        this._values = intersect;
+        this._values = this._values.filter(elem => 0 <= others.indexOf(elem));
         this.length = this._values.length;
     },
 
@@ -100,27 +85,20 @@ CandidateArray.prototype = {
     // whether the specified number is included
     "has": function(other) {
         const others = this._convertToArray(other);
-        for (const value of others) {
-            if (this._values.indexOf(value) < 0) {
-                return false;
-            }
-        }
-        return true;
+        return others.every(elem => 0 <= this._values.indexOf(elem));
     },
 
     // whether the candidates are the same
     "areSame": function(other) {
-        const others = this._convertToArray(other);
+        const others = this._convertToArray(other).concat();
         if (others.length != this.length) {
             return false;
         }
-        const remain = others.concat();
-        for (const value of this._values) {
-            const index = remain.indexOf(value);
-            if (index < 0) {
+        others.sort(this._compareNumbers);
+        for (let i = 0; i < others.length; i++) {
+            if (others[i] != this._values[i]) {
                 return false;
             }
-            remain.splice(index, 1);
         }
         return true;
     },
@@ -464,9 +442,7 @@ LogicalBoard.prototype = {
     // setup candidates
     "setupCandidates": function() {
         // initialize all candidates
-        for (const cell of this._cells) {
-            cell.candidate.fill();
-        }
+        this._cells.forEach(elem => elem.candidate.fill());
 
         // decide with all solid values
         for (let i = 0; i < this._cells.length; i++) {
@@ -605,12 +581,8 @@ LogicalBoard.prototype = {
         for (const value of Numbers.all) {
             const indexes = numbers[value];
             if (Array.isArray(indexes) && 1 < indexes.length) {
-                for (const index of indexes) {
-                    // exclude solid values
-                    if (!this.isSolid(index)) {
-                        duplicates.push(index);
-                    }
-                }
+                // exclude solid values
+                indexes.filter(elem => !this.isSolid(elem)).forEach(elem => duplicates.push(elem));
             }
         }
         return duplicates;

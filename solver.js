@@ -180,11 +180,9 @@ SharedCellMethod.prototype = Object.create(SolverMethod.prototype, {
         // get the intersection
         const share = [];
         const candidate = new CandidateArray();
-        for (const cell of group) {
-            if (cell.block == block[0].block) {
-                share.push(cell);
-                candidate.add(cell.candidate);
-            }
+        for (const cell of group.filter(elem => elem.block == block[0].block)) {
+            share.push(cell);
+            candidate.add(cell.candidate);
         }
 
         // process for each candidate value
@@ -194,16 +192,12 @@ SharedCellMethod.prototype = Object.create(SolverMethod.prototype, {
 
             // block side
             if (!block.some(find)) {
-                for (const cell of group.filter(find)) {
-                    cell.candidate.remove(value);
-                }
+                group.filter(find).forEach(elem => elem.candidate.remove(value));
             }
 
             // other group side
             if (!group.some(find)) {
-                for (const cell of block.filter(find)) {
-                    cell.candidate.remove(value);
-                }
+                block.filter(find).forEach(elem => elem.candidate.remove(value));
             }
         }
     }},
@@ -263,9 +257,7 @@ TwinMethod.prototype = Object.create(SolverMethod.prototype, {
 
                 // reduce candidates
                 const values = [ first.value, second.value ];
-                for (const cell of first.cells) {
-                    cell.candidate.refine(values);
-                }
+                first.cells.forEach(elem => elem.candidate.refine(values));
             }
         }
     }},
@@ -284,11 +276,7 @@ TwinMethod.prototype = Object.create(SolverMethod.prototype, {
                 cells.splice(cells.indexOf(second), 1);
 
                 // reduce candidates
-                for (const cell of group) {
-                    if (cell != first && cell != second) {
-                        cell.candidate.remove(first.candidate);
-                    }
-                }
+                group.filter(elem => elem != first && elem != second).forEach(elem => elem.candidate.remove(first.candidate));
             }
         }
     }},
@@ -366,9 +354,7 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
             // reduce candidates
             if (third != null) {
                 const values = [ first.value, second.value, third.value ];
-                for (const cell of all) {
-                    cell.candidate.refine(values);
-                }
+                all.forEach(elem => elem.candidate.refine(values));
             }
         }
     }},
@@ -408,11 +394,7 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
 
             // reduce candidates
             if (third != null) {
-                for (const cell of group) {
-                    if (cell != first && cell != second && cell != third) {
-                        cell.candidate.remove(all);
-                    }
-                }
+                group.filter(elem => elem != first && elem != second && elem != third).forEach(elem => elem.candidate.remove(all));
             }
         }
     }},

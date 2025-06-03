@@ -203,12 +203,7 @@ Controller.prototype = {
             if (!this._areSameValues(keys, Object.keys(actual).sort())) {
                 return false;
             }
-            for (const key of keys) {
-                if (!this._areSameValues(expect[key], actual[key])) {
-                    return false;
-                }
-            }
-            return true;
+            return keys.every(elem => this._areSameValues(expect[elem], actual[elem]));
         }
 
         // others

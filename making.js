@@ -30,10 +30,7 @@ Controller.prototype = {
         document.getElementById("save").addEventListener("click", this._save.bind(this));
         document.getElementById("load").addEventListener("click", this._load.bind(this));
         const types = [ "solid", "decision", "candidate" ];
-        for (const type of types) {
-            const radio = document.getElementById(type);
-            radio.addEventListener("change", this._changeRadio.bind(this));
-        }
+        types.forEach(elem => document.getElementById(elem).addEventListener("change", this._changeRadio.bind(this)));
         this._type = types[0];
         for (let i = 1; i <= 9; i++) {
             const key = document.getElementById("key" + i);
