@@ -155,20 +155,20 @@ if (typeof Creator === "function") {
 
         // convert rows
         "_convertRow": { "value": function(sample, index) {
-            const numbers = sample.slice(0, 27);
+            let numbers = sample.slice(0, 27);
             for (const row of this._table[index]) {
                 const start = row * 9;
-                Array.prototype.push.apply(numbers, sample.slice(start, start + 9));
+                numbers = numbers.concat(sample.slice(start, start + 9));
             }
             return numbers;
         }},
 
         // convert columns
         "_convertCol": { "value": function(sample, index) {
-            const numbers = [];
+            let numbers = [];
             for (let i = 0; i < 9; i++) {
                 const start = i * 9;
-                Array.prototype.push.apply(numbers, sample.slice(start, start + 3));
+                numbers = numbers.concat(sample.slice(start, start + 3));
                 this._table[index].forEach(elem => numbers.push(sample[start + elem]));
             }
             return numbers;

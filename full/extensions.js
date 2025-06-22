@@ -39,22 +39,22 @@ if (typeof LogicalBoard === "function") {
         // get a list of incorrect indexes
         "getIncorrectIndexes": { "value": function() {
             // check for duplicate numbers
-            const indexes = [];
+            let indexes = [];
             for (let i = 0; i < 9; i++) {
-                Array.prototype.push.apply(indexes, this._getDuplicates(this._rows[i]));
-                Array.prototype.push.apply(indexes, this._getDuplicates(this._cols[i]));
-                Array.prototype.push.apply(indexes, this._getDuplicates(this._blocks[i]));
+                indexes = indexes.concat(this._getDuplicates(this._rows[i]));
+                indexes = indexes.concat(this._getDuplicates(this._cols[i]));
+                indexes = indexes.concat(this._getDuplicates(this._blocks[i]));
             }
 
             // check if they are siteswaps
             for (let i = 0; i < 9; i++) {
-                Array.prototype.push.apply(indexes, this._getCollisions(this._rows[i]));
-                Array.prototype.push.apply(indexes, this._getCollisions(this._cols[i]));
-                Array.prototype.push.apply(indexes, this._getCollisions(this._blocks[i]));
+                indexes = indexes.concat(this._getCollisions(this._rows[i]));
+                indexes = indexes.concat(this._getCollisions(this._cols[i]));
+                indexes = indexes.concat(this._getCollisions(this._blocks[i]));
             }
 
             // remove duplicate indexes
-            return indexes.filter((elem, idx, self) => self.indexOf(elem) == idx);
+            return indexes.filter((val, idx) => indexes.indexOf(val) == idx);
         }},
 
         // get a list of collision indexes

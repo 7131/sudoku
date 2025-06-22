@@ -10,7 +10,7 @@ SolverMethod.prototype = {
 
     // reduce candidates
     "reduce": function(logic) {
-        const progress = [];
+        let progress = [];
         let solutions = [];
         let before = 730;
         let after = logic.getCandidateCount();
@@ -18,8 +18,8 @@ SolverMethod.prototype = {
             // reduce at the lower level
             if (this.lower != null) {
                 const state = this.lower.reduce(logic);
-                Array.prototype.push.apply(progress, state.progress);
-                Array.prototype.push.apply(solutions, state.solutions);
+                progress = progress.concat(state.progress);
+                solutions = solutions.concat(state.solutions);
                 after = logic.getCandidateCount();
                 if (after == 0) {
                     break;
@@ -27,7 +27,7 @@ SolverMethod.prototype = {
             }
 
             // reduce at this level
-            Array.prototype.push.apply(solutions, this._createSolutions(logic));
+            solutions = solutions.concat(this._createSolutions(logic));
             before = after;
             after = logic.getCandidateCount();
             if (after < before) {
@@ -401,7 +401,7 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
 
     // get the union of arrays
     "_unionArray": { "value": function(first, second) {
-        return first.concat(second).filter((elem, idx, self) => self.indexOf(elem) == idx);
+        return first.concat(second).filter((val, idx, self) => self.indexOf(val) == idx);
     }},
 
 });
@@ -497,12 +497,12 @@ AriadneMethod.prototype = Object.create(SolverMethod.prototype, {
 
     // create a solution
     "_createSolutions": { "value": function(logic) {
-        const solutions = [];
+        let solutions = [];
         const candidates = logic.getCandidateList();
         for (let i = 0; i < candidates.length; i++) {
             if (1 < candidates[i].length) {
                 const complete = this._removeImpossibleCandidate(logic, candidates, i);
-                Array.prototype.push.apply(solutions, complete);
+                solutions = solutions.concat(complete);
             }
         }
         return solutions;
