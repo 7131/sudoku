@@ -187,7 +187,7 @@ Controller.prototype = {
         let reason = "";
         if (0 < indexes.length) {
             reason = "There are mistakes in the numbers.";
-            indexes.forEach(elem => this._board.drawCross(elem));
+            indexes.forEach(this._board.drawCross, this._board);
         } else if (!this._board.logic.isFixed()) {
             reason = "There are unfilled cells.";
         }
@@ -235,10 +235,7 @@ Controller.prototype = {
 
     // display the counter list
     "_showCounters": function() {
-        const counters = this._board.getCounters();
-        for (let i = 0; i < counters.length; i++) {
-            this._countAreas[i].innerHTML = counters[i];
-        }
+        this._board.getCounters().forEach((val, idx) => this._countAreas[idx].innerHTML = val);
     },
 
     // clear the result

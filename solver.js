@@ -599,9 +599,7 @@ Solver.prototype = {
         this._methods.push(new XWingMethod());
         this._methods.push(new AriadneMethod());
         this._methods.push(new AriadneMethod());
-        for (let i = 0; i < this._methods.length; i++) {
-            this._methods[i].depth = i;
-        }
+        this._methods.forEach((val, idx) => val.depth = idx);
     },
 
     // solve the problem using the specified level of method

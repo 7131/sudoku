@@ -76,15 +76,9 @@ Controller.prototype = {
             return;
         }
 
-        // if there are too many problems, reduce to 8 or less
-        const count = Math.min(this._problems.length, 8);
-        const problems = [];
-        for (let i = 0; i < count; i++) {
-            problems.push(this._problems[i]);
-        }
-
         // get the data
-        const data = JSON.stringify(problems);
+        const count = Math.min(this._problems.length, 8);
+        const data = JSON.stringify(this._problems.slice(0, count));
         window.open("./puzzle.html?data=" + data, "problem");
     },
 

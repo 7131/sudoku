@@ -167,10 +167,7 @@ Controller.prototype = {
 
     // display the counter list
     "_showCounters": function() {
-        const counters = this._board.getCounters();
-        for (let i = 0; i < counters.length; i++) {
-            this._countAreas[i].innerHTML = counters[i];
-        }
+        this._board.getCounters().forEach((val, idx) => this._countAreas[idx].innerHTML = val);
     },
 
 }

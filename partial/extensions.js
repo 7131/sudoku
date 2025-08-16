@@ -36,27 +36,23 @@ if (typeof LogicalBoard === "function") {
         // get a list of incorrect indexes
         "getIncorrectIndexes": { "value": function() {
             // check for duplicate numbers
-            let indexes = [];
-            for (let i = 0; i < 9; i++) {
-                indexes = indexes.concat(this._getDuplicates(this._rows[i]));
-                indexes = indexes.concat(this._getDuplicates(this._cols[i]));
-                indexes = indexes.concat(this._getDuplicates(this._blocks[i]));
-            }
+            const indexes = [];
+            indexes.push(this._rows.map(this._getDuplicates, this));
+            indexes.push(this._cols.map(this._getDuplicates, this));
+            indexes.push(this._blocks.map(this._getDuplicates, this));
 
             // check if they are siteswaps
-            for (let i = 0; i < 9; i++) {
-                indexes = indexes.concat(this._getCollisions(this._rows[i]));
-                indexes = indexes.concat(this._getCollisions(this._cols[i]));
-            }
+            indexes.push(this._rows.map(this._getCollisions, this));
+            indexes.push(this._cols.map(this._getCollisions, this));
 
             // remove duplicate indexes
-            return indexes.filter((val, idx) => indexes.indexOf(val) == idx);
+            return indexes.flat(Infinity).filter((val, idx, arr) => arr.indexOf(val) == idx);
         }},
 
         // get a list of collision indexes
         "_getCollisions": { "value": function(group) {
             // get a list of drop points for each number
-            const numbers = [];
+            const numbers = new Array(group.length).fill().map(elem => []);
             for (let i = 0; i < group.length; i++) {
                 const index = group[i];
 
@@ -66,23 +62,13 @@ if (typeof LogicalBoard === "function") {
                     value = this._cells[index].value;
                 }
                 if (Numbers.isValid(value)) {
-                    const drop = (value + i) % 9;
-                    if (!Array.isArray(numbers[drop])) {
-                        numbers[drop] = [];
-                    }
-                    numbers[drop].push(index);
+                    numbers[(value + i) % 9].push(index);
                 }
             }
 
             // check if there was a collision
-            const collisions = [];
-            for (let i = 0; i < 9; i++) {
-                const indexes = numbers[i];
-                if (Array.isArray(indexes) && 1 < indexes.length) {
-                    indexes.filter(elem => !this.isSolid(elem)).forEach(elem => collisions.push(elem));
-                }
-            }
-            return collisions;
+            const collisions = numbers.filter(elem => 1 < elem.length).map(elem => elem.filter(idx => !this.isSolid(idx)));
+            return collisions.flat();
         }},
 
     });
@@ -174,11 +160,7 @@ if (typeof Solver === "function") {
 
         // reduce candidates with the same number
         "_reduceSameNumber": { "value": function(group, index1, index2, number) {
-            for (let i = 0; i < group.length; i++) {
-                if (i != index1 && i != index2) {
-                    group[i].candidate.remove(number);
-                }
-            }
+            group.filter((val, idx) => idx != index1 && idx != index2).forEach(elem => elem.candidate.remove(number));
         }},
 
         // reduce candidates while descending numbers
@@ -210,9 +192,7 @@ if (typeof Solver === "function") {
             this._methods.push(new XWingMethod());
             this._methods.push(new AriadneMethod());
             this._methods.push(new AriadneMethod());
-            for (let i = 0; i < this._methods.length; i++) {
-                this._methods[i].depth = i;
-            }
+            this._methods.forEach((val, idx) => val.depth = idx);
         }},
 
     });
@@ -360,14 +340,11 @@ if (typeof Creator === "function") {
 
         // convert columns
         "_convertCol": { "value": function(sample, index) {
-            let numbers = [];
+            const numbers = [];
             for (let i = 0; i < 81; i += 9) {
-                for (const col of this._table[index]) {
-                    const start = i + col;
-                    numbers = numbers.concat(sample.slice(start, start + 3));
-                }
+                numbers.push(this._table[index].map(elem => sample.slice(i + elem, i + elem + 3)));
             }
-            return numbers;
+            return numbers.flat(Infinity);
         }},
 
     });

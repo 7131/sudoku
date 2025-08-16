@@ -21,14 +21,8 @@ if (typeof Creator === "function") {
             // create a replacement table
             const first = this._permutate([ 3, 4, 5 ]);
             const second = this._permutate([ 6, 7, 8 ]);
-            const normal = [];
-            const reverse = [];
-            for (let i = 0; i < first.length; i++) {
-                for (let j = 0; j < second.length; j++) {
-                    normal.push(first[i].concat(second[j]));
-                    reverse.push(second[i].concat(first[j]));
-                }
-            }
+            const normal = first.map(head => second.map(elem => head.concat(elem))).flat();
+            const reverse = second.map(head => first.map(elem => head.concat(elem))).flat();
             this._table = normal.concat(reverse);
         }},
 
@@ -62,14 +56,14 @@ if (typeof Creator === "function") {
             }
 
             // recursive processing
-            const result = [];
+            let result = [];
             for (let i = 0; i < values.length; i++) {
                 const follow = values.concat();
                 const first = follow.splice(i, 1);
 
                 // permutate an array with one less element
                 const parts = this._permutate(follow);
-                parts.forEach(elem => result.push(first.concat(elem)));
+                result = result.concat(parts.map(elem => first.concat(elem)));
             }
             return result;
         }},
@@ -169,7 +163,7 @@ if (typeof Creator === "function") {
             for (let i = 0; i < 9; i++) {
                 const start = i * 9;
                 numbers = numbers.concat(sample.slice(start, start + 3));
-                this._table[index].forEach(elem => numbers.push(sample[start + elem]));
+                numbers = numbers.concat(this._table[index].map(elem => sample[start + elem]));
             }
             return numbers;
         }},
