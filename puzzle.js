@@ -43,7 +43,7 @@ Controller.prototype = {
         this._countAreas = [];
         this._countAreas.push(document.getElementById("remain"));
         for (let i = 1; i <= 9; i++) {
-            this._countAreas.push(document.getElementById("count" + i));
+            this._countAreas.push(document.getElementById(`count${i}`));
         }
 
         // set up a problem list
@@ -68,7 +68,7 @@ Controller.prototype = {
         types.forEach(elem => document.getElementById(elem).addEventListener("change", this._changeRadio.bind(this)));
         this._type = types[0];
         for (let i = 1; i <= 9; i++) {
-            const key = document.getElementById("key" + i);
+            const key = document.getElementById(`key${i}`);
             key.addEventListener("click", this._pressNumber.bind(this));
         }
         this._eraseButton.addEventListener("click", this._eraseNumber.bind(this));
@@ -200,7 +200,7 @@ Controller.prototype = {
         } else {
             this._resultArea.classList.remove("valid");
             this._resultArea.classList.add("invalid");
-            this._resultArea.innerHTML = "Incorrect (" + reason + ")";
+            this._resultArea.innerHTML = `Incorrect (${reason})`;
         }
         this._judgeButton.disabled = true;
     },
@@ -209,7 +209,7 @@ Controller.prototype = {
     "_save": function(e) {
         let title = "Data";
         if (0 <= this._index && this._index < this._problems.length) {
-            title = "Puzzle " + (this._index + 1);
+            title = `Puzzle ${this._index + 1}`;
         }
         this._dataArea.value = this._board.getData(title, true);
     },

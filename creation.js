@@ -29,12 +29,12 @@ Controller.prototype = {
         let group = document.getElementsByName("group0");
         this._dependRadios = document.getElementsByName("group1");
         let level = 2;
-        let depend = document.getElementsByName("group" + level);
+        let depend = document.getElementsByName(`group${level}`);
         while (0 < depend.length) {
             group = this._dependRadios;
             this._dependRadios = depend;
             level++;
-            depend = document.getElementsByName("group" + level);
+            depend = document.getElementsByName(`group${level}`);
         }
         this._invalidRadio = group[0];
 
@@ -79,7 +79,7 @@ Controller.prototype = {
         // get the data
         const count = Math.min(this._problems.length, 8);
         const data = JSON.stringify(this._problems.slice(0, count));
-        window.open("./puzzle.html?data=" + data, "problem");
+        window.open(`./puzzle.html?data=${data}`, "problem");
     },
 
     // create multiple problems
@@ -146,12 +146,12 @@ Controller.prototype = {
         // process radio buttons in order
         const group = [];
         let row = 0;
-        let radio = document.getElementById("group" + row + "_" + col);
+        let radio = document.getElementById(`group${row}_${col}`);
         while (radio != null) {
             // set depending on whether or not there is checked
             group.push(radio.checked == checked);
             row++;
-            radio = document.getElementById("group" + row + "_" + col);
+            radio = document.getElementById(`group${row}_${col}`);
         }
         return group;
     },
@@ -164,7 +164,7 @@ Controller.prototype = {
         if (numbers != null) {
             // valid data
             const now = new Date();
-            const message = now.toLocaleString() + " (" + summary.join() + ")";
+            const message = `${now.toLocaleString()} (${summary.join()})`;
             const data = { "description": message, "pattern": numbers };
             this._problems.push(data);
             this._countCreate.innerText = this._problems.length.toLocaleString();

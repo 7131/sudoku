@@ -21,7 +21,7 @@ Controller.prototype = {
         this._countAreas = [];
         this._countAreas.push(document.getElementById("remain"));
         for (let i = 1; i <= 9; i++) {
-            this._countAreas.push(document.getElementById("count" + i));
+            this._countAreas.push(document.getElementById(`count${i}`));
         }
 
         // button events
@@ -33,7 +33,7 @@ Controller.prototype = {
         types.forEach(elem => document.getElementById(elem).addEventListener("change", this._changeRadio.bind(this)));
         this._type = types[0];
         for (let i = 1; i <= 9; i++) {
-            const key = document.getElementById("key" + i);
+            const key = document.getElementById(`key${i}`);
             key.addEventListener("click", this._pressNumber.bind(this));
         }
         this._eraseButton.addEventListener("click", this._eraseNumber.bind(this));
@@ -138,13 +138,13 @@ Controller.prototype = {
     // show the problem on another page
     "_showProblem": function(e) {
         const data = this._board.getData();
-        window.open("./puzzle.html?data=" + data, "problem");
+        window.open(`./puzzle.html?data=${data}`, "problem");
     },
 
     // show the solution page
     "_showSolver": function(e) {
         const data = this._board.getData();
-        window.open("./solution.html?data=" + data, "solution");
+        window.open(`./solution.html?data=${data}`, "solution");
     },
 
     // output to text

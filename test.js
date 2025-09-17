@@ -32,10 +32,10 @@ Controller.prototype = {
 
             // expected values
             const expects = this._rows[i].cells[ColNum.EXPECT].childNodes;
-            expects[0].id = "view-" + i;
+            expects[0].id = `view-${i}`;
             expects[0].addEventListener("click", this._show.bind(this));
             expects[1].htmlFor = expects[0].id;
-            expects[2].id = "data-" + i;
+            expects[2].id = `data-${i}`;
         }
 
         // get the last row
@@ -87,7 +87,7 @@ Controller.prototype = {
         // execute
         const row = this._rows[this._index];
         const problem = row.cells[ColNum.TARGET].innerText;
-        const element = document.getElementById("data-" + this._index);
+        const element = document.getElementById(`data-${this._index}`);
         const expect = element.innerText;
         const message = this._getResult(problem, expect);
         if (message == "") {
@@ -112,7 +112,7 @@ Controller.prototype = {
             last.cells[ColNum.RESULT].innerText = "All OK";
             last.cells[ColNum.RESULT].classList.remove("error");
         } else {
-            last.cells[ColNum.RESULT].innerText = "NG : " + this._errors.join();
+            last.cells[ColNum.RESULT].innerText = `NG: ${this._errors.join()}`;
             last.cells[ColNum.RESULT].classList.add("error");
         }
         this._button.disabled = false;
@@ -157,26 +157,26 @@ Controller.prototype = {
                 }
             }
         }
-        return message + "\n" + JSON.stringify(actual);
+        return `${message}\n${JSON.stringify(actual)}`;
     },
 
     // get the difference
     "_getDifference": function(title, expect, actual) {
         // check the actual
         if (!Array.isArray(expect) || !Array.isArray(actual)) {
-            return "There is a difference in the " + title + ".";
+            return `There is a difference in the ${title}.`;
         }
 
         // compare the number of elements in arrays
         const count = Math.min(expect.length, actual.length);
         if (count != Math.max(expect.length, actual.length)) {
-            return "There is a difference in the number of " + title + ".";
+            return `There is a difference in the number of ${title}.`;
         }
 
         // compare from the beginning
         for (let i = 0; i < count; i++) {
             if (!this._areSameValues(expect[i], actual[i])) {
-                return "There is a difference in the " + title + " #" + (i + 1);
+                return `There is a difference in the ${title} #${i + 1}`;
             }
         }
         return "";

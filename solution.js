@@ -24,27 +24,27 @@ Controller.prototype = {
         this._countAreas = [];
         this._countAreas.push(document.getElementById("remain"));
         for (let i = 1; i <= 9; i++) {
-            this._countAreas.push(document.getElementById("count" + i));
+            this._countAreas.push(document.getElementById(`count${i}`));
         }
         this._settingBoxes = [];
         let level = 0;
-        let box = document.getElementById("level" + level);
+        let box = document.getElementById(`level${level}`);
         while (box != null) {
             this._settingBoxes.push(box);
             level++;
-            box = document.getElementById("level" + level);
+            box = document.getElementById(`level${level}`);
         }
-        this._dependCheck = document.getElementById("level" + (level - 1));
+        this._dependCheck = document.getElementById(`level${level - 1}`);
 
         // button events
         this._solveButton.addEventListener("click", this._solve.bind(this));
         for (let i = 1; i <= 9; i++) {
-            const key = document.getElementById("key" + i);
+            const key = document.getElementById(`key${i}`);
             key.addEventListener("click", this._pressNumber.bind(this));
         }
         document.getElementById("erase").addEventListener("click", this._eraseNumber.bind(this));
         document.getElementById("load").addEventListener("click", this._load.bind(this));
-        document.getElementById("level" + (level - 2)).addEventListener("change", this._changeCheck.bind(this));
+        document.getElementById(`level${level - 2}`).addEventListener("change", this._changeCheck.bind(this));
 
         // initial display
         this._board.clear();
@@ -171,19 +171,16 @@ Controller.prototype = {
 
             default:
                 // multiple solutions
-                message += "are " + result.solutions.length + " solutions.";
+                message += `are ${result.solutions.length} solutions.`;
                 break;
         }
-        this._messageArea.innerHTML = message + " (" + result.summary.join() + ")";
+        this._messageArea.innerHTML = `${message}(${result.summary.join()})`;
 
         // create a list of progress
         const progress = [ { "title": "Initial state, candidates are in [ ].", "table": initial } ];
-        result.progress.forEach(elem => progress.push({ "title": "Method " + elem.depth, "table": elem.table }));
+        result.progress.forEach(elem => progress.push({ "title": `Method ${elem.depth}`, "table": elem.table }));
         if (1 < result.solutions.length) {
-            // when there are multiple solutions
-            for (let i = 0; i < result.solutions.length; i++) {
-                progress.push({ "title": "Solution " + (i + 1), "table": result.solutions[i] });
-            }
+            result.solutions.forEach((val, idx) => progress.push({ "title": `Solution ${idx + 1}`, "table": val }));
         }
 
         // display progress
@@ -214,7 +211,7 @@ Controller.prototype = {
                 td.classList.add(horizontal[hidx]);
                 td.classList.add(vertical[vidx]);
                 if (Array.isArray(row[j])) {
-                    td.innerHTML = "[" + row[j] + "]";
+                    td.innerHTML = `[${row[j].join()}]`;
                 } else {
                     td.innerHTML = row[j];
                 }

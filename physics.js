@@ -82,8 +82,8 @@ PhysicalBoard.prototype = {
         }
 
         // fonts
-        this._large = "bold " + Math.floor(Math.min(nw, nh) * 0.8) + "px sans-serif";
-        this._small = "bold " + Math.floor(Math.min(cw, ch)) + "px sans-serif";
+        this._large = `bold ${Math.floor(Math.min(nw, nh) * 0.8)}px sans-serif`;
+        this._small = `bold ${Math.floor(Math.min(cw, ch))}px sans-serif`;
         this._solid = "blue";
         this._number = "black";
         this._candidate = "green";
@@ -270,7 +270,7 @@ PhysicalBoard.prototype = {
         const now = new Date();
         let description = now.toLocaleString();
         if (title != null) {
-            description = title + " (" + description + ")";
+            description = `${title} (${description})`;
         }
         const data = { "description": description, "pattern": solids };
         if (numbers != null) {
