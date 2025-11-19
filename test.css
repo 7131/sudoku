@@ -1,16 +1,16 @@
 @charset "utf-8";
 
+body {
+    line-height: 1.8;
+    margin-bottom: 10ex;
+}
+
 nav {
     margin-top: 3ex;
 }
 
 nav span {
     margin-right: 1ex;
-}
-
-main {
-    line-height: 1.8;
-    margin-bottom: 10ex;
 }
 
 button {
@@ -47,7 +47,7 @@ div.hidden {
 
 @media (min-width: 768px) {
 
-    main {
+    body {
         line-height: 1.5;
     }
 
