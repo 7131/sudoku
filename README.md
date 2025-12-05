@@ -1,6 +1,7 @@
 # Siteswap Sudoku
 
-https://7131.github.io/sudoku/
+English site: https://7131.github.io/sudoku/<br>
+Japanese site: https://app.7131.jp/sudoku/
 
 There are three types of sudoku puzzles: (full) siteswap sudoku, partial siteswap sudoku, and normal sudoku.
 There are four applications for each type: to play puzzles, to use the automatic solution, to use the automatic creation, and to make new puzzles by yourself.
