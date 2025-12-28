@@ -18,22 +18,22 @@ button {
     margin-top: 2ex;
 }
 
-table.border {
+table {
     border: 1px outset gray;
     border-collapse: collapse;
 }
 
-table.border tr th {
+table tr th {
     border: 1px inset gray;
     padding: 0.5ex 1ex;
 }
 
-table.border tr td {
+table tr td {
     border: 1px inset gray;
     padding: 0.5ex 1ex;
 }
 
-div.hidden {
+.hidden {
     display: none;
 }
 
@@ -45,7 +45,7 @@ div.hidden {
     color: red;
 }
 
-@media (min-width: 768px) {
+@media (orientation: landscape) {
 
     body {
         line-height: 1.5;
