@@ -2,11 +2,17 @@
 
 body {
     line-height: 1.8;
-    margin: 3ex 0ex 10ex 2ex;
+    margin: 0ex 0ex 10ex 2ex;
 }
 
-nav span {
-    margin-right: 1ex;
+nav ul {
+    padding-left: 0ex;
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin-right: 2ex;
 }
 
 section {
