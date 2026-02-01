@@ -27,7 +27,7 @@ Controller.prototype = {
         for (let i = 1; i < this._rows.length; i++) {
             // No.
             const number = this._rows[i].cells[ColNum.NUMBER];
-            number.innerText = i;
+            number.textContent = i;
             number.classList.add("symbol");
 
             // expected values
@@ -40,13 +40,13 @@ Controller.prototype = {
 
         // get the last row
         let last = this._rows[this._rows.length - 1];
-        if (last.cells[ColNum.TARGET].innerText != "") {
+        if (last.cells[ColNum.TARGET].textContent != "") {
             last = last.parentNode.appendChild(last.cloneNode(true));
         }
-        last.cells[ColNum.NUMBER].innerText = "total";
-        last.cells[ColNum.TARGET].innerText = "";
-        last.cells[ColNum.EXPECT].innerText = "";
-        last.cells[ColNum.RESULT].innerText = "";
+        last.cells[ColNum.NUMBER].textContent = "total";
+        last.cells[ColNum.TARGET].textContent = "";
+        last.cells[ColNum.EXPECT].textContent = "";
+        last.cells[ColNum.RESULT].textContent = "";
 
         // button events
         this._button = document.getElementById("execute");
@@ -73,7 +73,7 @@ Controller.prototype = {
 
         // initialize table
         for (let i = 1; i < this._rows.length; i++) {
-            this._rows[i].cells[ColNum.RESULT].innerText = "";
+            this._rows[i].cells[ColNum.RESULT].textContent = "";
         }
         this._errors = [];
 
@@ -86,22 +86,22 @@ Controller.prototype = {
     "_execute": function() {
         // execute
         const row = this._rows[this._index];
-        const problem = row.cells[ColNum.TARGET].innerText;
+        const problem = row.cells[ColNum.TARGET].textContent;
         const element = document.getElementById(`data-${this._index}`);
-        const expect = element.innerText;
+        const expect = element.textContent;
         const message = this._getResult(problem, expect);
         if (message == "") {
-            row.cells[ColNum.RESULT].innerText = "OK";
+            row.cells[ColNum.RESULT].textContent = "OK";
             row.cells[ColNum.RESULT].classList.remove("error");
         } else {
-            row.cells[ColNum.RESULT].innerText = message;
+            row.cells[ColNum.RESULT].textContent = message;
             row.cells[ColNum.RESULT].classList.add("error");
             this._errors.push(this._index);
         }
 
         // execute the next test
         this._index++;
-        if (this._index < this._rows.length && this._rows[this._index].cells[ColNum.TARGET].innerText != "") {
+        if (this._index < this._rows.length && this._rows[this._index].cells[ColNum.TARGET].textContent != "") {
             setTimeout(this._execute.bind(this), 10);
             return;
         }
@@ -109,10 +109,10 @@ Controller.prototype = {
         // finished
         const last = this._rows[this._rows.length - 1];
         if (this._errors.length == 0) {
-            last.cells[ColNum.RESULT].innerText = "All OK";
+            last.cells[ColNum.RESULT].textContent = "All OK";
             last.cells[ColNum.RESULT].classList.remove("error");
         } else {
-            last.cells[ColNum.RESULT].innerText = `NG: ${this._errors.join()}`;
+            last.cells[ColNum.RESULT].textContent = `NG: ${this._errors.join()}`;
             last.cells[ColNum.RESULT].classList.add("error");
         }
         this._button.disabled = false;

@@ -77,12 +77,12 @@ Controller.prototype = {
 
             case "candidate":
                 // candidate
-                this._eraseButton.innerHTML = "#";
+                this._eraseButton.textContent = "#";
                 break;
 
             default:
                 // solid
-                this._eraseButton.innerHTML = "X";
+                this._eraseButton.textContent = "X";
                 break;
         }
     },
@@ -90,7 +90,7 @@ Controller.prototype = {
     // press the number button
     "_pressNumber": function(e) {
         // get the input value
-        const value = parseInt(e.currentTarget.innerText, 10);
+        const value = parseInt(e.currentTarget.textContent, 10);
         switch (this._type) {
             case "decision":
                 // decision
@@ -167,7 +167,7 @@ Controller.prototype = {
 
     // display the counter list
     "_showCounters": function() {
-        this._board.getCounters().forEach((val, idx) => this._countAreas[idx].innerHTML = val);
+        this._board.getCounters().forEach((val, idx) => this._countAreas[idx].textContent = val);
     },
 
 }

@@ -77,7 +77,7 @@ Controller.prototype = {
     // press the number button
     "_pressNumber": function(e) {
         // get the input value
-        const value = parseInt(e.currentTarget.innerText, 10);
+        const value = parseInt(e.currentTarget.textContent, 10);
         this._board.setSolidCell(value);
 
         // update results
@@ -132,12 +132,12 @@ Controller.prototype = {
 
     // display the counter list
     "_showCounters": function() {
-        this._board.getCounters(true).forEach((val, idx) => this._countAreas[idx].innerHTML = val);
+        this._board.getCounters(true).forEach((val, idx) => this._countAreas[idx].textContent = val);
     },
 
     // clear the result
     "_clearResult": function() {
-        this._resultArea.innerHTML = "";
+        this._resultArea.textContent = "";
 
         // set the message area
         this._messageArea.innerHTML = "&nbsp;";
@@ -150,7 +150,7 @@ Controller.prototype = {
         this._messageArea.classList.remove("valid");
         this._messageArea.classList.add("invalid");
         if (result == null) {
-            this._messageArea.innerHTML = "There is an error in the settings.";
+            this._messageArea.textContent = "There is an error in the settings.";
             return;
         }
 
@@ -174,7 +174,7 @@ Controller.prototype = {
                 message += `are ${result.solutions.length} solutions.`;
                 break;
         }
-        this._messageArea.innerHTML = `${message}(${result.summary.join()})`;
+        this._messageArea.textContent = `${message}(${result.summary.join()})`;
 
         // create a list of progress
         const progress = [ { "title": "Initial state, candidates are in [ ].", "table": initial } ];
@@ -186,7 +186,7 @@ Controller.prototype = {
         // display progress
         for (const value of progress) {
             const text = document.createElement("p");
-            text.innerHTML = value.title;
+            text.textContent = value.title;
             this._resultArea.appendChild(text);
             const table = this._convertTable(value.table);
             this._resultArea.appendChild(table);
@@ -211,9 +211,9 @@ Controller.prototype = {
                 td.classList.add(horizontal[hidx]);
                 td.classList.add(vertical[vidx]);
                 if (Array.isArray(row[j])) {
-                    td.innerHTML = `[${row[j].join()}]`;
+                    td.textContent = `[${row[j].join()}]`;
                 } else {
-                    td.innerHTML = row[j];
+                    td.textContent = row[j];
                 }
                 tr.appendChild(td);
             }

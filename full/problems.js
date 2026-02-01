@@ -1,6 +1,6 @@
 const Problems = [
     {
-        "description": "You can solve this puzzle without any knowledge of siteswap, but it&apos;s easy if you know it.",
+        "description": "You can solve this puzzle without any knowledge of siteswap, but it's easy if you know it.",
         "pattern": [
             0, 0, 3, 8, 2, 0, 7, 0, 0,
             0, 0, 0, 3, 0, 6, 0, 5, 0,
@@ -14,7 +14,7 @@ const Problems = [
         ],
     },
     {
-        "description": "Knowledge of siteswap is required. It is a beginner&apos;s puzzle.",
+        "description": "Knowledge of siteswap is required. It is a beginner's puzzle.",
         "pattern": [
             0, 0, 9, 7, 0, 0, 0, 8, 0,
             5, 0, 0, 0, 0, 4, 0, 0, 7,

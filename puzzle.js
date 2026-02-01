@@ -50,13 +50,13 @@ Controller.prototype = {
         const title = document.createElement("option");
         title.value = 0;
         title.selected = true;
-        title.innerHTML = "Select...";
-        this._problemSelector.innerHTML = "";
+        title.textContent = "Select...";
+        this._problemSelector.textContent = "";
         this._problemSelector.appendChild(title);
         for (let i = 1; i <= this._problems.length; i++) {
             const option = document.createElement("option");
             option.value = i;
-            option.innerHTML = i;
+            option.textContent = i;
             this._problemSelector.appendChild(option);
         }
 
@@ -81,7 +81,7 @@ Controller.prototype = {
         if (this._problems.length == 1) {
             this._index = 0;
             this._problemSelector.value = 1;
-            this._descriptionArea.innerHTML = this._problems[this._index].description;
+            this._descriptionArea.textContent = this._problems[this._index].description;
             this._board.setPattern(this._problems[this._index].pattern);
         }
         this._showCounters();
@@ -92,9 +92,9 @@ Controller.prototype = {
     "_selectProblem": function(e) {
         this._index = parseInt(this._problemSelector.value, 10) - 1;
         if (0 <= this._index && this._index < this._problems.length) {
-            this._descriptionArea.innerHTML = this._problems[this._index].description;
+            this._descriptionArea.textContent = this._problems[this._index].description;
         } else {
-            this._descriptionArea.innerHTML = "";
+            this._descriptionArea.textContent = "";
         }
     },
 
@@ -140,7 +140,7 @@ Controller.prototype = {
         this._keyTable.classList.add(this._type);
         if (this._type == "candidate") {
             // candidate
-            this._eraseButton.innerHTML = "#";
+            this._eraseButton.textContent = "#";
         } else {
             // decision
             this._eraseButton.innerHTML = "&nbsp;";
@@ -150,7 +150,7 @@ Controller.prototype = {
     // press the number button
     "_pressNumber": function(e) {
         // get the input value
-        const value = parseInt(e.currentTarget.innerText, 10);
+        const value = parseInt(e.currentTarget.textContent, 10);
         if (this._type == "candidate") {
             // candidate
             this._board.toggleCandidate(value);
@@ -196,11 +196,11 @@ Controller.prototype = {
         if (reason == "") {
             this._resultArea.classList.remove("invalid");
             this._resultArea.classList.add("valid");
-            this._resultArea.innerHTML = "Correct";
+            this._resultArea.textContent = "Correct";
         } else {
             this._resultArea.classList.remove("valid");
             this._resultArea.classList.add("invalid");
-            this._resultArea.innerHTML = `Incorrect (${reason})`;
+            this._resultArea.textContent = `Incorrect (${reason})`;
         }
         this._judgeButton.disabled = true;
     },
@@ -225,9 +225,9 @@ Controller.prototype = {
 
         // title
         if (data.description == null) {
-            this._descriptionArea.innerHTML = "(No title)";
+            this._descriptionArea.textContent = "(No title)";
         } else {
-            this._descriptionArea.innerHTML = data.description;
+            this._descriptionArea.textContent = data.description;
         }
         this._showCounters();
         this._clearResult();
@@ -235,7 +235,7 @@ Controller.prototype = {
 
     // display the counter list
     "_showCounters": function() {
-        this._board.getCounters().forEach((val, idx) => this._countAreas[idx].innerHTML = val);
+        this._board.getCounters().forEach((val, idx) => this._countAreas[idx].textContent = val);
     },
 
     // clear the result

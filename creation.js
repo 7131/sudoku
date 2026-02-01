@@ -50,8 +50,8 @@ Controller.prototype = {
         this._creator.cancelEvent = this._canceled.bind(this);
 
         // range of conditions
-        this._minClues = this._getInt(document.getElementById("min_clues").innerText);
-        this._maxClues = this._getInt(document.getElementById("max_clues").innerText);
+        this._minClues = this._getInt(document.getElementById("min_clues").textContent);
+        this._maxClues = this._getInt(document.getElementById("max_clues").textContent);
         this._countClues.min = this._minClues;
         this._countClues.max = this._maxClues;
 
@@ -125,10 +125,10 @@ Controller.prototype = {
         this._board.logic.initialize();
 
         // initialize the page
-        this._messageArea.innerText = "Running...";
+        this._messageArea.textContent = "Running...";
         this._outputArea.value = "";
-        this._countTry.innerText = 0;
-        this._countCreate.innerText = 0;
+        this._countTry.textContent = 0;
+        this._countCreate.textContent = 0;
         this._createButton.disabled = true;
         this._problemButton.disabled = true;
         this._startButton.disabled = true;
@@ -160,14 +160,14 @@ Controller.prototype = {
     "_showProgress": function(numbers, summary) {
         // check arguments
         this._trial++;
-        this._countTry.innerText = this._trial.toLocaleString();
+        this._countTry.textContent = this._trial.toLocaleString();
         if (numbers != null) {
             // valid data
             const now = new Date();
             const message = `${now.toLocaleString()} (${summary.join()})`;
             const data = { "description": message, "pattern": numbers };
             this._problems.push(data);
-            this._countCreate.innerText = this._problems.length.toLocaleString();
+            this._countCreate.textContent = this._problems.length.toLocaleString();
         }
 
         // check if finished
@@ -186,7 +186,7 @@ Controller.prototype = {
         }
 
         // finalize
-        this._messageArea.innerText = "";
+        this._messageArea.textContent = "";
         this._createButton.disabled = false;
         this._startButton.disabled = false;
         this._stopButton.disabled = true;
