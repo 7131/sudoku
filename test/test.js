@@ -1,168 +1,80 @@
-// Column number constants
-const ColNum = {
-    "NUMBER": 0,
-    "TARGET": 1,
-    "EXPECT": 2,
-    "RESULT": 3,
-}
+// Sudoku test class
+class SudokuTest extends TestTable {
+    #logic = new LogicalBoard();
+    #solver = new Solver();
 
-// Controller class
-const Controller = function() {
-    // fields
-    this._logic = new LogicalBoard();
-    this._solver = new Solver();
-    this._solver.initialize();
+    // constructor
+    constructor(id, body, data) {
+        super(id, body);
+        super.create(data);
+        this.#solver.initialize();
+    }
 
-    // events
-    window.addEventListener("load", this._initialize.bind(this));
-}
+    // test start
+    start(method) {
+        super.clearCol("result");
+        this.index = 0;
+        setTimeout(this.#test.bind(this), 0, 0, []);
+    }
 
-// Controller prototype
-Controller.prototype = {
-
-    // initialize the private fields
-    "_initialize": function(e) {
-        // get the elements
-        this._rows = document.getElementById("table").rows;
-        for (let i = 1; i < this._rows.length; i++) {
-            // No.
-            const number = this._rows[i].cells[ColNum.NUMBER];
-            number.textContent = i;
-            number.classList.add("symbol");
-
-            // expected values
-            const expects = this._rows[i].cells[ColNum.EXPECT].childNodes;
-            expects[0].id = `view-${i}`;
-            expects[0].addEventListener("click", this._show.bind(this));
-            expects[1].htmlFor = expects[0].id;
-            expects[2].id = `data-${i}`;
-        }
-
-        // get the last row
-        let last = this._rows[this._rows.length - 1];
-        if (last.cells[ColNum.TARGET].textContent != "") {
-            last = last.parentNode.appendChild(last.cloneNode(true));
-        }
-        last.cells[ColNum.NUMBER].textContent = "total";
-        last.cells[ColNum.TARGET].textContent = "";
-        last.cells[ColNum.EXPECT].textContent = "";
-        last.cells[ColNum.RESULT].textContent = "";
-
-        // button events
-        this._button = document.getElementById("execute");
-        this._button.addEventListener("click", this._start.bind(this));
-    },
-
-    // show or hide the result
-    "_show": function(e) {
-        // get the display area
-        const check = e.currentTarget;
-        const area = check.nextSibling.nextSibling;
-        if (check.checked) {
-            // show
-            area.classList.remove("hidden");
+    // execute test
+    #test(index, errors) {
+        if (index < this.dataCount) {
+            // test row
+            if (typeof this.progressEvent == "function") {
+                this.progressEvent(index);
+            }
+            const message = this.#executeRow(index);
+            if (message == "") {
+                super.setText(index, "result", "OK");
+            } else {
+                super.setText(index, "result", message, "error");
+                errors.push(index + 1);
+            }
+            setTimeout(this.#test.bind(this), 0, index + 1, errors);
         } else {
-            // hide
-            area.classList.add("hidden");
+            // result row
+            if (errors.length == 0) {
+                super.setFoot("result", "All OK");
+            } else {
+                super.setFoot("result", `NG: ${errors.join()}`, "error");
+            }
+            if (typeof this.completeEvent == "function") {
+                this.completeEvent();
+            }
         }
-    },
+    }
 
-    // start all tests
-    "_start": function(e) {
-        this._button.disabled = true;
-
-        // initialize table
-        for (let i = 1; i < this._rows.length; i++) {
-            this._rows[i].cells[ColNum.RESULT].textContent = "";
-        }
-        this._errors = [];
-
-        // execute the first test
-        this._index = 1;
-        setTimeout(this._execute.bind(this), 10);
-    },
-
-    // execute a test
-    "_execute": function() {
-        // execute
-        const row = this._rows[this._index];
-        const problem = row.cells[ColNum.TARGET].textContent;
-        const element = document.getElementById(`data-${this._index}`);
-        const expect = element.textContent;
-        const message = this._getResult(problem, expect);
-        if (message == "") {
-            row.cells[ColNum.RESULT].textContent = "OK";
-            row.cells[ColNum.RESULT].classList.remove("error");
-        } else {
-            row.cells[ColNum.RESULT].textContent = message;
-            row.cells[ColNum.RESULT].classList.add("error");
-            this._errors.push(this._index);
-        }
-
-        // execute the next test
-        this._index++;
-        if (this._index < this._rows.length && this._rows[this._index].cells[ColNum.TARGET].textContent != "") {
-            setTimeout(this._execute.bind(this), 10);
-            return;
-        }
-
-        // finished
-        const last = this._rows[this._rows.length - 1];
-        if (this._errors.length == 0) {
-            last.cells[ColNum.RESULT].textContent = "All OK";
-            last.cells[ColNum.RESULT].classList.remove("error");
-        } else {
-            last.cells[ColNum.RESULT].textContent = `NG: ${this._errors.join()}`;
-            last.cells[ColNum.RESULT].classList.add("error");
-        }
-        this._button.disabled = false;
-    },
-
-    // get the result message
-    "_getResult": function(problem, expect) {
-        // get the problem
-        let data = {};
-        try {
-            data = JSON.parse(problem);
-        } catch (ex) {
-            return "Could not get the puzzle.";
-        }
-
-        // get the expected value
-        let result = {};
-        try {
-            result = JSON.parse(expect);
-        } catch (ex) {
-        }
-
-        // set the board
-        this._logic.initialize();
-        this._logic.setSolidList(data.pattern);
-        this._logic.setupCandidates();
+    // execute by row
+    #executeRow(index) {
+        const params = JSON.parse(super.getText(index, "params"));
+        const expect = JSON.parse(super.getText(index, "expect"));
+        this.#logic.initialize();
+        this.#logic.setSolidList(params.pattern);
+        this.#logic.setupCandidates();
 
         // run the solver
-        const actual = this._solver.solve(this._logic);
+        const actual = this.#solver.solve(this.#logic);
         if (actual == null) {
             return "Could not be resolved.";
         }
 
         // judgement of results
-        let message = this._getDifference("progress", result.progress, actual.progress);
+        let message = this.#getDifference("progress", expect.progress, actual.progress);
         if (message == "") {
-            message = this._getDifference("solutions", result.solutions, actual.solutions);
+            message = this.#getDifference("solutions", expect.solutions, actual.solutions);
             if (message == "") {
-                message = this._getDifference("summary", result.summary, actual.summary);
+                message = this.#getDifference("summary", expect.summary, actual.summary);
                 if (message == "") {
                     return "";
                 }
             }
         }
         return `${message}\n${JSON.stringify(actual)}`;
-    },
+    }
 
     // get the difference
-    "_getDifference": function(title, expect, actual) {
-        // check the actual
+    #getDifference(title, expect, actual) {
         if (!Array.isArray(expect) || !Array.isArray(actual)) {
             return `There is a difference in the ${title}.`;
         }
@@ -175,22 +87,22 @@ Controller.prototype = {
 
         // compare from the beginning
         for (let i = 0; i < count; i++) {
-            if (!this._areSameValues(expect[i], actual[i])) {
+            if (!this.#areSameValues(expect[i], actual[i])) {
                 return `There is a difference in the ${title} #${i + 1}`;
             }
         }
         return "";
-    },
+    }
 
     // whether the values are the same
-    "_areSameValues": function(expect, actual) {
+    #areSameValues(expect, actual) {
         // if both are arrays
         if (Array.isArray(expect) && Array.isArray(actual)) {
             if (expect.length != actual.length) {
                 return false;
             }
             for (let i = 0; i < expect.length; i++) {
-                if (!this._areSameValues(expect[i], actual[i])) {
+                if (!this.#areSameValues(expect[i], actual[i])) {
                     return false;
                 }
             }
@@ -200,15 +112,58 @@ Controller.prototype = {
         // if both are objects
         if (typeof expect == "object" && typeof actual == "object") {
             const keys = Object.keys(expect).sort();
-            if (!this._areSameValues(keys, Object.keys(actual).sort())) {
+            if (!this.#areSameValues(keys, Object.keys(actual).sort())) {
                 return false;
             }
-            return keys.every(elem => this._areSameValues(expect[elem], actual[elem]));
+            return keys.every(elem => this.#areSameValues(expect[elem], actual[elem]));
         }
 
         // others
         return expect === actual;
-    },
+    }
+
+}
+
+// Controller class
+class Controller {
+    #tests = { "full": FullData, "partial": PartialData, "normal": NormalData };
+    #buttons = new Map();
+
+    // constructor
+    constructor() {
+        window.addEventListener("load", this.#initialize.bind(this));
+    }
+
+    // initialize the page
+    #initialize(e) {
+        for (const id in this.#tests) {
+            const section = document.getElementById(id);
+            if (section == null) {
+                continue;
+            }
+            const table = section.querySelector("table");
+            if (table == null || table.tBodies.length == 0) {
+                continue;
+            }
+            const button = section.querySelector("button");
+
+            // test settings
+            const test = new SudokuTest(id, table.tBodies[0], this.#tests[id]);
+            test.completeEvent = () => button.disabled = false;
+
+            // get button
+            button.addEventListener("click", this.#executeTest.bind(this));
+            this.#buttons.set(button, test);
+        }
+    }
+
+    // execute a test
+    #executeTest(e) {
+        const button = e.currentTarget;
+        button.disabled = true;
+        const instance = this.#buttons.get(button);
+        instance.start();
+    }
 
 }
 

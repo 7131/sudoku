@@ -36,6 +36,10 @@ table tr td {
     vertical-align: top;
 }
 
+pre {
+    margin: 0ex;
+}
+
 .hidden {
     display: none;
 }
