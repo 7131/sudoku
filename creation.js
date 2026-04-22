@@ -137,6 +137,7 @@ Controller.prototype = {
         // start creation
         this._trial = 0;
         this._problems = [];
+        this._now = new Date();
         this._creator.setClues(clues);
         this._creator.start(this._board.logic, levels, needs);
     },
@@ -163,8 +164,11 @@ Controller.prototype = {
         this._countTry.textContent = this._trial.toLocaleString();
         if (numbers != null) {
             // valid data
-            const now = new Date();
-            const message = `${now.toLocaleString()} (${summary.join()})`;
+            let name = this._getDateString(this._now);
+            if (1 < this._output) {
+                name += `_${this._problems.length + 1}`;
+            }
+            const message = `${name} (${summary.join()})`;
             const data = { "description": message, "pattern": numbers };
             this._problems.push(data);
             this._countCreate.textContent = this._problems.length.toLocaleString();
@@ -208,7 +212,7 @@ Controller.prototype = {
         this._dependRadios.forEach(elem => elem.disabled = invalid);
     },
 
-    // get an integer value
+    // get the integer value
     "_getInt": function(text) {
         const after = text.replace(/,/g, "");
         let number = parseInt(after, 10);
@@ -216,6 +220,16 @@ Controller.prototype = {
             number = 0;
         }
         return number;
+    },
+
+    // get the date string
+    "_getDateString": function(date) {
+        const month = `0${date.getMonth() + 1}`.slice(-2);
+        const day = `0${date.getDate()}`.slice(-2);
+        const hour = `0${date.getHours()}`.slice(-2);
+        const minute = `0${date.getMinutes()}`.slice(-2);
+        const second = `0${date.getSeconds()}`.slice(-2);
+        return `${date.getFullYear()}${month}${day}_${hour}${minute}${second}`;
     },
 
 }

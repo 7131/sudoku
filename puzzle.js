@@ -35,6 +35,7 @@ Controller.prototype = {
         this._board.setCanvas(canvas, this._selectCell.bind(this));
         this._problemSelector = document.getElementById("problem");
         this._descriptionArea = document.getElementById("description");
+        this._displayButton = document.getElementById("display");
         this._keyTable = document.getElementById("key");
         this._eraseButton = document.getElementById("erase");
         this._judgeButton = document.getElementById("judge");
@@ -61,9 +62,6 @@ Controller.prototype = {
         }
 
         // button events
-        document.getElementById("display").addEventListener("click", this._display.bind(this));
-        document.getElementById("save").addEventListener("click", this._save.bind(this));
-        document.getElementById("load").addEventListener("click", this._load.bind(this));
         const types = [ "decision", "candidate" ];
         types.forEach(elem => document.getElementById(elem).addEventListener("change", this._changeRadio.bind(this)));
         this._type = types[0];
@@ -71,9 +69,12 @@ Controller.prototype = {
             const key = document.getElementById(`key${i}`);
             key.addEventListener("click", this._pressNumber.bind(this));
         }
+        this._displayButton.addEventListener("click", this._display.bind(this));
         this._eraseButton.addEventListener("click", this._eraseNumber.bind(this));
         this._judgeButton.addEventListener("click", this._judge.bind(this));
         this._problemSelector.addEventListener("change", this._selectProblem.bind(this));
+        document.getElementById("save").addEventListener("click", this._save.bind(this));
+        document.getElementById("load").addEventListener("click", this._load.bind(this));
 
         // initial display
         this._board.clear();
@@ -84,6 +85,7 @@ Controller.prototype = {
             this._descriptionArea.textContent = this._problems[this._index].description;
             this._board.setPattern(this._problems[this._index].pattern);
         }
+        this._displayButton.disabled = true;
         this._showCounters();
         this._clearResult();
     },
@@ -93,18 +95,17 @@ Controller.prototype = {
         this._index = parseInt(this._problemSelector.value, 10) - 1;
         if (0 <= this._index && this._index < this._problems.length) {
             this._descriptionArea.textContent = this._problems[this._index].description;
+            this._displayButton.disabled = false;
         } else {
             this._descriptionArea.textContent = "";
+            this._displayButton.disabled = true;
         }
     },
 
     // display a problem
     "_display": function(e) {
-        if (0 <= this._index && this._index < this._problems.length) {
-            this._board.setPattern(this._problems[this._index].pattern);
-        } else {
-            this._board.setPattern([]);
-        }
+        this._board.setPattern(this._problems[this._index].pattern);
+        this._displayButton.disabled = true;
         this._showCounters();
         this._clearResult();
     },
@@ -222,6 +223,9 @@ Controller.prototype = {
             alert("The text format is incorrect.");
             return;
         }
+        this._index = -1;
+        this._problemSelector.value = 0;
+        this._displayButton.disabled = true;
 
         // title
         if (data.description == null) {
