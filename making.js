@@ -72,7 +72,7 @@ Controller.prototype = {
         switch (this._type) {
             case "decision":
                 // decision
-                this._eraseButton.innerHTML = "&nbsp;";
+                this._eraseButton.textContent = "";
                 break;
 
             case "candidate":

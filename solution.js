@@ -140,7 +140,7 @@ Controller.prototype = {
         this._resultArea.textContent = "";
 
         // set the message area
-        this._messageArea.innerHTML = "&nbsp;";
+        this._messageArea.textContent = "";
         this._resultArea.appendChild(this._messageArea);
     },
 

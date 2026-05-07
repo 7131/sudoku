@@ -144,7 +144,7 @@ Controller.prototype = {
             this._eraseButton.textContent = "#";
         } else {
             // decision
-            this._eraseButton.innerHTML = "&nbsp;";
+            this._eraseButton.textContent = "";
         }
     },
 
@@ -247,7 +247,7 @@ Controller.prototype = {
         if (this._judgeButton.disabled) {
             this._board.redraw(true);
         }
-        this._resultArea.innerHTML = "&nbsp;";
+        this._resultArea.textContent = "";
         this._judgeButton.disabled = false;
     },
 
