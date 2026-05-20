@@ -21,6 +21,7 @@ Controller.prototype = {
         this._resultArea = document.getElementById("result");
         this._messageArea = document.getElementById("message");
         this._dataArea = document.getElementById("data");
+        this._consequence = document.getElementById("consequence");
         this._countAreas = [];
         this._countAreas.push(document.getElementById("remain"));
         for (let i = 1; i <= 9; i++) {
@@ -115,13 +116,13 @@ Controller.prototype = {
 
     // restore from text
     "_load": function(e) {
+        this._clearResult();
         const data = this._board.setData(this._dataArea.value);
         if (data == null) {
-            alert("The text format is incorrect.");
+            this._consequence.textContent = "The text format is incorrect.";
             return;
         }
         this._showCounters();
-        this._clearResult();
     },
 
     // change the checkbox
@@ -137,9 +138,8 @@ Controller.prototype = {
 
     // clear the result
     "_clearResult": function() {
+        this._consequence.textContent = "";
         this._resultArea.textContent = "";
-
-        // set the message area
         this._messageArea.textContent = "";
         this._resultArea.appendChild(this._messageArea);
     },

@@ -41,6 +41,7 @@ Controller.prototype = {
         this._judgeButton = document.getElementById("judge");
         this._resultArea = document.getElementById("result");
         this._dataArea = document.getElementById("data");
+        this._consequence = document.getElementById("consequence");
         this._countAreas = [];
         this._countAreas.push(document.getElementById("remain"));
         for (let i = 1; i <= 9; i++) {
@@ -183,6 +184,8 @@ Controller.prototype = {
 
     // judge the result
     "_judge": function(e) {
+        this._clearResult();
+
         // get incorrect cells
         const indexes = this._board.logic.getIncorrectIndexes();
         let reason = "";
@@ -213,14 +216,17 @@ Controller.prototype = {
             title = `Puzzle ${this._index + 1}`;
         }
         this._dataArea.value = this._board.getData(title, true);
+        this._clearResult();
     },
 
     // restore from text
     "_load": function(e) {
+        this._clearResult();
+
         // grid data
         const data = this._board.setData(this._dataArea.value, true);
         if (data == null) {
-            alert("The text format is incorrect.");
+            this._consequence.textContent = "The text format is incorrect.";
             return;
         }
         this._index = -1;
@@ -234,7 +240,6 @@ Controller.prototype = {
             this._descriptionArea.textContent = data.description;
         }
         this._showCounters();
-        this._clearResult();
     },
 
     // display the counter list
@@ -248,6 +253,7 @@ Controller.prototype = {
             this._board.redraw(true);
         }
         this._resultArea.textContent = "";
+        this._consequence.textContent = "";
         this._judgeButton.disabled = false;
     },
 

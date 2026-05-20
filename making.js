@@ -18,6 +18,7 @@ Controller.prototype = {
         this._keyTable = document.getElementById("key");
         this._eraseButton = document.getElementById("erase");
         this._dataArea = document.getElementById("data");
+        this._consequence = document.getElementById("consequence");
         this._countAreas = [];
         this._countAreas.push(document.getElementById("remain"));
         for (let i = 1; i <= 9; i++) {
@@ -108,8 +109,9 @@ Controller.prototype = {
                 break;
         }
 
-        // update counters
+        // update the result
         this._showCounters();
+        this._clearResult();
     },
 
     // erase the number
@@ -131,43 +133,50 @@ Controller.prototype = {
                 break;
         }
 
-        // update counters
+        // update the result
         this._showCounters();
+        this._clearResult();
     },
 
     // show the problem on another page
     "_showProblem": function(e) {
         const data = this._board.getData();
         window.open(`./puzzle.html?data=${data}`, "problem");
+        this._clearResult();
     },
 
     // show the solution page
     "_showSolver": function(e) {
         const data = this._board.getData();
         window.open(`./solution.html?data=${data}`, "solution");
+        this._clearResult();
     },
 
     // output to text
     "_save": function(e) {
         this._dataArea.value = this._board.getData(null, true, true);
+        this._clearResult();
     },
 
     // restore from text
     "_load": function(e) {
-        // grid data
+        this._clearResult();
         const data = this._board.setData(this._dataArea.value, true, true);
         if (data == null) {
-            alert("The text format is incorrect.");
+            this._consequence.textContent = "The text format is incorrect.";
             return;
         }
-
-        // update counters
         this._showCounters();
     },
 
     // display the counter list
     "_showCounters": function() {
         this._board.getCounters().forEach((val, idx) => this._countAreas[idx].textContent = val);
+    },
+
+    // clear the result
+    "_clearResult": function() {
+        this._consequence.textContent = "";
     },
 
 }
