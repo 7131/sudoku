@@ -1,55 +1,57 @@
-// Creator prototype update
-if (typeof Creator === "function") {
+let ExtendedCreator;
 
-    Creator.prototype = Object.create(Creator.prototype, {
+if (typeof Creator == "function") {
 
-        // constructor
-        "constructor": { "value": Creator },
+    // Extended creator class
+    ExtendedCreator = class extends Creator {
+        #table;
+        #row = 0;
+        #col = 0;
 
         // initialize the fields
-        "initialize": { "value": function(grids) {
+        initialize(grids) {
             // set the grid list
             if (Array.isArray(grids)) {
-                this._grids = this._shuffle(grids);
+                this.grids = super.shuffle(grids);
             } else {
-                this._grids = [];
+                this.grids = [];
             }
 
             // create a list of clues
-            this._clues = new Array(81).fill(false);
+            this.clues = new Array(81).fill(false);
 
             // create a replacement table
-            const first = this._permutate([ 3, 4, 5 ]);
-            const second = this._permutate([ 6, 7, 8 ]);
+            const first = this.#permutate([ 3, 4, 5 ]);
+            const second = this.#permutate([ 6, 7, 8 ]);
             const normal = first.map(head => second.map(elem => head.concat(elem))).flat();
             const reverse = second.map(head => first.map(elem => head.concat(elem))).flat();
-            this._table = normal.concat(reverse);
-        }},
+            this.#table = normal.concat(reverse);
+        }
 
         // start creating problems
-        "start": { "value": function(logic, levels, needs) {
+        start(logic, levels, needs) {
             // initialize the fields
-            this._logic = logic;
-            this._levels = levels;
+            this.logic = logic;
+            this.levels = levels;
             if (Array.isArray(needs)) {
-                this._needs = needs;
+                this.needs = needs;
             } else {
-                this._needs = [];
+                this.needs = [];
             }
-            this._table = this._shuffle(this._table);
-            this._grids = this._shuffle(this._grids);
-            this._index = 0;
-            this._row = 0;
-            this._col = 0;
-            this._entity = null;
-            this._accept = true;
+            this.#table = super.shuffle(this.#table);
+            this.grids = super.shuffle(this.grids);
+            this.index = 0;
+            this.#row = 0;
+            this.#col = 0;
+            this.entity = null;
+            this.accept = true;
 
             // execute
-            setTimeout(this._execute.bind(this), 1);
-        }},
+            setTimeout(this.#execute.bind(this), 1);
+        }
 
         // permutate the array
-        "_permutate": { "value": function(values) {
+        #permutate(values) {
             // check arguments
             if (values.length <= 1) {
                 return [ values.concat() ];
@@ -62,58 +64,58 @@ if (typeof Creator === "function") {
                 const first = follow.splice(i, 1);
 
                 // permutate an array with one less element
-                const parts = this._permutate(follow);
+                const parts = this.#permutate(follow);
                 result = result.concat(parts.map(elem => first.concat(elem)));
             }
             return result;
-        }},
+        }
 
         // execute problem creation
-        "_execute": { "value": function() {
+        #execute() {
             // check fields
-            if (this._table.length <= this._col) {
+            if (this.#table.length <= this.#col) {
                 this.finishEvent(true);
                 return;
             }
 
             // create a problem
-            if (this._entity == null) {
-                this._entity = this._getEntity();
+            if (this.entity == null) {
+                this.entity = this.#getEntity();
             }
-            let numbers = this._entity.createNext(this._accept);
+            let numbers = this.entity.createNext(this.accept);
             if (numbers == null) {
-                this._entity = this._getEntity();
-                numbers = this._entity.createNext(this._accept);
+                this.entity = this.#getEntity();
+                numbers = this.entity.createNext(this.accept);
             }
-            this._logic.setSolidList(numbers);
-            this._logic.setNumberList([]);
-            this._logic.setupCandidates();
+            this.logic.setSolidList(numbers);
+            this.logic.setNumberList([]);
+            this.logic.setupCandidates();
 
             // create a solution
-            const result = this._solver.solve(this._logic, this._levels);
+            const result = this.solver.solve(this.logic, this.levels);
             if (result.solutions.length == 1) {
                 // if there is only one solution
                 let valid = true;
                 let i = 0;
-                while (valid && i < this._needs.length) {
-                    if (this._needs[i] && result.summary[i] === 0) {
+                while (valid && i < this.needs.length) {
+                    if (this.needs[i] && result.summary[i] === 0) {
                         valid = false;
                     }
                     i++;
                 }
                 if (valid) {
                     // if all required methods are used
-                    this.progressEvent(this._changeNumbers(numbers), result.summary);
-                    this._entity = null;
+                    this.progressEvent(this.#changeNumbers(numbers), result.summary);
+                    this.entity = null;
                 } else {
                     // if at least one required method is not used
                     this.progressEvent(null, []);
-                    this._accept = true;
+                    this.accept = true;
                 }
             } else {
                 // if there is no one solution
                 this.progressEvent(null, []);
-                this._accept = false;
+                this.accept = false;
             }
 
             // check for cancellations
@@ -123,58 +125,58 @@ if (typeof Creator === "function") {
             }
 
             // execute more
-            setTimeout(this._execute.bind(this), 1);
-        }},
+            setTimeout(this.#execute.bind(this), 1);
+        }
 
         // get the next creation entity
-        "_getEntity": { "value": function() {
+        #getEntity() {
             // replace the standard grid
-            const grid = this._grids[this._index];
-            const conv = this._convertRow(grid, this._row);
-            const next = this._convertCol(conv, this._col);
-            const entity = new CreatorEntity(next, this._clues);
+            const grid = this.grids[this.index];
+            const conv = this.#convertRow(grid, this.#row);
+            const next = this.#convertCol(conv, this.#col);
+            const entity = new CreatorEntity(next, this.clues);
 
             // update index
-            this._index++;
-            if (this._grids.length <= this._index) {
-                this._index = 0;
-                this._row++;
-                if (this._table.length <= this._row) {
-                    this._row = 0;
-                    this._col++;
+            this.index++;
+            if (this.grids.length <= this.index) {
+                this.index = 0;
+                this.#row++;
+                if (this.#table.length <= this.#row) {
+                    this.#row = 0;
+                    this.#col++;
                 }
             }
             return entity;
-        }},
+        }
 
         // convert rows
-        "_convertRow": { "value": function(sample, index) {
+        #convertRow(sample, index) {
             let numbers = sample.slice(0, 27);
-            for (const row of this._table[index]) {
+            for (const row of this.#table[index]) {
                 const start = row * 9;
                 numbers = numbers.concat(sample.slice(start, start + 9));
             }
             return numbers;
-        }},
+        }
 
         // convert columns
-        "_convertCol": { "value": function(sample, index) {
+        #convertCol(sample, index) {
             let numbers = [];
             for (let i = 0; i < 9; i++) {
                 const start = i * 9;
                 numbers = numbers.concat(sample.slice(start, start + 3));
-                numbers = numbers.concat(this._table[index].map(elem => sample[start + elem]));
+                numbers = numbers.concat(this.#table[index].map(elem => sample[start + elem]));
             }
             return numbers;
-        }},
+        }
 
         // change numbers
-        "_changeNumbers": { "value": function(numbers) {
-            const map = [ 0 ].concat(this._shuffle(Numbers.all));
+        #changeNumbers(numbers) {
+            const map = [ 0 ].concat(super.shuffle(Numbers.all));
             return numbers.map(elem => map[elem]);
-        }},
+        }
 
-    });
+    }
 
 }
 

@@ -1,183 +1,191 @@
 // Controller class
-const Controller = function() {
-    // fields
-    this._board = new PhysicalBoard(new LogicalBoard());
+class Controller {
+    #board;
+    #keyTable;
+    #eraseButton;
+    #dataArea;
+    #consequence;
+    #countAreas = [];
+    #type = "solid";
 
-    // events
-    window.addEventListener("load", this._initialize.bind(this));
-}
+    // constructor
+    constructor() {
+        if (typeof ExtendedLogicalBoard == "function") {
+            this.#board = new PhysicalBoard(new ExtendedLogicalBoard());
+        } else {
+            this.#board = new PhysicalBoard(new LogicalBoard());
+        }
 
-// Controller prototype
-Controller.prototype = {
+        // events
+        window.addEventListener("load", this.#initialize.bind(this));
+    }
 
     // initialize the private fields and the page
-    "_initialize": function(e) {
+    #initialize(e) {
         // get the elements
         const canvas = document.getElementById("board");
-        this._board.setCanvas(canvas, this._selectCell.bind(this));
-        this._keyTable = document.getElementById("key");
-        this._eraseButton = document.getElementById("erase");
-        this._dataArea = document.getElementById("data");
-        this._consequence = document.getElementById("consequence");
-        this._countAreas = [];
-        this._countAreas.push(document.getElementById("remain"));
+        this.#board.setCanvas(canvas, this.#selectCell.bind(this));
+        this.#keyTable = document.getElementById("key");
+        this.#eraseButton = document.getElementById("erase");
+        this.#dataArea = document.getElementById("data");
+        this.#consequence = document.getElementById("consequence");
+        this.#countAreas.push(document.getElementById("remain"));
         for (let i = 1; i <= 9; i++) {
-            this._countAreas.push(document.getElementById(`count${i}`));
+            this.#countAreas.push(document.getElementById(`count${i}`));
         }
 
         // button events
-        document.getElementById("problem").addEventListener("click", this._showProblem.bind(this));
-        document.getElementById("solution").addEventListener("click", this._showSolver.bind(this));
-        document.getElementById("save").addEventListener("click", this._save.bind(this));
-        document.getElementById("load").addEventListener("click", this._load.bind(this));
+        document.getElementById("problem").addEventListener("click", this.#showProblem.bind(this));
+        document.getElementById("solution").addEventListener("click", this.#showSolver.bind(this));
+        document.getElementById("save").addEventListener("click", this.#save.bind(this));
+        document.getElementById("load").addEventListener("click", this.#load.bind(this));
         const types = [ "solid", "decision", "candidate" ];
-        types.forEach(elem => document.getElementById(elem).addEventListener("change", this._changeRadio.bind(this)));
-        this._type = types[0];
+        types.forEach(elem => document.getElementById(elem).addEventListener("change", this.#changeRadio.bind(this)));
         for (let i = 1; i <= 9; i++) {
             const key = document.getElementById(`key${i}`);
-            key.addEventListener("click", this._pressNumber.bind(this));
+            key.addEventListener("click", this.#pressNumber.bind(this));
         }
-        this._eraseButton.addEventListener("click", this._eraseNumber.bind(this));
+        this.#eraseButton.addEventListener("click", this.#eraseNumber.bind(this));
 
         // initial display
-        this._board.clear();
-        this._showCounters();
-    },
+        this.#board.clear();
+        this.#showCounters();
+    }
 
     // select a cell
-    "_selectCell": function(e) {
+    #selectCell(e) {
         // deselect the current cell
-        this._board.drawBack(false);
+        this.#board.drawBack(false);
 
         // get the cell position
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        this._board.selectCell(x, y);
+        this.#board.selectCell(x, y);
 
         // draw background
-        this._board.drawBack(true);
-    },
+        this.#board.drawBack(true);
+    }
 
     // select a radio button
-    "_changeRadio": function(e) {
+    #changeRadio(e) {
         // check the status
         if (!e.currentTarget.checked) {
             return;
         }
 
         // set the status
-        this._keyTable.classList.remove(this._type);
-        this._type = e.currentTarget.id;
-        this._keyTable.classList.add(this._type);
-        switch (this._type) {
+        this.#keyTable.classList.remove(this.#type);
+        this.#type = e.currentTarget.id;
+        this.#keyTable.classList.add(this.#type);
+        switch (this.#type) {
             case "decision":
                 // decision
-                this._eraseButton.textContent = "";
+                this.#eraseButton.textContent = "";
                 break;
 
             case "candidate":
                 // candidate
-                this._eraseButton.textContent = "#";
+                this.#eraseButton.textContent = "#";
                 break;
 
             default:
                 // solid
-                this._eraseButton.textContent = "X";
+                this.#eraseButton.textContent = "X";
                 break;
         }
-    },
+    }
 
     // press the number button
-    "_pressNumber": function(e) {
+    #pressNumber(e) {
         // get the input value
         const value = parseInt(e.currentTarget.textContent, 10);
-        switch (this._type) {
+        switch (this.#type) {
             case "decision":
                 // decision
-                this._board.setNumberCell(value);
+                this.#board.setNumberCell(value);
                 break;
 
             case "candidate":
                 // candidate
-                this._board.toggleCandidate(value);
+                this.#board.toggleCandidate(value);
                 break;
 
             default:
                 // solid
-                this._board.setSolidCell(value);
+                this.#board.setSolidCell(value);
                 break;
         }
 
         // update the result
-        this._showCounters();
-        this._clearResult();
-    },
+        this.#showCounters();
+        this.#clearResult();
+    }
 
     // erase the number
-    "_eraseNumber": function(e) {
-        switch (this._type) {
+    #eraseNumber(e) {
+        switch (this.#type) {
             case "decision":
                 // decision
-                this._board.setNumberCell(0);
+                this.#board.setNumberCell(0);
                 break;
 
             case "candidate":
                 // candidate
-                this._board.resetCandidate();
+                this.#board.resetCandidate();
                 break;
 
             default:
                 // solid
-                this._board.setSolidCell(-1);
+                this.#board.setSolidCell(-1);
                 break;
         }
 
         // update the result
-        this._showCounters();
-        this._clearResult();
-    },
+        this.#showCounters();
+        this.#clearResult();
+    }
 
     // show the problem on another page
-    "_showProblem": function(e) {
-        const data = this._board.getData();
+    #showProblem(e) {
+        const data = this.#board.getData();
         window.open(`./puzzle.html?data=${data}`, "problem");
-        this._clearResult();
-    },
+        this.#clearResult();
+    }
 
     // show the solution page
-    "_showSolver": function(e) {
-        const data = this._board.getData();
+    #showSolver(e) {
+        const data = this.#board.getData();
         window.open(`./solution.html?data=${data}`, "solution");
-        this._clearResult();
-    },
+        this.#clearResult();
+    }
 
     // output to text
-    "_save": function(e) {
-        this._dataArea.value = this._board.getData(null, true, true);
-        this._clearResult();
-    },
+    #save(e) {
+        this.#dataArea.value = this.#board.getData(null, true, true);
+        this.#clearResult();
+    }
 
     // restore from text
-    "_load": function(e) {
-        this._clearResult();
-        const data = this._board.setData(this._dataArea.value, true, true);
+    #load(e) {
+        this.#clearResult();
+        const data = this.#board.setData(this.#dataArea.value, true, true);
         if (data == null) {
-            this._consequence.textContent = "The text format is incorrect.";
+            this.#consequence.textContent = "The text format is incorrect.";
             return;
         }
-        this._showCounters();
-    },
+        this.#showCounters();
+    }
 
     // display the counter list
-    "_showCounters": function() {
-        this._board.getCounters().forEach((val, idx) => this._countAreas[idx].textContent = val);
-    },
+    #showCounters() {
+        this.#board.getCounters().forEach((val, idx) => this.#countAreas[idx].textContent = val);
+    }
 
     // clear the result
-    "_clearResult": function() {
-        this._consequence.textContent = "";
-    },
+    #clearResult() {
+        this.#consequence.textContent = "";
+    }
 
 }
 

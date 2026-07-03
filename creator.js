@@ -1,46 +1,48 @@
 // Creator entity class
-const CreatorEntity = function(sample, clues) {
-    // fields
-    this._sample = sample;
-    this._clues = clues;
+class CreatorEntity {
+    #sample;
+    #clues;
+    #child;
+    #shrink = [];
+    #index = -1;
 
-    // create reduction clues
-    const count = Math.floor(this._clues.length / 2);
-    this._shrink = [];
-    for (let i = 0; i < count; i++) {
-        if (this._clues[i]) {
-            // when a clue is set in the cell
-            const copy = this._clues.concat();
-            copy[i] = false;
-            copy[copy.length - 1 - i] = false;
-            this._shrink.push(copy);
+    // constructor
+    constructor(sample, clues) {
+        // fields
+        this.#sample = sample;
+        this.#clues = clues;
+
+        // create reduction clues
+        const count = Math.floor(this.#clues.length / 2);
+        for (let i = 0; i < count; i++) {
+            if (this.#clues[i]) {
+                // when a clue is set in the cell
+                const copy = this.#clues.concat();
+                copy[i] = false;
+                copy[copy.length - 1 - i] = false;
+                this.#shrink.push(copy);
+            }
+        }
+        if (this.#clues.length % 2 == 1 && this.#clues[count]) {
+            // when a clue is set in the center cell
+            const copy = this.#clues.concat();
+            copy[count] = false;
+            this.#shrink.push(copy);
         }
     }
-    if (this._clues.length % 2 == 1 && this._clues[count]) {
-        // when a clue is set in the center cell
-        const copy = this._clues.concat();
-        copy[count] = false;
-        this._shrink.push(copy);
-    }
-    this._index = -1;
-    this._child = null;
-}
-
-// Creator entity prototype
-CreatorEntity.prototype = {
 
     // create the next problem
-    "createNext": function(accept) {
-        if (this._index < 0) {
+    createNext(accept) {
+        if (this.#index < 0) {
             // this clues problem
-            this._index = 0;
-            return this._createProblem();
+            this.#index = 0;
+            return this.#createProblem();
         }
-        if (this._index == 0) {
-            if (accept && 0 < this._shrink.length) {
+        if (this.#index == 0) {
+            if (accept && 0 < this.#shrink.length) {
                 // first reduction clues
-                this._child = new CreatorEntity(this._sample, this._shrink[0]);
-                this._index = 1;
+                this.#child = new CreatorEntity(this.#sample, this.#shrink[0]);
+                this.#index = 1;
             } else {
                 // if this clues problem is not accepted
                 return null;
@@ -48,101 +50,118 @@ CreatorEntity.prototype = {
         }
 
         // reduction clues problem
-        let numbers = this._child.createNext(accept);
-        if (numbers == null && this._index < this._shrink.length) {
-            this._child = new CreatorEntity(this._sample, this._shrink[this._index]);
-            this._index++;
-            numbers = this._child.createNext(accept);
+        let numbers = this.#child.createNext(accept);
+        if (numbers == null && this.#index < this.#shrink.length) {
+            this.#child = new CreatorEntity(this.#sample, this.#shrink[this.#index]);
+            this.#index++;
+            numbers = this.#child.createNext(accept);
         }
         return numbers;
-    },
+    }
 
     // create a problem
-    "_createProblem": function() {
+    #createProblem() {
         const numbers = [];
-        for (let i = 0; i < this._sample.length; i++) {
+        for (let i = 0; i < this.#sample.length; i++) {
             // get clues
-            if (this._clues[i]) {
-                numbers.push(this._sample[i]);
+            if (this.#clues[i]) {
+                numbers.push(this.#sample[i]);
             } else {
                 numbers.push(0);
             }
         }
         return numbers;
-    },
+    }
 
 }
 
 // Creator class
-const Creator = function() {
-    // fields
-    this._solver = new Solver();
-    this._solver.initialize();
+class Creator {
 
-    // events
-    this.progressEvent = function(numbers, summary) { };
-    this.finishEvent = function(completed) { };
-    this.cancelEvent = function() { return false; };
-}
+    // constructor
+    constructor() {
+        // properties
+        if (typeof ExtendedSolver == "function") {
+            this.solver = new ExtendedSolver();
+        } else {
+            this.solver = new Solver();
+        }
+        this.solver.initialize();
 
-// Creator prototype
-Creator.prototype = {
+        // events
+        this.progressEvent = function (numbers, summary) { };
+        this.finishEvent = function (completed) { };
+        this.cancelEvent = function () { return false; };
+    }
 
     // initialize the fields
-    "initialize": function(grids) {
+    initialize(grids) {
         // set the grid list
         if (Array.isArray(grids)) {
-            this._grids = this._shuffle(grids);
+            this.grids = this.shuffle(grids);
         } else {
-            this._grids = [];
+            this.grids = [];
         }
 
         // create a list of clues
-        this._clues = [];
+        this.clues = [];
         for (let i = 0; i < 81; i++) {
-            this._clues.push(false);
+            this.clues.push(false);
         }
-    },
+    }
 
     // set clues
-    "setClues": function(count) {
+    setClues(count) {
         // initialize clues
-        this._clues.fill(false);
+        this.clues.fill(false);
 
         // set the center cell if the number of clues is odd
         if ((count % 2) == 1) {
-            this._clues[Math.floor(this._clues.length / 2)] = true;
+            this.clues[Math.floor(this.clues.length / 2)] = true;
             count--;
         }
         count /= 2;
 
         // set clues in rotationally symmetric cells
-        const quad = this._getRandom(count / 2);
-        this._setQuadClues(quad);
-        this._setTwinClues(count - quad * 2);
-    },
+        const quad = this.#getRandom(count / 2);
+        this.#setQuadClues(quad);
+        this.#setTwinClues(count - quad * 2);
+    }
 
     // start creating problems
-    "start": function(logic, levels, needs) {
+    start(logic, levels, needs) {
         // initialize the fields
-        this._logic = logic;
-        this._levels = levels;
+        this.logic = logic;
+        this.levels = levels;
         if (Array.isArray(needs)) {
-            this._needs = needs;
+            this.needs = needs;
         } else {
-            this._needs = [];
+            this.needs = [];
         }
-        this._grids = this._shuffle(this._grids);
-        this._index = 0;
-        this._entity = null;
-        this._accept = true;
+        this.grids = this.shuffle(this.grids);
+        this.index = 0;
+        this.entity = null;
+        this.accept = true;
 
         // execute
-        setTimeout(this._execute.bind(this), 1);
-    },
+        setTimeout(this.#execute.bind(this), 1);
+    }
+
+    // shuffle the array
+    shuffle(target) {
+        const before = target.concat();
+        const after = [];
+        while (0 < before.length) {
+            // get elements randomly
+            const index = this.#getRandom(before.length);
+            after.push(before[index]);
+            before.splice(index, 1);
+        }
+        return after;
+    }
 
     // set clues for 4-fold rotational symmetry
-    "_setQuadClues": function(count) {
+    #setQuadClues(count) {
         // get the operation target positions
         const target = [];
         for (let i = 0; i < 4; i++) {
@@ -152,68 +171,68 @@ Creator.prototype = {
         }
 
         // set random positions as clues
-        const positions = this._shuffle(target);
+        const positions = this.shuffle(target);
         count = Math.min(count, positions.length);
         for (let i = 0; i < count; i++) {
             const pos = positions[i];
-            this._clues[pos.row * 9 + pos.col] = true;
-            this._clues[(8 - pos.row) + pos.col * 9] = true;
-            this._clues[pos.row + (8 - pos.col) * 9] = true;
-            this._clues[(8 - pos.row) * 9 + (8 - pos.col)] = true;
+            this.clues[pos.row * 9 + pos.col] = true;
+            this.clues[(8 - pos.row) + pos.col * 9] = true;
+            this.clues[pos.row + (8 - pos.col) * 9] = true;
+            this.clues[(8 - pos.row) * 9 + (8 - pos.col)] = true;
         }
-    },
+    }
 
     // set clues for 2-fold rotational symmetry
-    "_setTwinClues": function(count) {
+    #setTwinClues(count) {
         // get indexes of cells for which no clues have been obtained yet
         const target = [];
-        const half = Math.floor(this._clues.length / 2);
+        const half = Math.floor(this.clues.length / 2);
         for (let i = 0; i < half; i++) {
-            if (!this._clues[i]) {
+            if (!this.clues[i]) {
                 target.push(i);
             }
         }
 
         // set random positions as clues
-        const indexes = this._shuffle(target);
-        const max = this._clues.length - 1;
+        const indexes = this.shuffle(target);
+        const max = this.clues.length - 1;
         count = Math.min(count, indexes.length);
         for (let i = 0; i < count; i++) {
             const index = indexes[i];
-            this._clues[index] = true;
-            this._clues[max - index] = true;
+            this.clues[index] = true;
+            this.clues[max - index] = true;
         }
-    },
+    }
 
     // execute problem creation
-    "_execute": function() {
+    #execute() {
         // check fields
-        if (this._grids.length <= this._index) {
+        if (this.grids.length <= this.index) {
             this.finishEvent(true);
             return;
         }
 
         // create a problem
-        if (this._entity == null) {
-            this._entity = this._getEntity();
+        if (this.entity == null) {
+            this.entity = this.#getEntity();
         }
-        let numbers = this._entity.createNext(this._accept);
+        let numbers = this.entity.createNext(this.accept);
         if (numbers == null) {
-            this._entity = this._getEntity();
-            numbers = this._entity.createNext(this._accept);
+            this.entity = this.#getEntity();
+            numbers = this.entity.createNext(this.accept);
         }
-        this._logic.setSolidList(numbers);
-        this._logic.setNumberList([]);
-        this._logic.setupCandidates();
+        this.logic.setSolidList(numbers);
+        this.logic.setNumberList([]);
+        this.logic.setupCandidates();
 
         // create a solution
-        const result = this._solver.solve(this._logic, this._levels);
+        const result = this.solver.solve(this.logic, this.levels);
         if (result.solutions.length == 1) {
             // if there is only one solution
             let valid = true;
             let i = 0;
-            while (valid && i < this._needs.length) {
-                if (this._needs[i] && result.summary[i] === 0) {
+            while (valid && i < this.needs.length) {
+                if (this.needs[i] && result.summary[i] === 0) {
                     valid = false;
                 }
                 i++;
@@ -221,16 +240,16 @@ Creator.prototype = {
             if (valid) {
                 // if all required methods are used
                 this.progressEvent(numbers, result.summary);
-                this._entity = null;
+                this.entity = null;
             } else {
                 // if at least one required method is not used
                 this.progressEvent(null, []);
-                this._accept = true;
+                this.accept = true;
             }
         } else {
             // if there is no one solution
             this.progressEvent(null, []);
-            this._accept = false;
+            this.accept = false;
         }
 
         // check for cancellations
@@ -240,37 +259,24 @@ Creator.prototype = {
         }
 
         // execute more
-        setTimeout(this._execute.bind(this), 1);
-    },
+        setTimeout(this.#execute.bind(this), 1);
+    }
 
     // get the next creation entity
-    "_getEntity": function() {
+    #getEntity() {
         // get the next grid
-        const next = this._grids[this._index];
-        const entity = new CreatorEntity(next, this._clues);
+        const next = this.grids[this.index];
+        const entity = new CreatorEntity(next, this.clues);
 
         // update index
-        this._index++;
+        this.index++;
         return entity;
-    },
+    }
 
     // generate integer random numbers
-    "_getRandom": function(max) {
+    #getRandom(max) {
         return Math.floor(Math.random() * Math.floor(max));
-    },
-
-    // shuffle the array
-    "_shuffle": function(target) {
-        const before = target.concat();
-        const after = [];
-        while (0 < before.length) {
-            // get elements randomly
-            const index = this._getRandom(before.length);
-            after.push(before[index]);
-            before.splice(index, 1);
-        }
-        return after;
-    },
+    }
 
 }
 

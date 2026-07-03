@@ -1,51 +1,68 @@
 // Controller class
-const Controller = function() {
-    // get the query string
-    let data;
-    const params = new URLSearchParams(window.location.search);
-    if (params.has("data")) {
-        try {
-            data = JSON.parse(params.get("data"));
-            if (!Array.isArray(data)) {
-                data = [ data ];
+class Controller {
+    #problems;
+    #board;
+    #problemSelector;
+    #descriptionArea;
+    #displayButton;
+    #keyTable;
+    #eraseButton;
+    #judgeButton;
+    #resultArea;
+    #dataArea;
+    #consequence;
+    #countAreas = [];
+    #type = "decision";
+    #index = -1;
+
+    // constructor
+    constructor() {
+        // get the query string
+        let data;
+        const params = new URLSearchParams(window.location.search);
+        if (params.has("data")) {
+            try {
+                data = JSON.parse(params.get("data"));
+                if (!Array.isArray(data)) {
+                    data = [ data ];
+                }
+            } catch (ex) {
             }
-        } catch (ex) {
         }
+        if (Array.isArray(data)) {
+            this.#problems = data;
+        } else {
+            this.#problems = Problems;
+        }
+
+        // fields
+        if (typeof ExtendedLogicalBoard == "function") {
+            this.#board = new PhysicalBoard(new ExtendedLogicalBoard());
+        } else {
+            this.#board = new PhysicalBoard(new LogicalBoard());
+        }
+
+        // events
+        window.addEventListener("load", this.#initialize.bind(this));
     }
-    if (Array.isArray(data)) {
-        this._problems = data;
-    } else {
-        this._problems = Problems;
-    }
-
-    // fields
-    this._board = new PhysicalBoard(new LogicalBoard());
-
-    // events
-    window.addEventListener("load", this._initialize.bind(this));
-}
-
-// Controller prototype
-Controller.prototype = {
 
     // initialize the private fields and the page
-    "_initialize": function(e) {
+    #initialize(e) {
         // get the elements
         const canvas = document.getElementById("board");
-        this._board.setCanvas(canvas, this._selectCell.bind(this));
-        this._problemSelector = document.getElementById("problem");
-        this._descriptionArea = document.getElementById("description");
-        this._displayButton = document.getElementById("display");
-        this._keyTable = document.getElementById("key");
-        this._eraseButton = document.getElementById("erase");
-        this._judgeButton = document.getElementById("judge");
-        this._resultArea = document.getElementById("result");
-        this._dataArea = document.getElementById("data");
-        this._consequence = document.getElementById("consequence");
-        this._countAreas = [];
-        this._countAreas.push(document.getElementById("remain"));
+        this.#board.setCanvas(canvas, this.#selectCell.bind(this));
+        this.#problemSelector = document.getElementById("problem");
+        this.#descriptionArea = document.getElementById("description");
+        this.#displayButton = document.getElementById("display");
+        this.#keyTable = document.getElementById("key");
+        this.#eraseButton = document.getElementById("erase");
+        this.#judgeButton = document.getElementById("judge");
+        this.#resultArea = document.getElementById("result");
+        this.#dataArea = document.getElementById("data");
+        this.#consequence = document.getElementById("consequence");
+        this.#countAreas.push(document.getElementById("remain"));
         for (let i = 1; i <= 9; i++) {
-            this._countAreas.push(document.getElementById(`count${i}`));
+            this.#countAreas.push(document.getElementById(`count${i}`));
         }
 
         // set up a problem list
@@ -53,209 +70,207 @@ Controller.prototype = {
         title.value = 0;
         title.selected = true;
         title.textContent = "Select...";
-        this._problemSelector.textContent = "";
-        this._problemSelector.appendChild(title);
-        for (let i = 1; i <= this._problems.length; i++) {
+        this.#problemSelector.textContent = "";
+        this.#problemSelector.appendChild(title);
+        for (let i = 1; i <= this.#problems.length; i++) {
             const option = document.createElement("option");
             option.value = i;
             option.textContent = i;
-            this._problemSelector.appendChild(option);
+            this.#problemSelector.appendChild(option);
         }
 
         // button events
         const types = [ "decision", "candidate" ];
-        types.forEach(elem => document.getElementById(elem).addEventListener("change", this._changeRadio.bind(this)));
-        this._type = types[0];
+        types.forEach(elem => document.getElementById(elem).addEventListener("change", this.#changeRadio.bind(this)));
         for (let i = 1; i <= 9; i++) {
             const key = document.getElementById(`key${i}`);
-            key.addEventListener("click", this._pressNumber.bind(this));
+            key.addEventListener("click", this.#pressNumber.bind(this));
         }
-        this._displayButton.addEventListener("click", this._display.bind(this));
-        this._eraseButton.addEventListener("click", this._eraseNumber.bind(this));
-        this._judgeButton.addEventListener("click", this._judge.bind(this));
-        this._problemSelector.addEventListener("change", this._selectProblem.bind(this));
-        document.getElementById("save").addEventListener("click", this._save.bind(this));
-        document.getElementById("load").addEventListener("click", this._load.bind(this));
+        this.#displayButton.addEventListener("click", this.#display.bind(this));
+        this.#eraseButton.addEventListener("click", this.#eraseNumber.bind(this));
+        this.#judgeButton.addEventListener("click", this.#judge.bind(this));
+        this.#problemSelector.addEventListener("change", this.#selectProblem.bind(this));
+        document.getElementById("save").addEventListener("click", this.#save.bind(this));
+        document.getElementById("load").addEventListener("click", this.#load.bind(this));
 
         // initial display
-        this._board.clear();
-        this._index = -1;
-        if (this._problems.length == 1) {
-            this._index = 0;
-            this._problemSelector.value = 1;
-            this._descriptionArea.textContent = this._problems[this._index].description;
-            this._board.setPattern(this._problems[this._index].pattern);
+        this.#board.clear();
+        if (this.#problems.length == 1) {
+            this.#index = 0;
+            this.#problemSelector.value = 1;
+            this.#descriptionArea.textContent = this.#problems[this.#index].description;
+            this.#board.setPattern(this.#problems[this.#index].pattern);
         }
-        this._displayButton.disabled = true;
-        this._showCounters();
-        this._clearResult();
-    },
+        this.#displayButton.disabled = true;
+        this.#showCounters();
+        this.#clearResult();
+    }
 
     // select a problem
-    "_selectProblem": function(e) {
-        this._index = parseInt(this._problemSelector.value, 10) - 1;
-        if (0 <= this._index && this._index < this._problems.length) {
-            this._descriptionArea.textContent = this._problems[this._index].description;
-            this._displayButton.disabled = false;
+    #selectProblem(e) {
+        this.#index = parseInt(this.#problemSelector.value, 10) - 1;
+        if (0 <= this.#index && this.#index < this.#problems.length) {
+            this.#descriptionArea.textContent = this.#problems[this.#index].description;
+            this.#displayButton.disabled = false;
         } else {
-            this._descriptionArea.textContent = "";
-            this._displayButton.disabled = true;
+            this.#descriptionArea.textContent = "";
+            this.#displayButton.disabled = true;
         }
-    },
+    }
 
     // display a problem
-    "_display": function(e) {
-        this._board.setPattern(this._problems[this._index].pattern);
-        this._displayButton.disabled = true;
-        this._showCounters();
-        this._clearResult();
-    },
+    #display(e) {
+        this.#board.setPattern(this.#problems[this.#index].pattern);
+        this.#displayButton.disabled = true;
+        this.#showCounters();
+        this.#clearResult();
+    }
 
     // select a cell
-    "_selectCell": function(e) {
+    #selectCell(e) {
         // deselect the current cell
-        this._board.drawBack(false);
+        this.#board.drawBack(false);
 
         // get the cell position
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        this._board.selectCell(x, y, true);
-        if (this._board.isSolidCell()) {
+        this.#board.selectCell(x, y, true);
+        if (this.#board.isSolidCell()) {
             return;
         }
 
         // draw background
-        this._board.drawBack(true);
-    },
+        this.#board.drawBack(true);
+    }
 
     // select a radio button
-    "_changeRadio": function(e) {
+    #changeRadio(e) {
         // check the status
         if (!e.currentTarget.checked) {
             return;
         }
 
         // set the status
-        this._keyTable.classList.remove(this._type);
-        this._type = e.currentTarget.id;
-        this._keyTable.classList.add(this._type);
-        if (this._type == "candidate") {
+        this.#keyTable.classList.remove(this.#type);
+        this.#type = e.currentTarget.id;
+        this.#keyTable.classList.add(this.#type);
+        if (this.#type == "candidate") {
             // candidate
-            this._eraseButton.textContent = "#";
+            this.#eraseButton.textContent = "#";
         } else {
             // decision
-            this._eraseButton.textContent = "";
+            this.#eraseButton.textContent = "";
         }
-    },
+    }
 
     // press the number button
-    "_pressNumber": function(e) {
+    #pressNumber(e) {
         // get the input value
         const value = parseInt(e.currentTarget.textContent, 10);
-        if (this._type == "candidate") {
+        if (this.#type == "candidate") {
             // candidate
-            this._board.toggleCandidate(value);
+            this.#board.toggleCandidate(value);
         } else {
             // decision
-            this._board.setNumberCell(value);
+            this.#board.setNumberCell(value);
         }
 
         // update results
-        this._showCounters();
-        this._clearResult();
-    },
+        this.#showCounters();
+        this.#clearResult();
+    }
 
     // erase the number
-    "_eraseNumber": function(e) {
+    #eraseNumber(e) {
         // get the status
-        if (this._type == "candidate") {
+        if (this.#type == "candidate") {
             // candidate
-            this._board.resetCandidate();
+            this.#board.resetCandidate();
         } else {
             // decision
-            this._board.setNumberCell(0);
+            this.#board.setNumberCell(0);
         }
 
         // update results
-        this._showCounters();
-        this._clearResult();
-    },
+        this.#showCounters();
+        this.#clearResult();
+    }
 
     // judge the result
-    "_judge": function(e) {
-        this._clearResult();
+    #judge(e) {
+        this.#clearResult();
 
         // get incorrect cells
-        const indexes = this._board.logic.getIncorrectIndexes();
+        const indexes = this.#board.logic.getIncorrectIndexes();
         let reason = "";
         if (0 < indexes.length) {
             reason = "There are mistakes in the numbers.";
-            indexes.forEach(this._board.drawCross, this._board);
-        } else if (!this._board.logic.isFixed()) {
+            indexes.forEach(this.#board.drawCross, this.#board);
+        } else if (!this.#board.logic.isFixed()) {
             reason = "There are unfilled cells.";
         }
 
         // show the result
         if (reason == "") {
-            this._resultArea.classList.remove("invalid");
-            this._resultArea.classList.add("valid");
-            this._resultArea.textContent = "Correct";
+            this.#resultArea.classList.remove("invalid");
+            this.#resultArea.classList.add("valid");
+            this.#resultArea.textContent = "Correct";
         } else {
-            this._resultArea.classList.remove("valid");
-            this._resultArea.classList.add("invalid");
-            this._resultArea.textContent = `Incorrect (${reason})`;
+            this.#resultArea.classList.remove("valid");
+            this.#resultArea.classList.add("invalid");
+            this.#resultArea.textContent = `Incorrect (${reason})`;
         }
-        this._judgeButton.disabled = true;
-    },
+        this.#judgeButton.disabled = true;
+    }
 
     // output to text
-    "_save": function(e) {
+    #save(e) {
         let title = "Data";
-        if (0 <= this._index && this._index < this._problems.length) {
-            title = `Puzzle ${this._index + 1}`;
+        if (0 <= this.#index && this.#index < this.#problems.length) {
+            title = `Puzzle ${this.#index + 1}`;
         }
-        this._dataArea.value = this._board.getData(title, true);
-        this._clearResult();
-    },
+        this.#dataArea.value = this.#board.getData(title, true);
+        this.#clearResult();
+    }
 
     // restore from text
-    "_load": function(e) {
-        this._clearResult();
+    #load(e) {
+        this.#clearResult();
 
         // grid data
-        const data = this._board.setData(this._dataArea.value, true);
+        const data = this.#board.setData(this.#dataArea.value, true);
         if (data == null) {
-            this._consequence.textContent = "The text format is incorrect.";
+            this.#consequence.textContent = "The text format is incorrect.";
             return;
         }
-        this._index = -1;
-        this._problemSelector.value = 0;
-        this._displayButton.disabled = true;
+        this.#index = -1;
+        this.#problemSelector.value = 0;
+        this.#displayButton.disabled = true;
 
         // title
         if (data.description == null) {
-            this._descriptionArea.textContent = "(No title)";
+            this.#descriptionArea.textContent = "(No title)";
         } else {
-            this._descriptionArea.textContent = data.description;
+            this.#descriptionArea.textContent = data.description;
         }
-        this._showCounters();
-    },
+        this.#showCounters();
+    }
 
     // display the counter list
-    "_showCounters": function() {
-        this._board.getCounters().forEach((val, idx) => this._countAreas[idx].textContent = val);
-    },
+    #showCounters() {
+        this.#board.getCounters().forEach((val, idx) => this.#countAreas[idx].textContent = val);
+    }
 
     // clear the result
-    "_clearResult": function() {
-        if (this._judgeButton.disabled) {
-            this._board.redraw(true);
+    #clearResult() {
+        if (this.#judgeButton.disabled) {
+            this.#board.redraw(true);
         }
-        this._resultArea.textContent = "";
-        this._consequence.textContent = "";
-        this._judgeButton.disabled = false;
-    },
+        this.#resultArea.textContent = "";
+        this.#consequence.textContent = "";
+        this.#judgeButton.disabled = false;
+    }
 
 }
 

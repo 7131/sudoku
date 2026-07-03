@@ -1,15 +1,30 @@
 // Physical board class
-const PhysicalBoard = function(logic) {
-    // fields
-    this.logic = logic;
-    this._index = -1;
-}
+class PhysicalBoard {
+    #grid;
+    #fore;
+    #back;
+    #width;
+    #height;
+    #large;
+    #small;
+    #index = -1;
+    #ax = [ 1 ];
+    #ay = [ 1 ];
+    #nx = [];
+    #ny = [];
+    #cx = [];
+    #cy = [];
+    #solid = "blue";
+    #number = "black";
+    #candidate = "green";
 
-// Physical board prototype
-PhysicalBoard.prototype = {
+    // constructor
+    constructor(logic) {
+        this.logic = logic;
+    }
 
     // set the canvas element
-    "setCanvas": function(canvas, event) {
+    setCanvas(canvas, event) {
         // set the board size
         if (canvas.clientWidth == canvas.width && canvas.clientHeight == canvas.height) {
             // if no style is specified
@@ -27,7 +42,7 @@ PhysicalBoard.prototype = {
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
         }
-        this._grid = canvas.getContext("2d");
+        this.#grid = canvas.getContext("2d");
 
         // number area (front)
         const face = document.createElement("canvas");
@@ -36,11 +51,11 @@ PhysicalBoard.prototype = {
         face.height = canvas.height;
         face.addEventListener("click", event);
         canvas.parentElement.appendChild(face);
-        this._fore = face.getContext("2d");
-        this._fore.textBaseline = "middle";
-        this._fore.textAlign = "center";
-        this._fore.strokeStyle = "red";
-        this._fore.lineWidth = 2;
+        this.#fore = face.getContext("2d");
+        this.#fore.textBaseline = "middle";
+        this.#fore.textAlign = "center";
+        this.#fore.strokeStyle = "red";
+        this.#fore.lineWidth = 2;
 
         // background area (backmost)
         const rear = document.createElement("canvas");
@@ -48,8 +63,8 @@ PhysicalBoard.prototype = {
         rear.width = canvas.width;
         rear.height = canvas.height;
         canvas.parentElement.appendChild(rear);
-        this._back = rear.getContext("2d");
-        this._back.fillStyle = "gold";
+        this.#back = rear.getContext("2d");
+        this.#back.fillStyle = "gold";
 
         // drawing sizes
         const nw = canvas.width / 9;
@@ -60,157 +75,148 @@ PhysicalBoard.prototype = {
         const ch = nh / 3;
 
         // coordinates
-        this._ax = [ 1 ];
-        this._ay = [ 1 ];
-        this._nx = [];
-        this._ny = [];
         for (let i = 0; i < 9; i++) {
-            this._ax.push(Math.floor(this._ax[i] + nw));
-            this._ay.push(Math.floor(this._ay[i] + nh));
-            this._nx.push(Math.floor(this._ax[i] + ncw));
-            this._ny.push(Math.floor(this._ay[i] + nch));
+            this.#ax.push(Math.floor(this.#ax[i] + nw));
+            this.#ay.push(Math.floor(this.#ay[i] + nh));
+            this.#nx.push(Math.floor(this.#ax[i] + ncw));
+            this.#ny.push(Math.floor(this.#ay[i] + nch));
         }
-        this._width = this._ax[9];
-        this._height = this._ay[9];
-        this._cx = [];
-        this._cy = [];
+        this.#width = this.#ax[9];
+        this.#height = this.#ay[9];
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
-                this._cx.push(Math.floor((cw - 2) * (j - 1)) - 1);
-                this._cy.push(Math.floor((ch - 2) * (i - 1)) - 1);
+                this.#cx.push(Math.floor((cw - 2) * (j - 1)) - 1);
+                this.#cy.push(Math.floor((ch - 2) * (i - 1)) - 1);
             }
         }
 
         // fonts
-        this._large = `bold ${Math.floor(Math.min(nw, nh) * 0.8)}px sans-serif`;
-        this._small = `bold ${Math.floor(Math.min(cw, ch))}px sans-serif`;
-        this._solid = "blue";
-        this._number = "black";
-        this._candidate = "green";
-    },
+        this.#large = `bold ${Math.floor(Math.min(nw, nh) * 0.8)}px sans-serif`;
+        this.#small = `bold ${Math.floor(Math.min(cw, ch))}px sans-serif`;
+    }
 
     // initialize the board
-    "clear": function() {
+    clear() {
         // clear the board
-        this._grid.clearRect(0, 0, this._width, this._height);
-        this._fore.clearRect(0, 0, this._width, this._height);
-        this._back.clearRect(0, 0, this._width, this._height);
+        this.#grid.clearRect(0, 0, this.#width, this.#height);
+        this.#fore.clearRect(0, 0, this.#width, this.#height);
+        this.#back.clearRect(0, 0, this.#width, this.#height);
 
         // draw the frame
         for (let i = 0; i < 10; i++) {
-            this._grid.beginPath();
-            this._grid.lineWidth = 1;
+            this.#grid.beginPath();
+            this.#grid.lineWidth = 1;
             if ((i % 3) == 0) {
-                this._grid.lineWidth = 2;
+                this.#grid.lineWidth = 2;
             }
 
             // horizontal lines
-            this._grid.moveTo(0, this._ay[i]);
-            this._grid.lineTo(this._width, this._ay[i]);
+            this.#grid.moveTo(0, this.#ay[i]);
+            this.#grid.lineTo(this.#width, this.#ay[i]);
 
             // vertical lines
-            this._grid.moveTo(this._ax[i], 0);
-            this._grid.lineTo(this._ax[i], this._height);
-            this._grid.stroke();
+            this.#grid.moveTo(this.#ax[i], 0);
+            this.#grid.lineTo(this.#ax[i], this.#height);
+            this.#grid.stroke();
         }
-        this._index = -1;
-    },
+        this.#index = -1;
+    }
 
     // select a cell
-    "selectCell": function(px, py, avoid) {
+    selectCell(px, py, avoid) {
         // convert coordinates to index
         let row = -1;
         let col = -1;
         for (let i = 0; i < 9; i++) {
-            if (this._ax[i] <= px && px <= this._ax[i + 1]) {
+            if (this.#ax[i] <= px && px <= this.#ax[i + 1]) {
                 col = i;
             }
-            if (this._ay[i] <= py && py <= this._ay[i + 1]) {
+            if (this.#ay[i] <= py && py <= this.#ay[i + 1]) {
                 row = i;
             }
         }
-        this._index = this.logic.getIndex(row, col);
+        this.#index = this.logic.getIndex(row, col);
 
         // whether it is a solid value
-        if (avoid && this.logic.isSolid(this._index)) {
-            this._index = -1;
+        if (avoid && this.logic.isSolid(this.#index)) {
+            this.#index = -1;
         }
-    },
+    }
 
     // set the pattern
-    "setPattern": function(pattern) {
+    setPattern(pattern) {
         // set the logical board
         this.logic.initialize();
         this.logic.setSolidList(pattern);
 
         // draw a list of solid values
-        this._fore.clearRect(0, 0, this._width, this._height);
-        this._drawSolidList();
+        this.#fore.clearRect(0, 0, this.#width, this.#height);
+        this.#drawSolidList();
 
         // deselect a cell
         this.drawBack(false);
-        this._index = -1;
-    },
+        this.#index = -1;
+    }
 
     // set a solid cell
-    "setSolidCell": function(value) {
+    setSolidCell(value) {
         // check fields
-        if (this._index < 0) {
+        if (this.#index < 0) {
             return;
         }
 
         // set the value in the selected cell
-        this.logic.setSolid(this._index, value);
-        this.logic.setNumber(this._index, 0);
-        this.logic.setCandidate(this._index, []);
-        this._drawSolid(value);
-    },
+        this.logic.setSolid(this.#index, value);
+        this.logic.setNumber(this.#index, 0);
+        this.logic.setCandidate(this.#index, []);
+        this.#drawSolid(value);
+    }
 
     // set a number cell
-    "setNumberCell": function(value) {
+    setNumberCell(value) {
         // check fields
-        if (this._index < 0) {
+        if (this.#index < 0) {
             return;
         }
 
         // set the value in the selected cell
-        this.logic.setSolid(this._index, 0);
-        this.logic.setNumber(this._index, value);
-        this.logic.setCandidate(this._index, []);
-        this._drawNumber(value);
-    },
+        this.logic.setSolid(this.#index, 0);
+        this.logic.setNumber(this.#index, value);
+        this.logic.setCandidate(this.#index, []);
+        this.#drawNumber(value);
+    }
 
     // reset the candidate
-    "resetCandidate": function() {
+    resetCandidate() {
         // check fields
-        if (this._index < 0) {
+        if (this.#index < 0) {
             return;
         }
 
         // reset the values in the selected cell
-        this.logic.setSolid(this._index, 0);
-        this.logic.setNumber(this._index, 0);
-        this.logic.setCandidate(this._index, Numbers.all);
-        this._drawCandidate(Numbers.all);
-    },
+        this.logic.setSolid(this.#index, 0);
+        this.logic.setNumber(this.#index, 0);
+        this.logic.setCandidate(this.#index, Numbers.all);
+        this.#drawCandidate(Numbers.all);
+    }
 
     // toggle a candidate value
-    "toggleCandidate": function(value) {
+    toggleCandidate(value) {
         // check fields
-        if (this._index < 0) {
+        if (this.#index < 0) {
             return;
         }
 
         // switch the value in the selected cell
-        this.logic.setSolid(this._index, 0);
-        this.logic.setNumber(this._index, 0);
-        const candidate = this.logic.getCandidate(this._index);
+        this.logic.setSolid(this.#index, 0);
+        this.logic.setNumber(this.#index, 0);
+        const candidate = this.logic.getCandidate(this.#index);
         candidate.toggle(value);
-        this._drawCandidate(candidate.getArray());
-    },
+        this.#drawCandidate(candidate.getArray());
+    }
 
     // get a list of counters
-    "getCounters": function(initial) {
+    getCounters(initial) {
         // initialize the counters
         const counters = new Array(Numbers.all.length + 1).fill(0);
 
@@ -229,25 +235,25 @@ PhysicalBoard.prototype = {
             }
         }
         return counters;
-    },
+    }
 
     // whether it is a solid cell
-    "isSolidCell": function() {
-        return this.logic.isSolid(this._index);
-    },
+    isSolidCell() {
+        return this.logic.isSolid(this.#index);
+    }
 
     // redraw the board
-    "redraw": function(detail) {
-        this._fore.clearRect(0, 0, this._width, this._height);
-        this._drawSolidList();
-        this._drawNumberList();
+    redraw(detail) {
+        this.#fore.clearRect(0, 0, this.#width, this.#height);
+        this.#drawSolidList();
+        this.#drawNumberList();
         if (detail) {
-            this._drawCandidateList();
+            this.#drawCandidateList();
         }
-    },
+    }
 
     // get the current data
-    "getData": function(title, all, stay) {
+    getData(title, all, stay) {
         // current state
         const solids = this.logic.getSolidList();
         let numbers = null;
@@ -280,10 +286,10 @@ PhysicalBoard.prototype = {
             data.candidates = candidates.map(elem => elem.getArray());
         }
         return JSON.stringify(data);
-    },
+    }
 
     // set the current data
-    "setData": function(json, all, stay) {
+    setData(json, all, stay) {
         // convert to a JSON object
         let data = null;
         try {
@@ -325,54 +331,54 @@ PhysicalBoard.prototype = {
         if (all) {
             this.logic.setNumberList(data.numbers);
             this.logic.setCandidateList(data.candidates);
-            this._drawNumberList();
-            this._drawCandidateList();
+            this.#drawNumberList();
+            this.#drawCandidateList();
         }
         return data;
-    },
+    }
 
     // draw background
-    "drawBack": function(fill) {
+    drawBack(fill) {
         // check fields
-        if (this._index < 0) {
+        if (this.#index < 0) {
             return;
         }
 
         // coordinate calculation
-        const pos = this._getPosition(this._index);
-        const x = this._ax[pos.col];
-        const y = this._ay[pos.row];
-        const w = this._ax[pos.col + 1] - x;
-        const h = this._ay[pos.row + 1] - y;
+        const pos = this.#getPosition(this.#index);
+        const x = this.#ax[pos.col];
+        const y = this.#ay[pos.row];
+        const w = this.#ax[pos.col + 1] - x;
+        const h = this.#ay[pos.row + 1] - y;
 
         // fill the background
         if (fill) {
-            this._back.fillRect(x, y, w, h);
+            this.#back.fillRect(x, y, w, h);
         } else {
-            this._back.clearRect(x, y, w, h);
+            this.#back.clearRect(x, y, w, h);
         }
-    },
+    }
 
     // draw an x mark
-    "drawCross": function(index) {
+    drawCross(index) {
         // get coordinates
-        const pos = this._getPosition(index);
-        const left = this._ax[pos.col] + 3;
-        const top = this._ay[pos.row] + 3;
-        const right = this._ax[pos.col + 1] - 3;
-        const bottom = this._ay[pos.row + 1] - 3;
+        const pos = this.#getPosition(index);
+        const left = this.#ax[pos.col] + 3;
+        const top = this.#ay[pos.row] + 3;
+        const right = this.#ax[pos.col + 1] - 3;
+        const bottom = this.#ay[pos.row + 1] - 3;
 
         // draw
-        this._fore.beginPath();
-        this._fore.moveTo(left, top);
-        this._fore.lineTo(right, bottom);
-        this._fore.moveTo(right, top);
-        this._fore.lineTo(left, bottom);
-        this._fore.stroke();
-    },
+        this.#fore.beginPath();
+        this.#fore.moveTo(left, top);
+        this.#fore.lineTo(right, bottom);
+        this.#fore.moveTo(right, top);
+        this.#fore.lineTo(left, bottom);
+        this.#fore.stroke();
+    }
 
     // draw a solid value
-    "_drawSolid": function(value) {
+    #drawSolid(value) {
         // check arguments
         if (!Numbers.isValid(value)) {
             if (value < 0) {
@@ -383,74 +389,74 @@ PhysicalBoard.prototype = {
         }
 
         // draw
-        this._drawValue(value, this._solid);
-    },
+        this.#drawValue(value, this.#solid);
+    }
 
     // draw a number
-    "_drawNumber": function(value) {
+    #drawNumber(value) {
         // check arguments
         if (!Numbers.isValid(value)) {
             value = "";
         }
 
         // draw
-        this._drawValue(value, this._number);
-    },
+        this.#drawValue(value, this.#number);
+    }
 
     // draw candidates
-    "_drawCandidate": function(values) {
+    #drawCandidate(values) {
         // check fields
-        if (this._index < 0) {
+        if (this.#index < 0) {
             return;
         }
 
         // clear
-        this._drawNumber(0);
-        const pos = this._getPosition(this._index);
+        this.#drawNumber(0);
+        const pos = this.#getPosition(this.#index);
 
         // draw
-        this._fore.font = this._small;
-        this._fore.fillStyle = this._candidate;
+        this.#fore.font = this.#small;
+        this.#fore.fillStyle = this.#candidate;
         for (const value of values) {
             const index = Numbers.all.indexOf(value);
             if (0 <= index) {
-                const x = this._nx[pos.col] + this._cx[index];
-                const y = this._ny[pos.row] + this._cy[index];
-                this._fore.fillText(value, x, y);
+                const x = this.#nx[pos.col] + this.#cx[index];
+                const y = this.#ny[pos.row] + this.#cy[index];
+                this.#fore.fillText(value, x, y);
             }
         }
-    },
+    }
 
     // draw a value
-    "_drawValue": function(value, color) {
+    #drawValue(value, color) {
         // check fields
-        if (this._index < 0) {
+        if (this.#index < 0) {
             return;
         }
 
         // coordinate calculation
-        const pos = this._getPosition(this._index);
-        const x = this._ax[pos.col];
-        const y = this._ay[pos.row];
-        const w = this._ax[pos.col + 1] - x;
-        const h = this._ay[pos.row + 1] - y;
+        const pos = this.#getPosition(this.#index);
+        const x = this.#ax[pos.col];
+        const y = this.#ay[pos.row];
+        const w = this.#ax[pos.col + 1] - x;
+        const h = this.#ay[pos.row + 1] - y;
 
         // clear
-        this._fore.clearRect(x, y, w, h);
+        this.#fore.clearRect(x, y, w, h);
 
         // draw
-        this._fore.font = this._large;
-        this._fore.fillStyle = color;
-        this._fore.fillText(value, this._nx[pos.col], this._ny[pos.row]);
-    },
+        this.#fore.font = this.#large;
+        this.#fore.fillStyle = color;
+        this.#fore.fillText(value, this.#nx[pos.col], this.#ny[pos.row]);
+    }
 
     // draw a list of solid values
-    "_drawSolidList": function() {
+    #drawSolidList() {
         const solids = this.logic.getSolidList();
 
         // specify the font
-        this._fore.font = this._large;
-        this._fore.fillStyle = this._solid;
+        this.#fore.font = this.#large;
+        this.#fore.fillStyle = this.#solid;
 
         // draw
         for (let i = 0; i < solids.length; i++) {
@@ -463,58 +469,58 @@ PhysicalBoard.prototype = {
                 }
             }
             if (value !== "") {
-                const pos = this._getPosition(i);
-                this._fore.fillText(value, this._nx[pos.col], this._ny[pos.row]);
+                const pos = this.#getPosition(i);
+                this.#fore.fillText(value, this.#nx[pos.col], this.#ny[pos.row]);
             }
         }
-    },
+    }
 
     // draw a list of number values
-    "_drawNumberList": function() {
+    #drawNumberList() {
         const numbers = this.logic.getNumberList();
 
         // specify the font
-        this._fore.font = this._large;
-        this._fore.fillStyle = this._number;
+        this.#fore.font = this.#large;
+        this.#fore.fillStyle = this.#number;
 
         // draw
         for (let i = 0; i < numbers.length; i++) {
             if (Numbers.isValid(numbers[i]) && !this.logic.isSolid(i)) {
-                const pos = this._getPosition(i);
-                this._fore.fillText(numbers[i], this._nx[pos.col], this._ny[pos.row]);
+                const pos = this.#getPosition(i);
+                this.#fore.fillText(numbers[i], this.#nx[pos.col], this.#ny[pos.row]);
             }
         }
-    },
+    }
 
     // draw a list of candidate values
-    "_drawCandidateList": function() {
+    #drawCandidateList() {
         const candidates = this.logic.getCandidateList();
 
         // specify the font
-        this._fore.font = this._small;
-        this._fore.fillStyle = this._candidate;
+        this.#fore.font = this.#small;
+        this.#fore.fillStyle = this.#candidate;
 
         // draw
         for (let i = 0; i < candidates.length; i++) {
             const values = candidates[i].getArray();
             if (0 < values.length && !this.logic.isSolid(i)) {
-                const pos = this._getPosition(i);
+                const pos = this.#getPosition(i);
                 for (const value of values) {
                     const index = Numbers.all.indexOf(value);
-                    const x = this._nx[pos.col] + this._cx[index];
-                    const y = this._ny[pos.row] + this._cy[index];
-                    this._fore.fillText(value, x, y);
+                    const x = this.#nx[pos.col] + this.#cx[index];
+                    const y = this.#ny[pos.row] + this.#cy[index];
+                    this.#fore.fillText(value, x, y);
                 }
             }
         }
-    },
+    }
 
     // get position
-    "_getPosition": function(index) {
+    #getPosition(index) {
         const row = Math.floor(index / 9);
         const col = index % 9;
         return { "row": row, "col": col };
-    },
+    }
 
 }
 

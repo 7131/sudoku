@@ -1,156 +1,171 @@
 // Controller class
-const Controller = function() {
-    // fields
-    this._board = new PhysicalBoard(new LogicalBoard());
-    this._solver = new Solver();
-    this._solver.initialize();
+class Controller {
+    #board;
+    #solver;
+    #solveButton;
+    #resultArea;
+    #messageArea;
+    #dataArea;
+    #consequence;
+    #dependCheck;
+    #countAreas = [];
+    #settingBoxes = [];
 
-    // events
-    window.addEventListener("load", this._initialize.bind(this));
-}
+    // constructor
+    constructor() {
+        if (typeof ExtendedLogicalBoard == "function") {
+            this.#board = new PhysicalBoard(new ExtendedLogicalBoard());
+        } else {
+            this.#board = new PhysicalBoard(new LogicalBoard());
+        }
+        if (typeof ExtendedSolver == "function") {
+            this.#solver = new ExtendedSolver();
+        } else {
+            this.#solver = new Solver();
+        }
 
-// Controller prototype
-Controller.prototype = {
+        // events
+        window.addEventListener("load", this.#initialize.bind(this));
+    }
 
     // initialize the private fields and the page
-    "_initialize": function(e) {
+    #initialize(e) {
         // get the elements
         const canvas = document.getElementById("board");
-        this._board.setCanvas(canvas, this._selectCell.bind(this));
-        this._solveButton = document.getElementById("solve");
-        this._resultArea = document.getElementById("result");
-        this._messageArea = document.getElementById("message");
-        this._dataArea = document.getElementById("data");
-        this._consequence = document.getElementById("consequence");
-        this._countAreas = [];
-        this._countAreas.push(document.getElementById("remain"));
+        this.#board.setCanvas(canvas, this.#selectCell.bind(this));
+        this.#solveButton = document.getElementById("solve");
+        this.#resultArea = document.getElementById("result");
+        this.#messageArea = document.getElementById("message");
+        this.#dataArea = document.getElementById("data");
+        this.#consequence = document.getElementById("consequence");
+        this.#countAreas.push(document.getElementById("remain"));
         for (let i = 1; i <= 9; i++) {
-            this._countAreas.push(document.getElementById(`count${i}`));
+            this.#countAreas.push(document.getElementById(`count${i}`));
         }
-        this._settingBoxes = [];
         let level = 0;
         let box = document.getElementById(`level${level}`);
         while (box != null) {
-            this._settingBoxes.push(box);
+            this.#settingBoxes.push(box);
             level++;
             box = document.getElementById(`level${level}`);
         }
-        this._dependCheck = document.getElementById(`level${level - 1}`);
+        this.#dependCheck = document.getElementById(`level${level - 1}`);
+        this.#solver.initialize();
 
         // button events
-        this._solveButton.addEventListener("click", this._solve.bind(this));
+        this.#solveButton.addEventListener("click", this.#solve.bind(this));
         for (let i = 1; i <= 9; i++) {
             const key = document.getElementById(`key${i}`);
-            key.addEventListener("click", this._pressNumber.bind(this));
+            key.addEventListener("click", this.#pressNumber.bind(this));
         }
-        document.getElementById("erase").addEventListener("click", this._eraseNumber.bind(this));
-        document.getElementById("load").addEventListener("click", this._load.bind(this));
-        document.getElementById(`level${level - 2}`).addEventListener("change", this._changeCheck.bind(this));
+        document.getElementById("erase").addEventListener("click", this.#eraseNumber.bind(this));
+        document.getElementById("load").addEventListener("click", this.#load.bind(this));
+        document.getElementById(`level${level - 2}`).addEventListener("change", this.#changeCheck.bind(this));
 
         // initial display
-        this._board.clear();
+        this.#board.clear();
         const params = new URLSearchParams(window.location.search);
         if (params.has("data")) {
             const json = params.get("data");
             if (json != "") {
-                this._board.setData(json);
+                this.#board.setData(json);
             }
         }
-        this._showCounters();
-        this._clearResult();
-    },
+        this.#showCounters();
+        this.#clearResult();
+    }
 
     // select a cell
-    "_selectCell": function(e) {
+    #selectCell(e) {
         // deselect the current cell
-        this._board.drawBack(false);
+        this.#board.drawBack(false);
 
         // get the cell position
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        this._board.selectCell(x, y);
+        this.#board.selectCell(x, y);
 
         // draw background
-        this._board.drawBack(true);
-    },
+        this.#board.drawBack(true);
+    }
 
     // press the number button
-    "_pressNumber": function(e) {
+    #pressNumber(e) {
         // get the input value
         const value = parseInt(e.currentTarget.textContent, 10);
-        this._board.setSolidCell(value);
+        this.#board.setSolidCell(value);
 
         // update results
-        this._showCounters();
-        this._clearResult();
-    },
+        this.#showCounters();
+        this.#clearResult();
+    }
 
     // erase the number
-    "_eraseNumber": function(e) {
-        this._board.setSolidCell(0);
-        this._showCounters();
-        this._clearResult();
-    },
+    #eraseNumber(e) {
+        this.#board.setSolidCell(0);
+        this.#showCounters();
+        this.#clearResult();
+    }
 
     // solve the problem
-    "_solve": function(e) {
-        this._solveButton.disabled = true;
-        this._clearResult();
+    #solve(e) {
+        this.#solveButton.disabled = true;
+        this.#clearResult();
 
         // reset the board
-        const solids = this._board.logic.getSolidList();
-        this._board.clear();
-        this._board.setPattern(solids);
-        this._board.logic.setupCandidates();
+        const solids = this.#board.logic.getSolidList();
+        this.#board.clear();
+        this.#board.setPattern(solids);
+        this.#board.logic.setupCandidates();
 
         // set the selected method
-        const levels = this._settingBoxes.map(elem => elem.checked);
+        const levels = this.#settingBoxes.map(elem => elem.checked);
 
         // execute
-        const initial = this._board.logic.getCurrentStatus();
-        const result = this._solver.solve(this._board.logic, levels);
-        this._setResult(initial, result);
-        this._solveButton.disabled = false;
-    },
+        const initial = this.#board.logic.getCurrentStatus();
+        const result = this.#solver.solve(this.#board.logic, levels);
+        this.#setResult(initial, result);
+        this.#solveButton.disabled = false;
+    }
 
     // restore from text
-    "_load": function(e) {
-        this._clearResult();
-        const data = this._board.setData(this._dataArea.value);
+    #load(e) {
+        this.#clearResult();
+        const data = this.#board.setData(this.#dataArea.value);
         if (data == null) {
-            this._consequence.textContent = "The text format is incorrect.";
+            this.#consequence.textContent = "The text format is incorrect.";
             return;
         }
-        this._showCounters();
-    },
+        this.#showCounters();
+    }
 
     // change the checkbox
-    "_changeCheck": function(e) {
-        this._dependCheck.checked = false;
-        this._dependCheck.disabled = !e.currentTarget.checked;
-    },
+    #changeCheck(e) {
+        this.#dependCheck.checked = false;
+        this.#dependCheck.disabled = !e.currentTarget.checked;
+    }
 
     // display the counter list
-    "_showCounters": function() {
-        this._board.getCounters(true).forEach((val, idx) => this._countAreas[idx].textContent = val);
-    },
+    #showCounters() {
+        this.#board.getCounters(true).forEach((val, idx) => this.#countAreas[idx].textContent = val);
+    }
 
     // clear the result
-    "_clearResult": function() {
-        this._consequence.textContent = "";
-        this._resultArea.textContent = "";
-        this._messageArea.textContent = "";
-        this._resultArea.appendChild(this._messageArea);
-    },
+    #clearResult() {
+        this.#consequence.textContent = "";
+        this.#resultArea.textContent = "";
+        this.#messageArea.textContent = "";
+        this.#resultArea.appendChild(this.#messageArea);
+    }
 
     // show the result
-    "_setResult": function(initial, result) {
-        this._board.redraw();
-        this._messageArea.classList.remove("valid");
-        this._messageArea.classList.add("invalid");
+    #setResult(initial, result) {
+        this.#board.redraw();
+        this.#messageArea.classList.remove("valid");
+        this.#messageArea.classList.add("invalid");
         if (result == null) {
-            this._messageArea.textContent = "There is an error in the settings.";
+            this.#messageArea.textContent = "There is an error in the settings.";
             return;
         }
 
@@ -165,8 +180,8 @@ Controller.prototype = {
             case 1:
                 // one solution
                 message += "is only one solution.";
-                this._messageArea.classList.remove("invalid");
-                this._messageArea.classList.add("valid");
+                this.#messageArea.classList.remove("invalid");
+                this.#messageArea.classList.add("valid");
                 break;
 
             default:
@@ -174,7 +189,7 @@ Controller.prototype = {
                 message += `are ${result.solutions.length} solutions.`;
                 break;
         }
-        this._messageArea.textContent = `${message}(${result.summary.join()})`;
+        this.#messageArea.textContent = `${message}(${result.summary.join()})`;
 
         // create a list of progress
         const progress = [ { "title": "Initial state, candidates are in [ ].", "table": initial } ];
@@ -187,14 +202,14 @@ Controller.prototype = {
         for (const value of progress) {
             const text = document.createElement("p");
             text.textContent = value.title;
-            this._resultArea.appendChild(text);
-            const table = this._convertTable(value.table);
-            this._resultArea.appendChild(table);
+            this.#resultArea.appendChild(text);
+            const table = this.#convertTable(value.table);
+            this.#resultArea.appendChild(table);
         }
-    },
+    }
 
     // convert to a table
-    "_convertTable": function(rows) {
+    #convertTable(rows) {
         // set the stylesheet class name
         const horizontal = [ "top", "middle", "bottom" ];
         const vertical = [ "left", "center", "right" ];
@@ -221,7 +236,7 @@ Controller.prototype = {
         }
         table.classList.add("border");
         return table;
-    },
+    }
 
 }
 

@@ -1,15 +1,15 @@
 // Solver method class
-const SolverMethod = function() {
-    // fields
-    this.lower = null;
-    this.depth = 0;
-}
+class SolverMethod {
 
-// Solver method prototype
-SolverMethod.prototype = {
+    // constructor
+    constructor() {
+        // fields
+        this.lower = null;
+        this.depth = 0;
+    }
 
     // reduce candidates
-    "reduce": function(logic) {
+    reduce(logic) {
         let progress = [];
         let solutions = [];
         let before = 730;
@@ -27,7 +27,7 @@ SolverMethod.prototype = {
             }
 
             // reduce at this level
-            solutions = solutions.concat(this._createSolutions(logic));
+            solutions = solutions.concat(this.createSolutions(logic));
             before = after;
             after = logic.getCandidateCount();
             if (after < before) {
@@ -48,27 +48,19 @@ SolverMethod.prototype = {
             solutions = represent;
         }
         return { "progress": progress, "solutions": solutions };
-    },
+    }
 
     // create a solution (template method)
-    "_createSolutions": function(logic) {
-    },
+    createSolutions(logic) {
+    }
 
 }
 
 // Unique candidate method class
-const OneCandidateMethod = function() {
-    SolverMethod.call(this);
-}
-
-// Unique candidate method prototype
-OneCandidateMethod.prototype = Object.create(SolverMethod.prototype, {
-
-    // constructor
-    "constructor": { "value": OneCandidateMethod },
+class OneCandidateMethod extends SolverMethod {
 
     // create a solution
-    "_createSolutions": { "value": function(logic) {
+    createSolutions(logic) {
         const candidates = logic.getCandidateList();
         for (let i = 0; i < candidates.length; i++) {
             const candidate = candidates[i];
@@ -84,28 +76,20 @@ OneCandidateMethod.prototype = Object.create(SolverMethod.prototype, {
         } else {
             return [];
         }
-    }},
+    }
 
-});
-
-// Unique cell method class
-const OneCellMethod = function() {
-    SolverMethod.call(this);
 }
 
-// Unique cell method prototype
-OneCellMethod.prototype = Object.create(SolverMethod.prototype, {
-
-    // constructor
-    "constructor": { "value": OneCellMethod },
+// Unique cell method class
+class OneCellMethod extends SolverMethod {
 
     // create a solution
-    "_createSolutions": { "value": function(logic) {
+    createSolutions(logic) {
         for (let i = 0; i < 9; i++) {
             // process by row, column, and block
-            this._reduceInGroup(logic, logic.getRowCells(i));
-            this._reduceInGroup(logic, logic.getColCells(i));
-            this._reduceInGroup(logic, logic.getBlockCells(i));
+            this.#reduceInGroup(logic, logic.getRowCells(i));
+            this.#reduceInGroup(logic, logic.getColCells(i));
+            this.#reduceInGroup(logic, logic.getBlockCells(i));
         }
 
         // check if finished
@@ -114,10 +98,10 @@ OneCellMethod.prototype = Object.create(SolverMethod.prototype, {
         } else {
             return [];
         }
-    }},
+    }
 
     // reduce the candidates in the group
-    "_reduceInGroup": { "value": function(logic, group) {
+    #reduceInGroup(logic, group) {
         // handle the entire group
         const numbers = [];
         for (const cell of group) {
@@ -142,41 +126,33 @@ OneCellMethod.prototype = Object.create(SolverMethod.prototype, {
                 logic.decideNumber(index, number);
             }
         }
-    }},
+    }
 
-});
-
-// Shared cells method class
-const SharedCellMethod = function() {
-    SolverMethod.call(this);
 }
 
-// Shared cells method prototype
-SharedCellMethod.prototype = Object.create(SolverMethod.prototype, {
-
-    // constructor
-    "constructor": { "value": SharedCellMethod },
+// Shared cells method class
+class SharedCellMethod extends SolverMethod {
 
     // create a solution
-    "_createSolutions": { "value": function(logic) {
+    createSolutions(logic) {
         // check the intersection of blocks and rows / columns
         for (let i = 0; i < 9; i++) {
             const block = logic.getBlockCells(i);
             for (let j = 0; j < 9; j += 4) {
                 // rows
                 const row = logic.getRowCells(block[j].row);
-                this._reduceOutofIntersection(logic, block, row);
+                this.#reduceOutOfIntersection(logic, block, row);
 
                 // columns
                 const col = logic.getColCells(block[j].col);
-                this._reduceOutofIntersection(logic, block, col);
+                this.#reduceOutOfIntersection(logic, block, col);
             }
         }
         return [];
-    }},
+    }
 
     // reduce candidates from other than the shared cells
-    "_reduceOutofIntersection": { "value": function(logic, block, group) {
+    #reduceOutOfIntersection(logic, block, group) {
         // get the intersection
         const share = [];
         const candidate = new CandidateArray();
@@ -200,44 +176,36 @@ SharedCellMethod.prototype = Object.create(SolverMethod.prototype, {
                 block.filter(find).forEach(elem => elem.candidate.remove(value));
             }
         }
-    }},
+    }
 
-});
-
-// Twin method class
-const TwinMethod = function() {
-    SolverMethod.call(this);
 }
 
-// Twin method prototype
-TwinMethod.prototype = Object.create(SolverMethod.prototype, {
-
-    // constructor
-    "constructor": { "value": TwinMethod },
+// Twin method class
+class TwinMethod extends SolverMethod {
 
     // create a solution
-    "_createSolutions": { "value": function(logic) {
+    createSolutions(logic) {
         for (let i = 0; i < 9; i++) {
             // rows
             const row = logic.getRowCells(i);
-            this._reduceInTwin(row);
-            this._reduceOutofTwin(row);
+            this.#reduceInTwin(row);
+            this.#reduceOutOfTwin(row);
 
             // columns
             const col = logic.getColCells(i);
-            this._reduceInTwin(col);
-            this._reduceOutofTwin(col);
+            this.#reduceInTwin(col);
+            this.#reduceOutOfTwin(col);
 
             // blocks
             const block = logic.getBlockCells(i);
-            this._reduceInTwin(block);
-            this._reduceOutofTwin(block);
+            this.#reduceInTwin(block);
+            this.#reduceOutOfTwin(block);
         }
         return [];
-    }},
+    }
 
     // reduce candidates in the twin cells
-    "_reduceInTwin": { "value": function(group) {
+    #reduceInTwin(group) {
         // handle the entire group
         const numbers = [];
         for (const number of Numbers.all) {
@@ -260,10 +228,10 @@ TwinMethod.prototype = Object.create(SolverMethod.prototype, {
                 first.cells.forEach(elem => elem.candidate.refine(values));
             }
         }
-    }},
+    }
 
     // reduce candidates from other than the twin cells
-    "_reduceOutofTwin": { "value": function(group) {
+    #reduceOutOfTwin(group) {
         // handle the entire group
         const cells = group.filter(elem => elem.candidate.length == 2);
 
@@ -279,44 +247,36 @@ TwinMethod.prototype = Object.create(SolverMethod.prototype, {
                 group.filter(elem => elem != first && elem != second).forEach(elem => elem.candidate.remove(first.candidate));
             }
         }
-    }},
+    }
 
-});
-
-// Triplet method class
-const TripletMethod = function() {
-    SolverMethod.call(this);
 }
 
-// Triplet method prototype
-TripletMethod.prototype = Object.create(SolverMethod.prototype, {
-
-    // constructor
-    "constructor": { "value": TripletMethod },
+// Triplet method class
+class TripletMethod extends SolverMethod {
 
     // create a solution
-    "_createSolutions": { "value": function(logic) {
+    createSolutions(logic) {
         for (let i = 0; i < 9; i++) {
             // rows
             const row = logic.getRowCells(i);
-            this._reduceInTriplet(row);
-            this._reduceOutofTriplet(row);
+            this.#reduceInTriplet(row);
+            this.#reduceOutOfTriplet(row);
 
             // columns
             const col = logic.getColCells(i);
-            this._reduceInTriplet(col);
-            this._reduceOutofTriplet(col);
+            this.#reduceInTriplet(col);
+            this.#reduceOutOfTriplet(col);
 
             // blocks
             const block = logic.getBlockCells(i);
-            this._reduceInTriplet(block);
-            this._reduceOutofTriplet(block);
+            this.#reduceInTriplet(block);
+            this.#reduceOutOfTriplet(block);
         }
         return [];
-    }},
+    }
 
     // reduce candidates in the triplet cells
-    "_reduceInTriplet": { "value": function(group) {
+    #reduceInTriplet(group) {
         // handle the entire group
         const numbers = [];
         for (const number of Numbers.all) {
@@ -335,11 +295,11 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
             let i = 0;
             while (third == null && i < numbers.length - 1) {
                 second = numbers[i];
-                const union = this._unionArray(first.cells, second.cells);
+                const union = this.#unionArray(first.cells, second.cells);
                 if (union.length <= 3) {
                     let j = i + 1;
                     while (third == null && j < numbers.length) {
-                        all = this._unionArray(union, numbers[j].cells);
+                        all = this.#unionArray(union, numbers[j].cells);
                         if (all.length == 3) {
                             third = numbers[j];
                             numbers.splice(j, 1);
@@ -357,10 +317,10 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
                 all.forEach(elem => elem.candidate.refine(values));
             }
         }
-    }},
+    }
 
     // reduce candidates from other than the triplet cells
-    "_reduceOutofTriplet": { "value": function(group) {
+    #reduceOutOfTriplet(group) {
         // handle the entire group
         const cells = group.filter(elem => 2 <= elem.candidate.length && elem.candidate.length <= 3);
 
@@ -397,28 +357,20 @@ TripletMethod.prototype = Object.create(SolverMethod.prototype, {
                 group.filter(elem => elem != first && elem != second && elem != third).forEach(elem => elem.candidate.remove(all));
             }
         }
-    }},
+    }
 
     // get the union of arrays
-    "_unionArray": { "value": function(first, second) {
+    #unionArray(first, second) {
         return first.concat(second).filter((val, idx, self) => self.indexOf(val) == idx);
-    }},
+    }
 
-});
-
-// X-Wing method class
-const XWingMethod = function() {
-    SolverMethod.call(this);
 }
 
-// X-Wing method prototype
-XWingMethod.prototype = Object.create(SolverMethod.prototype, {
-
-    // constructor
-    "constructor": { "value": XWingMethod },
+// X-Wing method class
+class XWingMethod extends SolverMethod {
 
     // create a solution
-    "_createSolutions": { "value": function(logic) {
+    createSolutions(logic) {
         // rows
         for (let top = 0; top < 8; top++) {
             for (let bottom = top + 1; bottom < 9; bottom++) {
@@ -426,16 +378,16 @@ XWingMethod.prototype = Object.create(SolverMethod.prototype, {
                 // columns
                 for (let left = 0; left < 8; left++) {
                     for (let right = left + 1; right < 9; right++) {
-                        this._reduceOutofIntersection(logic, top, bottom, left, right);
+                        this.#reduceOutOfIntersection(logic, top, bottom, left, right);
                     }
                 }
             }
         }
         return [];
-    }},
+    }
 
     // reduce candidates from other than the shared cells
-    "_reduceOutofIntersection": { "value": function(logic, top, bottom, left, right) {
+    #reduceOutOfIntersection(logic, top, bottom, left, right) {
         // get rows, columns, and their intersections
         const trow = logic.getRowCells(top);
         const brow = logic.getRowCells(bottom);
@@ -480,36 +432,28 @@ XWingMethod.prototype = Object.create(SolverMethod.prototype, {
                 }
             }
         }
-    }},
+    }
 
-});
-
-// Ariadne method class
-const AriadneMethod = function() {
-    SolverMethod.call(this);
 }
 
-// Ariadne method prototype
-AriadneMethod.prototype = Object.create(SolverMethod.prototype, {
-
-    // constructor
-    "constructor": { "value": AriadneMethod },
+// Ariadne method class
+class AriadneMethod extends SolverMethod {
 
     // create a solution
-    "_createSolutions": { "value": function(logic) {
+    createSolutions(logic) {
         let solutions = [];
         const candidates = logic.getCandidateList();
         for (let i = 0; i < candidates.length; i++) {
             if (1 < candidates[i].length) {
-                const complete = this._removeImpossibleCandidate(logic, candidates, i);
+                const complete = this.#removeImpossibleCandidate(logic, candidates, i);
                 solutions = solutions.concat(complete);
             }
         }
         return solutions;
-    }},
+    }
 
     // remove impossible candidates
-    "_removeImpossibleCandidate": { "value": function(logic, candidates, index) {
+    #removeImpossibleCandidate(logic, candidates, index) {
         // check the target cell
         const candidate = candidates[index];
         const valids = [];
@@ -525,7 +469,7 @@ AriadneMethod.prototype = Object.create(SolverMethod.prototype, {
             }
 
             // check the resulting board
-            if (this._isValidBoard(copy)) {
+            if (this.#isValidBoard(copy)) {
                 // save the board if appropriate
                 valids.push(value);
                 copies.push(copy);
@@ -559,10 +503,10 @@ AriadneMethod.prototype = Object.create(SolverMethod.prototype, {
             }
         }
         return complete;
-    }},
+    }
 
     // whether the current board is valid
-    "_isValidBoard": { "value": function(logic) {
+    #isValidBoard(logic) {
         // check for duplicates
         const incorrect = logic.getIncorrectIndexes();
         if (0 < incorrect.length) {
@@ -576,46 +520,46 @@ AriadneMethod.prototype = Object.create(SolverMethod.prototype, {
             }
         }
         return true;
-    }},
+    }
 
-});
-
-// Solver class
-const Solver = function() {
-    this._methods = [];
 }
 
-// Solver prototype
-Solver.prototype = {
+// Solver class
+class Solver {
+
+    // constructor
+    constructor() {
+        this.methods = [];
+    }
 
     // initialize the fields
-    "initialize": function() {
+    initialize() {
         // set the methods
-        this._methods.push(new OneCandidateMethod());
-        this._methods.push(new OneCellMethod());
-        this._methods.push(new SharedCellMethod());
-        this._methods.push(new TwinMethod());
-        this._methods.push(new TripletMethod());
-        this._methods.push(new XWingMethod());
-        this._methods.push(new AriadneMethod());
-        this._methods.push(new AriadneMethod());
-        this._methods.forEach((val, idx) => val.depth = idx);
-    },
+        this.methods.push(new OneCandidateMethod());
+        this.methods.push(new OneCellMethod());
+        this.methods.push(new SharedCellMethod());
+        this.methods.push(new TwinMethod());
+        this.methods.push(new TripletMethod());
+        this.methods.push(new XWingMethod());
+        this.methods.push(new AriadneMethod());
+        this.methods.push(new AriadneMethod());
+        this.methods.forEach((val, idx) => val.depth = idx);
+    }
 
     // solve the problem using the specified level of method
-    "solve": function(logic, levels) {
+    solve(logic, levels) {
         // check arguments
         if (logic == null || logic.getSolidList(true) == null) {
             return null;
         }
         if (!Array.isArray(levels)) {
-            levels = new Array(this._methods.length).fill(true);
+            levels = new Array(this.methods.length).fill(true);
         }
 
         // set the method to use
         let method = null;
-        for (let i = 0; i < this._methods.length; i++) {
-            const current = this._methods[i];
+        for (let i = 0; i < this.methods.length; i++) {
+            const current = this.methods[i];
             if (i < levels.length && levels[i]) {
                 current.lower = method;
                 method = current;
@@ -654,7 +598,7 @@ Solver.prototype = {
         result.progress.forEach(elem => counts[elem.depth]++);
         result.summary = counts;
         return result;
-    },
+    }
 
 }
 

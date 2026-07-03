@@ -1,12 +1,22 @@
 // Sudoku test class
 class SudokuTest extends TestTable {
-    #logic = new LogicalBoard();
-    #solver = new Solver();
+    #logic;
+    #solver;
 
     // constructor
     constructor(id, body, data) {
         super(id, body);
         super.create(data);
+        if (typeof ExtendedLogicalBoard == "function") {
+            this.#logic = new ExtendedLogicalBoard();
+        } else {
+            this.#logic = new LogicalBoard();
+        }
+        if (typeof ExtendedSolver == "function") {
+            this.#solver = new ExtendedSolver();
+        } else {
+            this.#solver = new Solver();
+        }
         this.#solver.initialize();
     }
 

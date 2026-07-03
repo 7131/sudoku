@@ -1,149 +1,175 @@
 // Controller class
-const Controller = function() {
-    // fields
-    this._board = new PhysicalBoard(new LogicalBoard());
-    this._creator = new Creator();
-    this._creator.initialize(Grids);
+class Controller {
+    #board;
+    #creator;
+    #createButton;
+    #messageArea;
+    #problemButton;
+    #countClues;
+    #startButton;
+    #stopButton;
+    #countTry;
+    #countCreate;
+    #outputArea;
+    #dependRadios;
+    #invalidRadio;
+    #minClues;
+    #maxClues;
+    #output = 1;
+    #trial = 0;
+    #problems = [];
+    #now = new Date();
 
-    // events
-    window.addEventListener("load", this._initialize.bind(this));
-}
+    // constructor
+    constructor() {
+        if (typeof ExtendedLogicalBoard == "function") {
+            this.#board = new PhysicalBoard(new ExtendedLogicalBoard());
+        } else {
+            this.#board = new PhysicalBoard(new LogicalBoard());
+        }
+        if (typeof ExtendedCreator == "function") {
+            this.#creator = new ExtendedCreator();
+        } else {
+            this.#creator = new Creator();
+        }
 
-// Controller prototype
-Controller.prototype = {
+        // events
+        window.addEventListener("load", this.#initialize.bind(this));
+    }
 
     // initialize the private fields and the page
-    "_initialize": function(e) {
+    #initialize(e) {
         // get the elements
         const canvas = document.getElementById("board");
-        this._board.setCanvas(canvas);
-        this._createButton = document.getElementById("create");
-        this._messageArea = document.getElementById("message");
-        this._problemButton = document.getElementById("problem");
-        this._countClues = document.getElementById("count_clues");
-        this._startButton = document.getElementById("start");
-        this._stopButton = document.getElementById("stop");
-        this._countTry = document.getElementById("count_try");
-        this._countCreate = document.getElementById("count_create");
-        this._outputArea = document.getElementById("data_output");
+        this.#board.setCanvas(canvas);
+        this.#createButton = document.getElementById("create");
+        this.#messageArea = document.getElementById("message");
+        this.#problemButton = document.getElementById("problem");
+        this.#countClues = document.getElementById("count_clues");
+        this.#startButton = document.getElementById("start");
+        this.#stopButton = document.getElementById("stop");
+        this.#countTry = document.getElementById("count_try");
+        this.#countCreate = document.getElementById("count_create");
+        this.#outputArea = document.getElementById("data_output");
         let group = document.getElementsByName("group0");
-        this._dependRadios = document.getElementsByName("group1");
+        this.#dependRadios = document.getElementsByName("group1");
         let level = 2;
         let depend = document.getElementsByName(`group${level}`);
         while (0 < depend.length) {
-            group = this._dependRadios;
-            this._dependRadios = depend;
+            group = this.#dependRadios;
+            this.#dependRadios = depend;
             level++;
             depend = document.getElementsByName(`group${level}`);
         }
-        this._invalidRadio = group[0];
+        this.#invalidRadio = group[0];
+        this.#creator.initialize(Grids);
 
         // button events
-        this._createButton.addEventListener("click", this._create.bind(this));
-        this._problemButton.addEventListener("click", this._showProblem.bind(this));
-        this._startButton.addEventListener("click", this._start.bind(this));
-        this._stopButton.addEventListener("click", this._stop.bind(this));
-        this._countClues.addEventListener("input", this._inputClues.bind(this));
-        group.forEach(elem => elem.addEventListener("change", this._changeRadio.bind(this)));
-        this._creator.progressEvent = this._showProgress.bind(this);
-        this._creator.finishEvent = this._showResult.bind(this);
-        this._creator.cancelEvent = this._canceled.bind(this);
+        this.#createButton.addEventListener("click", this.#create.bind(this));
+        this.#problemButton.addEventListener("click", this.#showProblem.bind(this));
+        this.#startButton.addEventListener("click", this.#start.bind(this));
+        this.#stopButton.addEventListener("click", this.#stop.bind(this));
+        this.#countClues.addEventListener("input", this.#inputClues.bind(this));
+        group.forEach(elem => elem.addEventListener("change", this.#changeRadio.bind(this)));
+        this.#creator.progressEvent = this.#showProgress.bind(this);
+        this.#creator.finishEvent = this.#showResult.bind(this);
+        this.#creator.cancelEvent = this.#canceled.bind(this);
 
         // range of conditions
-        this._minClues = this._getInt(document.getElementById("min_clues").textContent);
-        this._maxClues = this._getInt(document.getElementById("max_clues").textContent);
-        this._countClues.min = this._minClues;
-        this._countClues.max = this._maxClues;
+        this.#minClues = this.#getInt(document.getElementById("min_clues").textContent);
+        this.#maxClues = this.#getInt(document.getElementById("max_clues").textContent);
+        this.#countClues.min = this.#minClues;
+        this.#countClues.max = this.#maxClues;
 
         // initial display
-        this._board.clear();
-        this._problemButton.disabled = true;
-        this._stopButton.disabled = true;
-        this._setRadios(true);
-    },
+        this.#board.clear();
+        this.#problemButton.disabled = true;
+        this.#stopButton.disabled = true;
+        this.#setRadios(true);
+    }
 
     // create one problem
-    "_create": function(e) {
-        this._output = 1;
-        this._execute();
-    },
+    #create(e) {
+        this.#output = 1;
+        this.#execute();
+    }
 
     // show the problem on another page
-    "_showProblem": function(e) {
+    #showProblem(e) {
         // check the data
-        if (this._problems.length == 0) {
-            this._problemButton.disabled = true;
+        if (this.#problems.length == 0) {
+            this.#problemButton.disabled = true;
             return;
         }
 
         // get the data
-        const count = Math.min(this._problems.length, 8);
-        const data = JSON.stringify(this._problems.slice(0, count));
+        const count = Math.min(this.#problems.length, 8);
+        const data = JSON.stringify(this.#problems.slice(0, count));
         window.open(`./puzzle.html?data=${data}`, "problem");
-    },
+    }
 
     // create multiple problems
-    "_start": function(e) {
-        this._output = this._getInt(document.getElementById("count_output").value);
-        this._execute();
-    },
+    #start(e) {
+        this.#output = this.#getInt(document.getElementById("count_output").value);
+        this.#execute();
+    }
 
     // stop creating problems
-    "_stop": function(e) {
-        this._stopButton.disabled = true;
-    },
+    #stop(e) {
+        this.#stopButton.disabled = true;
+    }
 
     // input the number of clues
-    "_inputClues": function(e) {
-        const clues = this._getInt(this._countClues.value);
-        if (clues < this._minClues || this._maxClues < clues) {
+    #inputClues(e) {
+        const clues = this.#getInt(this.#countClues.value);
+        if (clues < this.#minClues || this.#maxClues < clues) {
             // invalid
-            this._countClues.classList.add("error");
+            this.#countClues.classList.add("error");
         } else {
             // valid
-            this._countClues.classList.remove("error");
+            this.#countClues.classList.remove("error");
         }
-    },
+    }
 
     // select a radio button
-    "_changeRadio": function(e) {
-        this._setRadios(e.currentTarget == this._invalidRadio);
-    },
+    #changeRadio(e) {
+        this.#setRadios(e.currentTarget == this.#invalidRadio);
+    }
 
     // execute creation
-    "_execute": function() {
+    #execute() {
         // get the input values
-        const clues = this._getInt(this._countClues.value);
-        if (clues < this._minClues || this._maxClues < clues) {
+        const clues = this.#getInt(this.#countClues.value);
+        if (clues < this.#minClues || this.#maxClues < clues) {
             return;
         }
-        const levels = this._getRadioGroup(0, false);
-        const needs = this._getRadioGroup(2, true);
+        const levels = this.#getRadioGroup(0, false);
+        const needs = this.#getRadioGroup(2, true);
 
         // reset the board
-        this._board.clear();
-        this._board.logic.initialize();
+        this.#board.clear();
+        this.#board.logic.initialize();
 
         // initialize the page
-        this._messageArea.textContent = "Running...";
-        this._outputArea.value = "";
-        this._countTry.textContent = 0;
-        this._countCreate.textContent = 0;
-        this._createButton.disabled = true;
-        this._problemButton.disabled = true;
-        this._startButton.disabled = true;
-        this._stopButton.disabled = false;
+        this.#messageArea.textContent = "Running...";
+        this.#outputArea.value = "";
+        this.#countTry.textContent = 0;
+        this.#countCreate.textContent = 0;
+        this.#createButton.disabled = true;
+        this.#problemButton.disabled = true;
+        this.#startButton.disabled = true;
+        this.#stopButton.disabled = false;
 
         // start creation
-        this._trial = 0;
-        this._problems = [];
-        this._now = new Date();
-        this._creator.setClues(clues);
-        this._creator.start(this._board.logic, levels, needs);
-    },
+        this.#trial = 0;
+        this.#problems = [];
+        this.#now = new Date();
+        this.#creator.setClues(clues);
+        this.#creator.start(this.#board.logic, levels, needs);
+    }
 
     // get a list of radio button settings
-    "_getRadioGroup": function(col, checked) {
+    #getRadioGroup(col, checked) {
         // process radio buttons in order
         const group = [];
         let row = 0;
@@ -155,82 +181,82 @@ Controller.prototype = {
             radio = document.getElementById(`group${row}_${col}`);
         }
         return group;
-    },
+    }
 
     // display progress
-    "_showProgress": function(numbers, summary) {
+    #showProgress(numbers, summary) {
         // check arguments
-        this._trial++;
-        this._countTry.textContent = this._trial.toLocaleString();
+        this.#trial++;
+        this.#countTry.textContent = this.#trial.toLocaleString();
         if (numbers != null) {
             // valid data
-            let name = this._getDateString(this._now);
-            if (1 < this._output) {
-                name += `_${this._problems.length + 1}`;
+            let name = this.#getDateString(this.#now);
+            if (1 < this.#output) {
+                name += `_${this.#problems.length + 1}`;
             }
             const message = `${name} (${summary.join()})`;
             const data = { "description": message, "pattern": numbers };
-            this._problems.push(data);
-            this._countCreate.textContent = this._problems.length.toLocaleString();
+            this.#problems.push(data);
+            this.#countCreate.textContent = this.#problems.length.toLocaleString();
         }
 
         // check if finished
-        if (0 < this._output && this._output <= this._problems.length) {
-            this._stopButton.disabled = true;
+        if (0 < this.#output && this.#output <= this.#problems.length) {
+            this.#stopButton.disabled = true;
         }
-    },
+    }
 
     // show the result
-    "_showResult": function(completed) {
+    #showResult(completed) {
         // show problems
-        if (0 < this._problems.length) {
-            this._board.setPattern(this._problems[0].pattern);
-            this._outputArea.value = JSON.stringify(this._problems);
-            this._problemButton.disabled = false;
+        if (0 < this.#problems.length) {
+            this.#board.setPattern(this.#problems[0].pattern);
+            this.#outputArea.value = JSON.stringify(this.#problems);
+            this.#problemButton.disabled = false;
         }
 
         // finalize
-        this._messageArea.textContent = "";
-        this._createButton.disabled = false;
-        this._startButton.disabled = false;
-        this._stopButton.disabled = true;
-    },
+        this.#messageArea.textContent = "";
+        this.#createButton.disabled = false;
+        this.#startButton.disabled = false;
+        this.#stopButton.disabled = true;
+    }
 
     // whether it was canceled
-    "_canceled": function() {
-        return this._stopButton.disabled;
-    },
+    #canceled() {
+        return this.#stopButton.disabled;
+    }
 
     // set radio buttons
-    "_setRadios": function(invalid) {
+    #setRadios(invalid) {
         // if it cannot be entered, select the first radio button
         if (invalid) {
-            this._dependRadios[0].checked = true;
+            this.#dependRadios[0].checked = true;
         }
 
         // set whether input is possible
-        this._dependRadios.forEach(elem => elem.disabled = invalid);
-    },
+        this.#dependRadios.forEach(elem => elem.disabled = invalid);
+    }
 
     // get the integer value
-    "_getInt": function(text) {
+    #getInt(text) {
         const after = text.replace(/,/g, "");
         let number = parseInt(after, 10);
         if (isNaN(number)) {
             number = 0;
         }
         return number;
-    },
+    }
 
     // get the date string
-    "_getDateString": function(date) {
+    #getDateString(date) {
         const month = `0${date.getMonth() + 1}`.slice(-2);
         const day = `0${date.getDate()}`.slice(-2);
         const hour = `0${date.getHours()}`.slice(-2);
         const minute = `0${date.getMinutes()}`.slice(-2);
         const second = `0${date.getSeconds()}`.slice(-2);
         return `${date.getFullYear()}${month}${day}_${hour}${minute}${second}`;
-    },
+    }
 
 }
 

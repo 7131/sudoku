@@ -1,69 +1,68 @@
-// Logical board prototype update
-if (typeof LogicalBoard === "function") {
+let ExtendedLogicalBoard, ExtendedSolver;
 
-    LogicalBoard.prototype = Object.create(LogicalBoard.prototype, {
+if (typeof LogicalBoard == "function") {
 
-        // constructor
-        "constructor": { "value": LogicalBoard },
+    // Extended logical board class
+    ExtendedLogicalBoard = class extends LogicalBoard {
 
         // decide the number
-        "decideNumber": { "value": function(index, value) {
+        decideNumber(index, value) {
             // check arguments
-            if (index < 0 || this._cells.length <= index || !Numbers.isValid(value)) {
+            if (index < 0 || this.cells.length <= index || !Numbers.isValid(value)) {
                 return;
             }
 
             // decide the number in the specified cell
-            const cell = this._cells[index];
+            const cell = this.cells[index];
             cell.value = value;
             cell.candidate.clear();
 
             // remove candidates from the same group
             const act = elem => elem.candidate.remove(value);
-            this.getRowCells(cell.row).forEach(act);
-            this.getColCells(cell.col).forEach(act);
-            this.getBlockCells(cell.block).forEach(act);
+            super.getRowCells(cell.row).forEach(act);
+            super.getColCells(cell.col).forEach(act);
+            super.getBlockCells(cell.block).forEach(act);
 
             // remove collisions from the same group
-            const row = this.getRowCells(cell.row);
-            const col = this.getColCells(cell.col);
-            const block = this.getBlockCells(cell.block);
+            const row = super.getRowCells(cell.row);
+            const col = super.getColCells(cell.col);
+            const block = super.getBlockCells(cell.block);
             const pos = (cell.row % 3) * 3 + (cell.col % 3);
             for (let i = 0; i < 9; i++) {
                 row[i].candidate.remove((value + cell.col + 8 - i) % 9 + 1);
                 col[i].candidate.remove((value + cell.row + 8 - i) % 9 + 1);
                 block[i].candidate.remove((value + pos + 8 - i) % 9 + 1);
             }
-        }},
+        }
 
         // get a list of incorrect indexes
-        "getIncorrectIndexes": { "value": function() {
+        getIncorrectIndexes() {
             // check for duplicate numbers
             const indexes = [];
-            indexes.push(this._rows.map(this._getDuplicates, this));
-            indexes.push(this._cols.map(this._getDuplicates, this));
-            indexes.push(this._blocks.map(this._getDuplicates, this));
+            indexes.push(this.rows.map(super.getDuplicates, this));
+            indexes.push(this.cols.map(super.getDuplicates, this));
+            indexes.push(this.blocks.map(super.getDuplicates, this));
 
             // check if they are siteswaps
-            indexes.push(this._rows.map(this._getCollisions, this));
-            indexes.push(this._cols.map(this._getCollisions, this));
-            indexes.push(this._blocks.map(this._getCollisions, this));
+            indexes.push(this.rows.map(this.#getCollisions, this));
+            indexes.push(this.cols.map(this.#getCollisions, this));
+            indexes.push(this.blocks.map(this.#getCollisions, this));
 
             // remove duplicate indexes
             return indexes.flat(Infinity).filter((val, idx, arr) => arr.indexOf(val) == idx);
-        }},
+        }
 
         // get a list of collision indexes
-        "_getCollisions": { "value": function(group) {
+        #getCollisions(group) {
             // get a list of drop points for each number
             const numbers = new Array(group.length).fill().map(elem => []);
             for (let i = 0; i < group.length; i++) {
                 const index = group[i];
 
                 // solid value or numerical value
-                let value = this._cells[index].solid;
+                let value = this.cells[index].solid;
                 if (!Numbers.isValid(value)) {
-                    value = this._cells[index].value;
+                    value = this.cells[index].value;
                 }
                 if (Numbers.isValid(value)) {
                     numbers[(value + i) % 9].push(index);
@@ -71,30 +70,21 @@ if (typeof LogicalBoard === "function") {
             }
 
             // check if there was a collision
-            const collisions = numbers.filter(elem => 1 < elem.length).map(elem => elem.filter(idx => !this.isSolid(idx)));
+            const collisions = numbers.filter(elem => 1 < elem.length).map(elem => elem.filter(idx => !super.isSolid(idx)));
             return collisions.flat();
-        }},
+        }
 
-    });
+    }
 
 }
 
-// Solver prototype update
-if (typeof Solver === "function") {
+if (typeof Solver == "function") {
 
     // Siteswap twin method class
-    const SiteswapTwinMethod = function() {
-        SolverMethod.call(this);
-    }
-
-    // Siteswap twin method prototype
-    SiteswapTwinMethod.prototype = Object.create(SolverMethod.prototype, {
-
-        // constructor
-        "constructor": { "value": SiteswapTwinMethod },
+    class SiteswapTwinMethod extends SolverMethod {
 
         // create a solution
-        "_createSolutions": { "value": function(logic) {
+        createSolutions(logic) {
             // 1 cell
             const cells = logic.getAllCells();
             for (const cell of cells) {
@@ -104,34 +94,34 @@ if (typeof Solver === "function") {
                     const max = cell.candidate.getNumber(1);
 
                     // rows and columns
-                    this._reduceSingleTwin(logic.getRowCells(cell.row), cell.col, min, max);
-                    this._reduceSingleTwin(logic.getColCells(cell.col), cell.row, min, max);
+                    this.#reduceSingleTwin(logic.getRowCells(cell.row), cell.col, min, max);
+                    this.#reduceSingleTwin(logic.getColCells(cell.col), cell.row, min, max);
 
                     // blocks
                     const block = logic.getBlockCells(cell.block);
                     const index = block.indexOf(cell);
-                    this._reduceSingleTwin(block, index, min, max);
+                    this.#reduceSingleTwin(block, index, min, max);
                 }
             }
 
             // 2 cells
             for (let i = 0; i < 9; i++) {
-                this._reduceDoubleTwin(logic.getRowCells(i));
-                this._reduceDoubleTwin(logic.getColCells(i));
-                this._reduceDoubleTwin(logic.getBlockCells(i));
+                this.#reduceDoubleTwin(logic.getRowCells(i));
+                this.#reduceDoubleTwin(logic.getColCells(i));
+                this.#reduceDoubleTwin(logic.getBlockCells(i));
             }
             return [];
-        }},
+        }
 
         // reduce candidates from the other cells based on the value in the twin cell
-        "_reduceSingleTwin": { "value": function(group, index, min, max) {
+        #reduceSingleTwin(group, index, min, max) {
             const distance = max - min;
             group[(index + distance) % 9].candidate.remove(min);
             group[(index + 9 - distance) % 9].candidate.remove(max);
-        }},
+        }
 
         // reduce candidates from the other cells based on the values in the two cells
-        "_reduceDoubleTwin": { "value": function(group) {
+        #reduceDoubleTwin(group) {
             // handle the entire group
             const cells = group.filter(elem => elem.candidate.length == 2);
 
@@ -155,49 +145,41 @@ if (typeof Solver === "function") {
                     const max1min2 = (max1 - min2 + 9) % 9;
                     const max1max2 = (max1 - max2 + 9) % 9;
                     if ((min1 == min2 && max1max2 == distance) || (min1 == max2 && max1min2 == distance)) {
-                        this._reduceSameNumber(group, index1, index2, min1);
-                        this._reduceDescending(group, index1, index2, max1);
+                        this.#reduceSameNumber(group, index1, index2, min1);
+                        this.#reduceDescending(group, index1, index2, max1);
                     } else if ((max1 == min2 && min1max2 == distance) || (max1 == max2 && min1min2 == distance)) {
-                        this._reduceSameNumber(group, index1, index2, max1);
-                        this._reduceDescending(group, index1, index2, min1);
+                        this.#reduceSameNumber(group, index1, index2, max1);
+                        this.#reduceDescending(group, index1, index2, min1);
                     } else if ((min1min2 == distance && max1max2 == distance) || (min1max2 == distance && max1min2 == distance)) {
-                        this._reduceDescending(group, index1, index2, min1);
-                        this._reduceDescending(group, index1, index2, max1);
+                        this.#reduceDescending(group, index1, index2, min1);
+                        this.#reduceDescending(group, index1, index2, max1);
                     }
                 }
             }
-        }},
+        }
 
         // reduce candidates with the same number
-        "_reduceSameNumber": { "value": function(group, index1, index2, number) {
+        #reduceSameNumber(group, index1, index2, number) {
             group.filter((val, idx) => idx != index1 && idx != index2).forEach(elem => elem.candidate.remove(number));
-        }},
+        }
 
         // reduce candidates while descending numbers
-        "_reduceDescending": { "value": function(group, index1, index2, number1) {
+        #reduceDescending(group, index1, index2, number1) {
             for (let i = 0; i < group.length; i++) {
                 if (i != index1 && i != index2) {
                     const number = (index1 - i + number1 + 8) % 9 + 1;
                     group[i].candidate.remove(number);
                 }
             }
-        }},
+        }
 
-    });
-
-    // Siteswap triplet method class
-    const SiteswapTripletMethod = function() {
-        SolverMethod.call(this);
     }
 
-    // Siteswap triplet method prototype
-    SiteswapTripletMethod.prototype = Object.create(SolverMethod.prototype, {
-
-        // constructor
-        "constructor": { "value": SiteswapTripletMethod },
+    // Siteswap triplet method class
+    class SiteswapTripletMethod extends SolverMethod {
 
         // create a solution
-        "_createSolutions": { "value": function(logic) {
+        createSolutions(logic) {
             const numbers = new CandidateArray();
             for (let i = 0; i < 9; i++) {
                 // blocks
@@ -212,18 +194,18 @@ if (typeof Solver === "function") {
                         values.push(candidate[0] - candidate[2] + 9);
                         numbers.setArray(values);
                         if (numbers.areSame([ 1, 2, 6 ])) {
-                            this._reduceOutofTriplet(group, j, candidate, values, 1);
+                            this.#reduceOutOfTriplet(group, j, candidate, values, 1);
                         } else if (numbers.areSame([ 2, 4, 3 ])) {
-                            this._reduceOutofTriplet(group, j, candidate, values, 2);
+                            this.#reduceOutOfTriplet(group, j, candidate, values, 2);
                         }
                     }
                 }
             }
             return [];
-        }},
+        }
 
         // reduce candidates from other than the triplet cells
-        "_reduceOutofTriplet": { "value": function(group, index, candidate, values, distance) {
+        #reduceOutOfTriplet(group, index, candidate, values, distance) {
             // get the positional relationship between candidates
             const one = values.indexOf(distance);
             const two = values.indexOf(distance * 2);
@@ -244,32 +226,30 @@ if (typeof Solver === "function") {
                 number = candidate[tre];
             }
             group[target].candidate.remove(number);
-        }},
+        }
 
-    });
+    }
 
-    Solver.prototype = Object.create(Solver.prototype, {
-
-        // constructor
-        "constructor": { "value": Solver },
+    // Extended solver class
+    ExtendedSolver = class extends Solver {
 
         // initialize the fields
-        "initialize": { "value": function() {
+        initialize() {
             // set the methods
-            this._methods.push(new OneCandidateMethod());
-            this._methods.push(new OneCellMethod());
-            this._methods.push(new SharedCellMethod());
-            this._methods.push(new TwinMethod());
-            this._methods.push(new SiteswapTwinMethod());
-            this._methods.push(new TripletMethod());
-            this._methods.push(new SiteswapTripletMethod());
-            this._methods.push(new XWingMethod());
-            this._methods.push(new AriadneMethod());
-            this._methods.push(new AriadneMethod());
-            this._methods.forEach((val, idx) => val.depth = idx);
-        }},
+            this.methods.push(new OneCandidateMethod());
+            this.methods.push(new OneCellMethod());
+            this.methods.push(new SharedCellMethod());
+            this.methods.push(new TwinMethod());
+            this.methods.push(new SiteswapTwinMethod());
+            this.methods.push(new TripletMethod());
+            this.methods.push(new SiteswapTripletMethod());
+            this.methods.push(new XWingMethod());
+            this.methods.push(new AriadneMethod());
+            this.methods.push(new AriadneMethod());
+            this.methods.forEach((val, idx) => val.depth = idx);
+        }
 
-    });
+    }
 
 }
 
