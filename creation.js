@@ -240,10 +240,9 @@ class Controller {
 
     // get the integer value
     #getInt(text) {
-        const after = text.replace(/,/g, "");
-        let number = parseInt(after, 10);
+        const number = parseInt(text.replace(/,/g, ""), 10);
         if (isNaN(number)) {
-            number = 0;
+            return 0;
         }
         return number;
     }
