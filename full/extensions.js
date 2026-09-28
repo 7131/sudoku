@@ -83,8 +83,8 @@ if (typeof Solver == "function") {
     // Siteswap twin method class
     class SiteswapTwinMethod extends SolverMethod {
 
-        // create a solution
-        createSolutions(logic) {
+        // generate a solution
+        generateSolutions(logic) {
             // 1 cell
             const cells = logic.getAllCells();
             for (const cell of cells) {
@@ -178,8 +178,8 @@ if (typeof Solver == "function") {
     // Siteswap triplet method class
     class SiteswapTripletMethod extends SolverMethod {
 
-        // create a solution
-        createSolutions(logic) {
+        // generate a solution
+        generateSolutions(logic) {
             const numbers = new CandidateArray();
             for (let i = 0; i < 9; i++) {
                 // blocks

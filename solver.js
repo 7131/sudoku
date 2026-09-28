@@ -27,7 +27,7 @@ class SolverMethod {
             }
 
             // reduce at this level
-            solutions = solutions.concat(this.createSolutions(logic));
+            solutions = solutions.concat(this.generateSolutions(logic));
             before = after;
             after = logic.getCandidateCount();
             if (after < before) {
@@ -50,8 +50,8 @@ class SolverMethod {
         return { "progress": progress, "solutions": solutions };
     }
 
-    // create a solution (template method)
-    createSolutions(logic) {
+    // generate a solution (template method)
+    generateSolutions(logic) {
     }
 
 }
@@ -59,8 +59,8 @@ class SolverMethod {
 // Unique candidate method class
 class OneCandidateMethod extends SolverMethod {
 
-    // create a solution
-    createSolutions(logic) {
+    // generate a solution
+    generateSolutions(logic) {
         const candidates = logic.getCandidateList();
         for (let i = 0; i < candidates.length; i++) {
             const candidate = candidates[i];
@@ -83,8 +83,8 @@ class OneCandidateMethod extends SolverMethod {
 // Unique cell method class
 class OneCellMethod extends SolverMethod {
 
-    // create a solution
-    createSolutions(logic) {
+    // generate a solution
+    generateSolutions(logic) {
         for (let i = 0; i < 9; i++) {
             // process by row, column, and block
             this.#reduceInGroup(logic, logic.getRowCells(i));
@@ -133,8 +133,8 @@ class OneCellMethod extends SolverMethod {
 // Shared cells method class
 class SharedCellMethod extends SolverMethod {
 
-    // create a solution
-    createSolutions(logic) {
+    // generate a solution
+    generateSolutions(logic) {
         // check the intersection of blocks and rows / columns
         for (let i = 0; i < 9; i++) {
             const block = logic.getBlockCells(i);
@@ -183,8 +183,8 @@ class SharedCellMethod extends SolverMethod {
 // Twin method class
 class TwinMethod extends SolverMethod {
 
-    // create a solution
-    createSolutions(logic) {
+    // generate a solution
+    generateSolutions(logic) {
         for (let i = 0; i < 9; i++) {
             // rows
             const row = logic.getRowCells(i);
@@ -254,8 +254,8 @@ class TwinMethod extends SolverMethod {
 // Triplet method class
 class TripletMethod extends SolverMethod {
 
-    // create a solution
-    createSolutions(logic) {
+    // generate a solution
+    generateSolutions(logic) {
         for (let i = 0; i < 9; i++) {
             // rows
             const row = logic.getRowCells(i);
@@ -369,8 +369,8 @@ class TripletMethod extends SolverMethod {
 // X-Wing method class
 class XWingMethod extends SolverMethod {
 
-    // create a solution
-    createSolutions(logic) {
+    // generate a solution
+    generateSolutions(logic) {
         // rows
         for (let top = 0; top < 8; top++) {
             for (let bottom = top + 1; bottom < 9; bottom++) {
@@ -439,8 +439,8 @@ class XWingMethod extends SolverMethod {
 // Ariadne method class
 class AriadneMethod extends SolverMethod {
 
-    // create a solution
-    createSolutions(logic) {
+    // generate a solution
+    generateSolutions(logic) {
         let solutions = [];
         const candidates = logic.getCandidateList();
         for (let i = 0; i < candidates.length; i++) {

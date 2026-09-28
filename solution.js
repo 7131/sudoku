@@ -191,7 +191,7 @@ class Controller {
         }
         this.#messageArea.textContent = `${message}(${result.summary.join()})`;
 
-        // create a list of progress
+        // generate a list of progress
         const progress = [ { "title": "Initial state, candidates are in [ ].", "table": initial } ];
         result.progress.forEach(elem => progress.push({ "title": `Method ${elem.depth}`, "table": elem.table }));
         if (1 < result.solutions.length) {
@@ -214,7 +214,7 @@ class Controller {
         const horizontal = [ "top", "middle", "bottom" ];
         const vertical = [ "left", "center", "right" ];
 
-        // create a table element
+        // generate a table element
         const table = document.createElement("table");
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];

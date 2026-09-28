@@ -6,7 +6,7 @@ class SudokuTest extends TestTable {
     // constructor
     constructor(id, body, data) {
         super(id, body);
-        super.create(data);
+        super.generate(data);
         if (typeof ExtendedLogicalBoard == "function") {
             this.#logic = new ExtendedLogicalBoard();
         } else {

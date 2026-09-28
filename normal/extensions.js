@@ -1,9 +1,9 @@
-let ExtendedCreator;
+let ExtendedGenerator;
 
-if (typeof Creator == "function") {
+if (typeof Generator == "function") {
 
-    // Extended creator class
-    ExtendedCreator = class extends Creator {
+    // Extended generator class
+    ExtendedGenerator = class extends Generator {
         #table;
         #row = 0;
         #col = 0;
@@ -17,10 +17,10 @@ if (typeof Creator == "function") {
                 this.grids = [];
             }
 
-            // create a list of clues
+            // generate a list of clues
             this.clues = new Array(81).fill(false);
 
-            // create a replacement table
+            // generate a replacement table
             const first = this.#permutate([ 3, 4, 5 ]);
             const second = this.#permutate([ 6, 7, 8 ]);
             const normal = first.map(head => second.map(elem => head.concat(elem))).flat();
@@ -28,7 +28,7 @@ if (typeof Creator == "function") {
             this.#table = normal.concat(reverse);
         }
 
-        // start creating problems
+        // start generating problems
         start(logic, levels, needs) {
             // initialize the fields
             this.logic = logic;
@@ -70,7 +70,7 @@ if (typeof Creator == "function") {
             return result;
         }
 
-        // execute problem creation
+        // execute generation
         #execute() {
             // check fields
             if (this.#table.length <= this.#col) {
@@ -78,20 +78,20 @@ if (typeof Creator == "function") {
                 return;
             }
 
-            // create a problem
+            // generate a problem
             if (this.entity == null) {
                 this.entity = this.#getEntity();
             }
-            let numbers = this.entity.createNext(this.accept);
+            let numbers = this.entity.generateNext(this.accept);
             if (numbers == null) {
                 this.entity = this.#getEntity();
-                numbers = this.entity.createNext(this.accept);
+                numbers = this.entity.generateNext(this.accept);
             }
             this.logic.setSolidList(numbers);
             this.logic.setNumberList([]);
             this.logic.setupCandidates();
 
-            // create a solution
+            // generate a solution
             const result = this.solver.solve(this.logic, this.levels);
             if (result.solutions.length == 1) {
                 // if there is only one solution
@@ -128,13 +128,13 @@ if (typeof Creator == "function") {
             setTimeout(this.#execute.bind(this), 1);
         }
 
-        // get the next creation entity
+        // get the next generation entity
         #getEntity() {
             // replace the standard grid
             const grid = this.grids[this.index];
             const conv = this.#convertRow(grid, this.#row);
             const next = this.#convertCol(conv, this.#col);
-            const entity = new CreatorEntity(next, this.clues);
+            const entity = new GeneratorEntity(next, this.clues);
 
             // update index
             this.index++;

@@ -1,4 +1,4 @@
-let ExtendedLogicalBoard, ExtendedSolver, ExtendedCreator;
+let ExtendedLogicalBoard, ExtendedSolver, ExtendedGenerator;
 
 if (typeof LogicalBoard == "function") {
 
@@ -79,8 +79,8 @@ if (typeof Solver == "function") {
     // Siteswap twin method class
     class SiteswapTwinMethod extends SolverMethod {
 
-        // create a solution
-        createSolutions(logic) {
+        // generate a solution
+        generateSolutions(logic) {
             // 1 cell
             const cells = logic.getAllCells();
             for (const cell of cells) {
@@ -187,10 +187,10 @@ if (typeof Solver == "function") {
 
 }
 
-if (typeof Creator == "function") {
+if (typeof Generator == "function") {
 
-    // Extended creator class
-    ExtendedCreator = class extends Creator {
+    // Extended generator class
+    ExtendedGenerator = class extends Generator {
         #table;
         #row = 0;
         #col = 0;
@@ -204,10 +204,10 @@ if (typeof Creator == "function") {
                 this.grids = [];
             }
 
-            // create a list of clues
+            // generate a list of clues
             this.clues = new Array(81).fill(false);
 
-            // create a replacement table
+            // generate a replacement table
             this.#table = [
                 [ 0, 3, 6 ],
                 [ 3, 6, 0 ],
@@ -215,7 +215,7 @@ if (typeof Creator == "function") {
             ];
         }
 
-        // start creating problems
+        // start generating problems
         start(logic, levels, needs) {
             // initialize the fields
             this.logic = logic;
@@ -237,7 +237,7 @@ if (typeof Creator == "function") {
             setTimeout(this.#execute.bind(this), 1);
         }
 
-        // execute problem creation
+        // execute generation
         #execute() {
             // check fields
             if (this.#table.length <= this.#row) {
@@ -245,20 +245,20 @@ if (typeof Creator == "function") {
                 return;
             }
 
-            // create a problem
+            // generate a problem
             if (this.entity == null) {
                 this.entity = this.#getEntity();
             }
-            let numbers = this.entity.createNext(this.accept);
+            let numbers = this.entity.generateNext(this.accept);
             if (numbers == null) {
                 this.entity = this.#getEntity();
-                numbers = this.entity.createNext(this.accept);
+                numbers = this.entity.generateNext(this.accept);
             }
             this.logic.setSolidList(numbers);
             this.logic.setNumberList([]);
             this.logic.setupCandidates();
 
-            // create a solution
+            // generate a solution
             const result = this.solver.solve(this.logic, this.levels);
             if (result.solutions.length == 1) {
                 // if there is only one solution
@@ -295,13 +295,13 @@ if (typeof Creator == "function") {
             setTimeout(this.#execute.bind(this), 1);
         }
 
-        // get the next creation entity
+        // get the next generation entity
         #getEntity() {
             // replace the standard grid
             const grid = this.grids[this.index];
             const conv = this.#convertRow(grid, this.#row);
             const next = this.#convertCol(conv, this.#col);
-            const entity = new CreatorEntity(next, this.clues);
+            const entity = new GeneratorEntity(next, this.clues);
 
             // update index
             this.index++;
